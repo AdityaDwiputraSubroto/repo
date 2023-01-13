@@ -6,6 +6,12 @@ class AppController extends GetxController {
   CourseService courseService = CourseService();
   final allCourseList = <CourseResponse>[].obs;
 
+  // @override
+  // void onInit() {
+  //   fetchAllCourse();
+  //   super.onInit();
+  // }
+
   Future<List<CourseResponse>> fetchAllCourse() async {
     try {
       final allCourse = await courseService.getAllCourse();

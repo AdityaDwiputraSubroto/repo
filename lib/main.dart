@@ -14,7 +14,7 @@ void main() async {
   var initialRoute = AppRoutesRepo.login;
   final loggedIn = pref.getBool('logged-in') ?? false;
   print(loggedIn);
-  if (loggedIn ?? false) {
+  if (loggedIn) {
     initialRoute = AppRoutesRepo.bottomNavigator;
     var resp = await post(
         Uri.parse('${ApiRoutesRepo.baseUrl}/user/refresh-token'),

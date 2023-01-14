@@ -151,44 +151,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   } else {
                     List<CourseResponse>? course = snapshot.data;
                     if (course!.isEmpty) {
-                      return Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.only(
-                              top: 30,
-                              bottom: 20,
-                            ),
-                            alignment: Alignment.topCenter,
-                            child: SvgPicture.asset(AssetsRepo.noCourse),
-                          ),
-                          const Text(
-                            'Course Tidak Ditemukan',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.only(top: 10),
-                            child: const Text(
-                              '''Kami tidak dapat menemukan materi
-yang anda cari.
-Silakan mencoba kembali.''',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height / 5.4,
-                          ),
-                        ],
-                      );
+                      return _emptyCourse();
                     } else {
                       return ListView.builder(
-                        itemCount: course!.length,
+                        itemCount: course.length,
                         itemBuilder: (context, index) {
                           return InkWell(
                             onTap: () {},
@@ -364,6 +330,41 @@ Silakan mencoba kembali.''',
   }
 }
 
+_emptyCourse() {
+  return Column(
+    children: [
+      Container(
+        padding: const EdgeInsets.only(
+          top: 30,
+          bottom: 20,
+        ),
+        alignment: Alignment.topCenter,
+        child: SvgPicture.asset(AssetsRepo.noCourse),
+      ),
+      const Text(
+        'Course Tidak Ditemukan',
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      Container(
+        padding: const EdgeInsets.only(top: 10),
+        child: const Text(
+          '''Kami tidak dapat menemukan materi
+yang anda cari.
+Silakan mencoba kembali.''',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    ],
+  );
+}
+
 _labelDivision(int? idDivision) {
   final appController = Get.put(AppController());
   return Container(
@@ -403,11 +404,16 @@ _labelDivision(int? idDivision) {
 
 _courseMakerLabel(int? idUser) {
   final appController = Get.put(AppController());
-  return Text(
-    '${appController.fullnameById}',
-    style: TextStyle(
-      fontSize: 14,
-      color: hexToColor(ColorsRepo.darkGray),
-    ),
+  return FutureBuilder(
+    future: appController.fetchUserById(idUser!),
+    builder: (context, snapshot) {
+      return Text(
+        '${appController.fullnameById}',
+        style: TextStyle(
+          fontSize: 14,
+          color: hexToColor(ColorsRepo.darkGray),
+        ),
+      );
+    },
   );
 }

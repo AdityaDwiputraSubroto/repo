@@ -138,61 +138,55 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 12,
             ),
             SizedBox(
-                height: MediaQuery.of(context).size.height / 1.45,
-                child: FutureBuilder(
-                  future: appController.fetchAllCourse(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting ||
-                        snapshot.data == null) {
-                      return SizedBox(
-                        height: MediaQuery.of(context).size.height / 1.45,
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.only(
-                                top: 30,
-                                bottom: 20,
-                              ),
-                              alignment: Alignment.topCenter,
-                              child: SvgPicture.asset(AssetsRepo.noCourse),
+              height: MediaQuery.of(context).size.height / 1.45,
+              child: FutureBuilder(
+                future: appController.fetchAllCourse(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting ||
+                      snapshot.data == null) {
+                    return const Center(
+                      heightFactor: 10,
+                      child: CircularProgressIndicator(),
+                    );
+                  } else {
+                    List<CourseResponse>? course = snapshot.data;
+                    if (course!.isEmpty) {
+                      return Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.only(
+                              top: 30,
+                              bottom: 20,
                             ),
-                            const Text(
-                              'Course Tidak Ditemukan',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            alignment: Alignment.topCenter,
+                            child: SvgPicture.asset(AssetsRepo.noCourse),
+                          ),
+                          const Text(
+                            'Course Tidak Ditemukan',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
-                            Container(
-                              padding: const EdgeInsets.only(top: 10),
-                              child: const Text(
-                                '''Kami tidak dapat menemukan materi
+                          ),
+                          Container(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: const Text(
+                              '''Kami tidak dapat menemukan materi
 yang anda cari.
 Silakan mencoba kembali.''',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey,
-                                ),
-                                textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
                               ),
+                              textAlign: TextAlign.center,
                             ),
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height / 5.4,
-                            ),
-                            Container(
-                              alignment: Alignment.bottomRight,
-                              child: FloatingActionButton(
-                                onPressed: () {},
-                                backgroundColor:
-                                    hexToColor(ColorsRepo.primaryColor),
-                                child: const Icon(Icons.add),
-                              ),
-                            )
-                          ],
-                        ),
+                          ),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height / 5.4,
+                          ),
+                        ],
                       );
                     } else {
-                      List<CourseResponse>? course = snapshot.data;
                       return ListView.builder(
                         itemCount: course!.length,
                         itemBuilder: (context, index) {
@@ -359,8 +353,10 @@ Silakan mencoba kembali.''',
                         },
                       );
                     }
-                  },
-                ))
+                  }
+                },
+              ),
+            ),
           ],
         ),
       ),

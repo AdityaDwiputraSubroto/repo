@@ -367,6 +367,7 @@ Silakan mencoba kembali.''',
 
 _labelDivision(int? idDivision) {
   final appController = Get.put(AppController());
+  print(idDivision);
   return Container(
     margin: const EdgeInsets.only(
       left: 12,

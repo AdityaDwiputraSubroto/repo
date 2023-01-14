@@ -137,15 +137,59 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(
               height: 12,
             ),
-            Container(
+            SizedBox(
                 height: MediaQuery.of(context).size.height / 1.45,
                 child: FutureBuilder(
                   future: appController.fetchAllCourse(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting ||
                         snapshot.data == null) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height / 1.45,
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.only(
+                                top: 30,
+                                bottom: 20,
+                              ),
+                              alignment: Alignment.topCenter,
+                              child: SvgPicture.asset(AssetsRepo.noCourse),
+                            ),
+                            const Text(
+                              'Course Tidak Ditemukan',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: const Text(
+                                '''Kami tidak dapat menemukan materi
+yang anda cari.
+Silakan mencoba kembali.''',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height / 5.4,
+                            ),
+                            Container(
+                              alignment: Alignment.bottomRight,
+                              child: FloatingActionButton(
+                                onPressed: () {},
+                                backgroundColor:
+                                    hexToColor(ColorsRepo.primaryColor),
+                                child: const Icon(Icons.add),
+                              ),
+                            )
+                          ],
+                        ),
                       );
                     } else {
                       List<CourseResponse>? course = snapshot.data;
@@ -204,30 +248,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                     ),
                                   ),
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                      left: 12,
-                                      bottom: 12,
-                                    ),
-                                    padding: const EdgeInsets.only(
-                                      top: 4,
-                                      left: 8,
-                                    ),
-                                    width: 135,
-                                    height: 18,
-                                    decoration: BoxDecoration(
-                                      color: hexToColor(ColorsRepo.redColorPR),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      '${course[index].idDivision}',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
+                                  _labelDivision(course[index].idDivision),
                                   Container(
                                     margin: const EdgeInsets.only(
                                       left: 12,
@@ -262,14 +283,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         const SizedBox(
                                           width: 5,
                                         ),
-                                        Text(
-                                          '${course[index].idUser}',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color:
-                                                hexToColor(ColorsRepo.darkGray),
-                                          ),
-                                        )
+                                        _courseMakerLabel(course[index].idUser),
                                       ],
                                     ),
                                   ),
@@ -352,4 +366,52 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+_labelDivision(int? idDivision) {
+  final appController = Get.put(AppController());
+  return Container(
+    margin: const EdgeInsets.only(
+      left: 12,
+      bottom: 12,
+    ),
+    padding: const EdgeInsets.only(
+      top: 4,
+      left: 8,
+      right: 4,
+    ),
+    width: 138,
+    height: 18,
+    decoration: BoxDecoration(
+      color: idDivision == 1
+          ? hexToColor(ColorsRepo.grayColorBE)
+          : idDivision == 2
+              ? hexToColor(ColorsRepo.greenColorFE)
+              : idDivision == 3
+                  ? hexToColor(ColorsRepo.blueColorMobile)
+                  : idDivision == 4
+                      ? hexToColor(ColorsRepo.redColorPR)
+                      : hexToColor(ColorsRepo.brownColorPM),
+      borderRadius: BorderRadius.circular(4),
+    ),
+    child: Text(
+      '${appController.allDivisionList!.data!.elementAt(idDivision! - 1).divisionName}',
+      style: const TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+        color: Colors.white,
+      ),
+    ),
+  );
+}
+
+_courseMakerLabel(int? idUser) {
+  final appController = Get.put(AppController());
+  return Text(
+    '${appController.fullnameById}',
+    style: TextStyle(
+      fontSize: 14,
+      color: hexToColor(ColorsRepo.darkGray),
+    ),
+  );
 }

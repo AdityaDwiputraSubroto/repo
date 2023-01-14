@@ -51,7 +51,7 @@ class UserService extends GetConnect implements GetxService {
     return BaseResponse<User>.fromJson(body, (data) => User.fromJson(data));
   }
 
-  Future<BaseResponse<User>> fetch(int id) async {
+  Future<BaseResponse<User>> fetchUserById(int id) async {
     Response response = await get(ApiRoutesRepo.user(id));
 
     if (response.statusCode != 200) {

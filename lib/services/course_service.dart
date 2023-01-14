@@ -11,7 +11,6 @@ class CourseService {
   Future<List<CourseResponse>> getAllCourse() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var accesToken = sharedPreferences.getString('access-token');
-    print(accesToken);
     Uri url = Uri.parse(ApiRoutesRepo.baseUrl + ApiRoutesRepo.course);
     final response = await http.get(
       url,

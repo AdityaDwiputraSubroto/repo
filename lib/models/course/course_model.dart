@@ -4,8 +4,6 @@ class CourseResponse {
   String? description;
   String? imageThumbnail;
   String? cloudinaryId;
-  // String? createdAt;
-  // String? updatedAt;
   DateTime? createdAt;
   DateTime? updatedAt;
   int? idDivision;
@@ -31,8 +29,6 @@ class CourseResponse {
     cloudinaryId = json['cloudinary_id'];
     createdAt = DateTime.parse(json['createdAt']);
     updatedAt = DateTime.parse(json['updatedAt']);
-    // createdAt = json['createdAt'];
-    // updatedAt = json['updatedAt'];
     idDivision = json['id_division'];
     idUser = json['id_user'];
   }
@@ -44,8 +40,6 @@ class CourseResponse {
     data['description'] = description;
     data['image_thumbnail'] = imageThumbnail;
     data['cloudinary_id'] = cloudinaryId;
-    // data['createdAt'] = createdAt;
-    // data['updatedAt'] = updatedAt;
     data['createdAt'] = createdAt?.toIso8601String();
     data['updatedAt'] = updatedAt?.toIso8601String();
     data['id_division'] = idDivision;

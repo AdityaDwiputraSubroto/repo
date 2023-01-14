@@ -31,7 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ListTile(
+              const ListTile(
                 dense: true,
                 leading: ClipOval(
                   child: Image(
@@ -58,15 +58,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
-              Divider(
+              const Divider(
                 color: Colors.black,
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       "Akun",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -74,7 +74,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     Column(
-                      children: [
+                      children: const [
                         ListTile(
                           leading: FlutterLogo(size: 14),
                         )

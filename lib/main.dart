@@ -16,18 +16,32 @@ void main() async {
   print(loggedIn);
   if (loggedIn) {
     initialRoute = AppRoutesRepo.bottomNavigator;
-    var resp = await post(
-        Uri.parse('${ApiRoutesRepo.baseUrl}/user/refresh-token'),
-        body: <String, dynamic>{
-          'username': pref.getString('username'),
-          'refreshToken': pref.getString('refresh-token')
-        });
-    var body = jsonDecode(resp.body);
-    print(body);
-    if (body['status'] == 'success') {
-      pref.setString('access-token', body['data']['accessToken']);
-    } else {
+    try {
+      var resp = await post(
+          Uri.parse('${ApiRoutesRepo.baseUrl}/user/refresh-token'),
+          body: <String, dynamic>{
+            'username': pref.getString('username'),
+            'refreshToken': pref.getString('refresh-token')
+          });
+      var body = jsonDecode(resp.body);
+      print(body);
+      if (body['status'] == 'success') {
+        pref.setString('access-token', body['data']['accessToken']);
+      } else {
+        initialRoute = AppRoutesRepo.login;
+        await pref.setBool('logged-in', false);
+        await pref.setInt('role', 0);
+        await pref.setString('username', '');
+        await pref.setString('refresh-token', '');
+        await pref.setString('access-token', '');
+      }
+    } catch (e) {
       initialRoute = AppRoutesRepo.login;
+      await pref.setBool('logged-in', false);
+      await pref.setInt('role', 0);
+      await pref.setString('username', '');
+      await pref.setString('refresh-token', '');
+      await pref.setString('access-token', '');
     }
   }
   FlutterNativeSplash.remove();

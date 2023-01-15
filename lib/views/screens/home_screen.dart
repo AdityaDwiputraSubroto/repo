@@ -25,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'Mobile',
     'PM',
   ];
+  List<CourseResponse>? courseItems;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,8 +129,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         )
                       ],
                     ),
-                    onPressed: () =>
-                        setState(() => isDescending = !isDescending),
+                    onPressed: () => setState(() {
+                      isDescending = !isDescending;
+                    }),
                   ),
                 ),
               ],
@@ -149,8 +151,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: CircularProgressIndicator(),
                     );
                   } else {
-                    List<CourseResponse>? course = snapshot.data;
-                    if (course!.isEmpty) {
+                    courseItems = snapshot.data;
+                    final course = courseItems!
+                      ..sort(
+                        (a, b) => isDescending
+                            ? a.title!.compareTo(b.title!)
+                            : b.title!.compareTo(a.title!),
+                      );
+                    if (course.isEmpty) {
                       return _emptyCourse();
                     } else {
                       return ListView.builder(
@@ -177,54 +185,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Hero(
-                                    tag: 1,
-                                    child: Container(
-                                      margin: const EdgeInsets.all(12),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Container(
-                                          width: double.infinity,
-                                          color: Colors.white,
-                                          child: course[index].imageThumbnail !=
-                                                  null
-                                              ? Image.network(
-                                                  '${course[index].imageThumbnail}',
-                                                  height: 144,
-                                                  width: MediaQuery.of(context)
-                                                      .size
-                                                      .width,
-                                                  fit: BoxFit.cover,
-                                                )
-                                              : Image.asset(
-                                                  AssetsRepo.noPhoto,
-                                                  height: 144,
-                                                  width: MediaQuery.of(context)
-                                                      .size
-                                                      .width,
-                                                  fit: BoxFit.cover,
-                                                ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                  _thumbnailCourse(
+                                      context, course[index].imageThumbnail),
                                   _labelDivision(course[index].idDivision),
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                      left: 12,
-                                      right: 12,
-                                      bottom: 12,
-                                    ),
-                                    width: double.infinity,
-                                    child: Text(
-                                      '${course[index].title}',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 16,
-                                      ),
-                                      maxLines: 2,
-                                    ),
-                                  ),
+                                  _courseTitle(course[index].title),
                                   Container(
                                     margin: const EdgeInsets.only(
                                       left: 12,
@@ -254,63 +218,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       right: 12,
                                     ),
                                     width: double.infinity,
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.date_range,
-                                          size: 16,
-                                          color:
-                                              hexToColor(ColorsRepo.darkGray),
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          DateFormat('dd/MM/yyyy').format(
-                                              DateTime.parse(
-                                                  '${course[index].createdAt}')),
-                                          // '${course[index].createdAt}',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color:
-                                                hexToColor(ColorsRepo.darkGray),
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          '|',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color:
-                                                hexToColor(ColorsRepo.darkGray),
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        SvgPicture.asset(
-                                          AssetsRepo.iconUpdateDate,
-                                          color:
-                                              hexToColor(ColorsRepo.darkGray),
-                                          height: 18,
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          DateFormat('dd/MM/yyyy').format(
-                                              DateTime.parse(
-                                                  '${course[index].updatedAt}')),
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color:
-                                                hexToColor(ColorsRepo.darkGray),
-                                          ),
-                                        )
-                                      ],
-                                    ),
+                                    child: _courseCreateAndUpdate(
+                                        course[index].createdAt,
+                                        course[index].updatedAt),
                                   ),
                                 ],
                               ),
@@ -365,6 +275,35 @@ Silakan mencoba kembali.''',
   );
 }
 
+_thumbnailCourse(BuildContext context, String? imageThumbnail) {
+  return Hero(
+    tag: 1,
+    child: Container(
+      margin: const EdgeInsets.all(12),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          width: double.infinity,
+          color: Colors.white,
+          child: imageThumbnail != null
+              ? Image.network(
+                  imageThumbnail,
+                  height: 144,
+                  width: MediaQuery.of(context).size.width,
+                  fit: BoxFit.cover,
+                )
+              : Image.asset(
+                  AssetsRepo.noPhoto,
+                  height: 144,
+                  width: MediaQuery.of(context).size.width,
+                  fit: BoxFit.cover,
+                ),
+        ),
+      ),
+    ),
+  );
+}
+
 _labelDivision(int? idDivision) {
   final appController = Get.put(AppController());
   return Container(
@@ -407,13 +346,93 @@ _courseMakerLabel(int? idUser) {
   return FutureBuilder(
     future: appController.fetchUserById(idUser!),
     builder: (context, snapshot) {
-      return Text(
-        '${appController.fullnameById}',
+      if (appController.fullnameById == null) {
+        return Text(
+          '-',
+          style: TextStyle(
+            fontSize: 14,
+            color: hexToColor(ColorsRepo.darkGray),
+          ),
+        );
+      } else {
+        return Text(
+          '${appController.fullnameById}',
+          style: TextStyle(
+            fontSize: 14,
+            color: hexToColor(ColorsRepo.darkGray),
+          ),
+        );
+      }
+    },
+  );
+}
+
+_courseTitle(String? courseTitle) {
+  return Container(
+    margin: const EdgeInsets.only(
+      left: 12,
+      right: 12,
+      bottom: 12,
+    ),
+    width: double.infinity,
+    child: Text(
+      '$courseTitle',
+      style: const TextStyle(
+        fontWeight: FontWeight.w400,
+        fontSize: 16,
+      ),
+      maxLines: 2,
+    ),
+  );
+}
+
+_courseCreateAndUpdate(DateTime? createAt, DateTime? updateAt) {
+  return Row(
+    children: [
+      Icon(
+        Icons.date_range,
+        size: 16,
+        color: hexToColor(ColorsRepo.darkGray),
+      ),
+      const SizedBox(
+        width: 5,
+      ),
+      Text(
+        DateFormat('dd/MM/yyyy').format(DateTime.parse('$createAt')),
+        // '${course[index].createdAt}',
         style: TextStyle(
           fontSize: 14,
           color: hexToColor(ColorsRepo.darkGray),
         ),
-      );
-    },
+      ),
+      const SizedBox(
+        width: 5,
+      ),
+      Text(
+        '|',
+        style: TextStyle(
+          fontSize: 14,
+          color: hexToColor(ColorsRepo.darkGray),
+        ),
+      ),
+      const SizedBox(
+        width: 5,
+      ),
+      SvgPicture.asset(
+        AssetsRepo.iconUpdateDate,
+        color: hexToColor(ColorsRepo.darkGray),
+        height: 18,
+      ),
+      const SizedBox(
+        width: 5,
+      ),
+      Text(
+        DateFormat('dd/MM/yyyy').format(DateTime.parse('$updateAt')),
+        style: TextStyle(
+          fontSize: 14,
+          color: hexToColor(ColorsRepo.darkGray),
+        ),
+      )
+    ],
   );
 }

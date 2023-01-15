@@ -2,12 +2,28 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
+import 'package:repo/controllers/app_controller.dart';
+import 'package:get/get.dart';
 
 class BabItemWidget extends StatelessWidget {
-  const BabItemWidget({super.key});
+  final String? title;
+  final int? idCourse;
+  final int? idChapter;
+  
+  const BabItemWidget(
+  {Key? key, 
+   required this.title,
+   required this.idCourse,
+   required this.idChapter,
+   }) : 
+   super(key: key);
+  
+ 
 
   @override
+  
   Widget build(BuildContext context) {
+    final appController = Get.put(AppController());
     return Container(
       decoration: BoxDecoration(
           color: Colors.white,
@@ -21,20 +37,20 @@ class BabItemWidget extends StatelessWidget {
             ),
           ]),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+        padding: const EdgeInsets.fromLTRB(12, 0, 12, 5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Expanded(child: Text("[Judul Bab]",style: TextStyle(fontWeight: FontWeight.w500,fontSize: 20),)),
+                Expanded(child: Text("$title",style: TextStyle(fontWeight: FontWeight.w500,fontSize: 16),)),
                 PopupMenuButton<String>(
                   onSelected: popmenuClicked,
                   itemBuilder: (BuildContext context) {
-                    return {0, 1}.map((int choice) {
+                    return {0}.map((int choice) {
                       return PopupMenuItem<String>(
                         value: choice.toString(),
-                        child: Text(choice==0 ? 'Edit [Bab]' : 'Hapus'),
+                        child: Text('Hapus'),
                       );
                     }).toList();
                   },
@@ -42,7 +58,7 @@ class BabItemWidget extends StatelessWidget {
               ],
             ),
             Text(
-              "8 Artikel",
+              "0 Artikel",
               style: TextStyle(color: hexToColor(ColorsRepo.darkGray),fontWeight: FontWeight.w500,fontSize: 16,),
             ),
            
@@ -54,11 +70,10 @@ class BabItemWidget extends StatelessWidget {
 
   popmenuClicked(dynamic param) {
     param = int.parse(param);
-    if (param ==1) {
+    if (param ==0) {
+       Get.find<AppController>().deleteChapter(idCourse!,idChapter!);
       print('Hapus');
     }
-    else {
-      print('Edit');
-    }
+  
   }
 }

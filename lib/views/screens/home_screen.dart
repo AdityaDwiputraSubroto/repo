@@ -18,6 +18,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final appController = Get.put(AppController());
+  bool isChanged = true;
   bool isDescending = true;
   List<String> divisi = <String>[
     'Semua',
@@ -25,7 +26,9 @@ class _HomeScreenState extends State<HomeScreen> {
     'Mobile',
     'PM',
   ];
+  String selectedDivision = 'Divisi';
   List<CourseResponse>? courseItems;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,6 +80,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 40,
                   width: MediaQuery.of(context).size.width / 2.3,
                   child: DropdownSearch<String>(
+                    popupProps: const PopupProps.menu(
+                      fit: FlexFit.loose,
+                    ),
                     dropdownButtonProps: const DropdownButtonProps(
                       color: Colors.white,
                       icon: Icon(Icons.keyboard_arrow_down),
@@ -99,6 +105,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontWeight: FontWeight.w500,
                         ),
                       );
+                    },
+                    onChanged: (selectedItem) {
+                      setState(() {
+                        selectedDivision = selectedItem!;
+                      });
                     },
                   ),
                 ),
@@ -158,11 +169,24 @@ class _HomeScreenState extends State<HomeScreen> {
                             ? a.title!.compareTo(b.title!)
                             : b.title!.compareTo(a.title!),
                       );
+                    final coursePerDivision = course
+                        .where(
+                          (element) => selectedDivision == 'Web'
+                              ? element.idDivision == 1 ||
+                                  element.idDivision == 2
+                              : selectedDivision == 'Mobile'
+                                  ? element.idDivision == 3
+                                  : selectedDivision == 'PM'
+                                      ? element.idDivision == 4 ||
+                                          element.idDivision == 5
+                                      : element.idDivision != null,
+                        )
+                        .toList();
                     if (course.isEmpty) {
                       return _emptyCourse();
                     } else {
                       return ListView.builder(
-                        itemCount: course.length,
+                        itemCount: coursePerDivision.length,
                         itemBuilder: (context, index) {
                           return InkWell(
                             onTap: () {},
@@ -185,10 +209,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  _thumbnailCourse(
-                                      context, course[index].imageThumbnail),
-                                  _labelDivision(course[index].idDivision),
-                                  _courseTitle(course[index].title),
+                                  _thumbnailCourse(context,
+                                      coursePerDivision[index].imageThumbnail),
+                                  _labelDivision(
+                                      coursePerDivision[index].idDivision),
+                                  _courseTitle(coursePerDivision[index].title),
                                   Container(
                                     margin: const EdgeInsets.only(
                                       left: 12,
@@ -207,7 +232,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         const SizedBox(
                                           width: 5,
                                         ),
-                                        _courseMakerLabel(course[index].idUser),
+                                        _courseMakerLabel(
+                                            coursePerDivision[index].idUser),
                                       ],
                                     ),
                                   ),
@@ -219,8 +245,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     width: double.infinity,
                                     child: _courseCreateAndUpdate(
-                                        course[index].createdAt,
-                                        course[index].updatedAt),
+                                        coursePerDivision[index].createdAt,
+                                        coursePerDivision[index].updatedAt),
                                   ),
                                 ],
                               ),

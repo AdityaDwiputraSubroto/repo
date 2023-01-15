@@ -15,7 +15,6 @@ class DivisionService {
     );
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
-      print(jsonResponse);
       return jsonResponse;
     } else {
       return null;

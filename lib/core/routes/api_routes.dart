@@ -8,4 +8,10 @@ abstract class ApiRoutesRepo {
   static String user(int id) {
     return '$baseUrl/user/$id';
   }
+  static String chapter(int id) {
+    return '$baseUrl/course/$id/chapter';
+  }
+   static String deleteChapter(int idCourse, int idChapter) {
+    return '$baseUrl/course/$idCourse/chapter/$idChapter';
+  }
 }

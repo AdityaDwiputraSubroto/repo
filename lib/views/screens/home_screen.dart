@@ -1,13 +1,17 @@
+import 'dart:async';
+
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:repo/controllers/app_controller.dart';
 import 'package:repo/core/shared/assets.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
 import 'package:repo/models/course/course_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,6 +32,17 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
   String selectedDivision = 'Divisi';
   List<CourseResponse>? courseItems;
+  var role;
+
+  @override
+  void initState() {
+    SharedPreferences.getInstance().then((value) {
+      setState(() {
+        role = value.getInt('role');
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -212,7 +227,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   _thumbnailCourse(context,
                                       coursePerDivision[index].imageThumbnail),
                                   _labelDivision(
-                                      coursePerDivision[index].idDivision),
+                                      coursePerDivision[index].idDivision,
+                                      role,
+                                      coursePerDivision[index].id),
                                   _courseTitle(coursePerDivision[index].title),
                                   Container(
                                     margin: const EdgeInsets.only(
@@ -264,201 +281,222 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-}
 
-_emptyCourse() {
-  return Column(
-    children: [
-      Container(
-        padding: const EdgeInsets.only(
-          top: 30,
-          bottom: 20,
+  _labelDivision(int? idDivision, int? role, int? idCourse) {
+    final appController = Get.put(AppController());
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Container(
+          margin: const EdgeInsets.only(
+            left: 12,
+            // bottom: 8,
+          ),
+          padding: const EdgeInsets.only(
+            top: 4,
+            left: 8,
+            right: 4,
+          ),
+          width: 138,
+          height: 18,
+          decoration: BoxDecoration(
+            color: idDivision == 1
+                ? hexToColor(ColorsRepo.grayColorBE)
+                : idDivision == 2
+                    ? hexToColor(ColorsRepo.greenColorFE)
+                    : idDivision == 3
+                        ? hexToColor(ColorsRepo.blueColorMobile)
+                        : idDivision == 4
+                            ? hexToColor(ColorsRepo.redColorPR)
+                            : hexToColor(ColorsRepo.brownColorPM),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Text(
+            '${appController.allDivisionList!.data!.elementAt(idDivision! - 1).divisionName}',
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+              color: Colors.white,
+            ),
+          ),
         ),
-        alignment: Alignment.topCenter,
-        child: SvgPicture.asset(AssetsRepo.noCourse),
-      ),
-      const Text(
-        'Course Tidak Ditemukan',
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+        role == 2
+            ? PopupMenuButton(
+                itemBuilder: (BuildContext context) => [
+                  PopupMenuItem(
+                    value: idCourse,
+                    child: const Text('Hapus'),
+                    onTap: () {
+                      appController.deleteCourse(idCourse);
+                    },
+                  ),
+                ],
+              )
+            : Container(
+                height: 18,
+                margin: const EdgeInsets.only(top: 30),
+              )
+      ],
+    );
+  }
+
+  _emptyCourse() {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.only(
+            top: 30,
+            bottom: 20,
+          ),
+          alignment: Alignment.topCenter,
+          child: SvgPicture.asset(AssetsRepo.noCourse),
         ),
-      ),
-      Container(
-        padding: const EdgeInsets.only(top: 10),
-        child: const Text(
-          '''Kami tidak dapat menemukan materi
+        const Text(
+          'Course Tidak Ditemukan',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.only(top: 10),
+          child: const Text(
+            '''Kami tidak dapat menemukan materi
 yang anda cari.
 Silakan mencoba kembali.''',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
+  _thumbnailCourse(BuildContext context, String? imageThumbnail) {
+    return Hero(
+      tag: 1,
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            width: double.infinity,
+            color: Colors.white,
+            child: imageThumbnail != null
+                ? Image.network(
+                    imageThumbnail,
+                    height: 144,
+                    width: MediaQuery.of(context).size.width,
+                    fit: BoxFit.cover,
+                  )
+                : Image.asset(
+                    AssetsRepo.noPhoto,
+                    height: 144,
+                    width: MediaQuery.of(context).size.width,
+                    fit: BoxFit.cover,
+                  ),
+          ),
         ),
       ),
-    ],
-  );
-}
+    );
+  }
 
-_thumbnailCourse(BuildContext context, String? imageThumbnail) {
-  return Hero(
-    tag: 1,
-    child: Container(
-      margin: const EdgeInsets.all(12),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          width: double.infinity,
-          color: Colors.white,
-          child: imageThumbnail != null
-              ? Image.network(
-                  imageThumbnail,
-                  height: 144,
-                  width: MediaQuery.of(context).size.width,
-                  fit: BoxFit.cover,
-                )
-              : Image.asset(
-                  AssetsRepo.noPhoto,
-                  height: 144,
-                  width: MediaQuery.of(context).size.width,
-                  fit: BoxFit.cover,
-                ),
+  _courseMakerLabel(int? idUser) {
+    final appController = Get.put(AppController());
+    return FutureBuilder(
+      future: appController.fetchUserById(idUser!),
+      builder: (context, snapshot) {
+        if (appController.fullnameById == null) {
+          return Text(
+            '-',
+            style: TextStyle(
+              fontSize: 14,
+              color: hexToColor(ColorsRepo.darkGray),
+            ),
+          );
+        } else {
+          return Text(
+            '${appController.fullnameById}',
+            style: TextStyle(
+              fontSize: 14,
+              color: hexToColor(ColorsRepo.darkGray),
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  _courseTitle(String? courseTitle) {
+    return Container(
+      margin: const EdgeInsets.only(
+        left: 12,
+        right: 12,
+        bottom: 12,
+      ),
+      width: double.infinity,
+      child: Text(
+        '$courseTitle',
+        style: const TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 16,
         ),
+        maxLines: 2,
       ),
-    ),
-  );
-}
+    );
+  }
 
-_labelDivision(int? idDivision) {
-  final appController = Get.put(AppController());
-  return Container(
-    margin: const EdgeInsets.only(
-      left: 12,
-      bottom: 12,
-    ),
-    padding: const EdgeInsets.only(
-      top: 4,
-      left: 8,
-      right: 4,
-    ),
-    width: 138,
-    height: 18,
-    decoration: BoxDecoration(
-      color: idDivision == 1
-          ? hexToColor(ColorsRepo.grayColorBE)
-          : idDivision == 2
-              ? hexToColor(ColorsRepo.greenColorFE)
-              : idDivision == 3
-                  ? hexToColor(ColorsRepo.blueColorMobile)
-                  : idDivision == 4
-                      ? hexToColor(ColorsRepo.redColorPR)
-                      : hexToColor(ColorsRepo.brownColorPM),
-      borderRadius: BorderRadius.circular(4),
-    ),
-    child: Text(
-      '${appController.allDivisionList!.data!.elementAt(idDivision! - 1).divisionName}',
-      style: const TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
-        color: Colors.white,
-      ),
-    ),
-  );
-}
-
-_courseMakerLabel(int? idUser) {
-  final appController = Get.put(AppController());
-  return FutureBuilder(
-    future: appController.fetchUserById(idUser!),
-    builder: (context, snapshot) {
-      if (appController.fullnameById == null) {
-        return Text(
-          '-',
+  _courseCreateAndUpdate(DateTime? createAt, DateTime? updateAt) {
+    return Row(
+      children: [
+        Icon(
+          Icons.date_range,
+          size: 16,
+          color: hexToColor(ColorsRepo.darkGray),
+        ),
+        const SizedBox(
+          width: 5,
+        ),
+        Text(
+          DateFormat('dd/MM/yyyy').format(DateTime.parse('$createAt')),
+          // '${course[index].createdAt}',
           style: TextStyle(
             fontSize: 14,
             color: hexToColor(ColorsRepo.darkGray),
           ),
-        );
-      } else {
-        return Text(
-          '${appController.fullnameById}',
+        ),
+        const SizedBox(
+          width: 5,
+        ),
+        Text(
+          '|',
           style: TextStyle(
             fontSize: 14,
             color: hexToColor(ColorsRepo.darkGray),
           ),
-        );
-      }
-    },
-  );
-}
-
-_courseTitle(String? courseTitle) {
-  return Container(
-    margin: const EdgeInsets.only(
-      left: 12,
-      right: 12,
-      bottom: 12,
-    ),
-    width: double.infinity,
-    child: Text(
-      '$courseTitle',
-      style: const TextStyle(
-        fontWeight: FontWeight.w400,
-        fontSize: 16,
-      ),
-      maxLines: 2,
-    ),
-  );
-}
-
-_courseCreateAndUpdate(DateTime? createAt, DateTime? updateAt) {
-  return Row(
-    children: [
-      Icon(
-        Icons.date_range,
-        size: 16,
-        color: hexToColor(ColorsRepo.darkGray),
-      ),
-      const SizedBox(
-        width: 5,
-      ),
-      Text(
-        DateFormat('dd/MM/yyyy').format(DateTime.parse('$createAt')),
-        // '${course[index].createdAt}',
-        style: TextStyle(
-          fontSize: 14,
-          color: hexToColor(ColorsRepo.darkGray),
         ),
-      ),
-      const SizedBox(
-        width: 5,
-      ),
-      Text(
-        '|',
-        style: TextStyle(
-          fontSize: 14,
-          color: hexToColor(ColorsRepo.darkGray),
+        const SizedBox(
+          width: 5,
         ),
-      ),
-      const SizedBox(
-        width: 5,
-      ),
-      SvgPicture.asset(
-        AssetsRepo.iconUpdateDate,
-        color: hexToColor(ColorsRepo.darkGray),
-        height: 18,
-      ),
-      const SizedBox(
-        width: 5,
-      ),
-      Text(
-        DateFormat('dd/MM/yyyy').format(DateTime.parse('$updateAt')),
-        style: TextStyle(
-          fontSize: 14,
+        SvgPicture.asset(
+          AssetsRepo.iconUpdateDate,
           color: hexToColor(ColorsRepo.darkGray),
+          height: 18,
         ),
-      )
-    ],
-  );
+        const SizedBox(
+          width: 5,
+        ),
+        Text(
+          DateFormat('dd/MM/yyyy').format(DateTime.parse('$updateAt')),
+          style: TextStyle(
+            fontSize: 14,
+            color: hexToColor(ColorsRepo.darkGray),
+          ),
+        )
+      ],
+    );
+  }
 }

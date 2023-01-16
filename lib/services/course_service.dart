@@ -26,4 +26,20 @@ class CourseService {
       throw Exception('Failed to load course');
     }
   }
+
+  Future deleteCourseById(int? idCourse) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var accesToken = sharedPreferences.getString('access-token');
+    Uri url = Uri.parse(ApiRoutesRepo.deleteCourse(idCourse!));
+
+    final response = await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accesToken',
+      },
+    );
+    var jsonResponse = jsonDecode(response.body);
+    return jsonResponse;
+  }
 }

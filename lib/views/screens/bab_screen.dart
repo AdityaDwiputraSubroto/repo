@@ -30,49 +30,58 @@ class _BabScreenState extends State<BabScreen> {
         ],
       ),
       body: SafeArea(
-            child: FutureBuilder(
-                future: appController.fetchAllChapter(idCourse),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting ||
-                      snapshot.data == null) {
-                    return const Center(
-                      heightFactor: 10,
-                      child: CircularProgressIndicator(),
-                    );
-                  } else {
-
-                    List<ChapterResponse>? chapter = snapshot.data;
-                     return Padding(
-          padding: EdgeInsets.all(18),
-            child : Column(
-                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children : [
-                        SizedBox(height:8),
-                        Text('Daftar Bab',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 24),),
-                        Padding(padding: EdgeInsets.only(top: 10),
-                          child: Text('${chapter!.length} Bab | 0 Artikel', style: TextStyle(color: hexToColor(ColorsRepo.darkGray),fontSize: 18),
-                 ),),
-                      ListView.builder(
-                      shrinkWrap: true,
-                        itemCount: chapter!.length,
-                        itemBuilder: (context, index) {
-                          return InkWell(
-                            onTap: () {print('${chapter[index].title}');},
-                      child: Padding(
-                              padding: EdgeInsets.only(top:10, bottom: 10),
-                              child: BabItemWidget(
-                                idCourse : chapter[index].idCourse,
-                                idChapter: chapter[index].id,
-                                title: chapter[index].title
-                                ),
+          child: FutureBuilder(
+              future: appController.fetchAllChapter(idCourse),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting ||
+                    snapshot.data == null) {
+                  return const Center(
+                    heightFactor: 10,
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
+                  List<ChapterResponse>? chapter = snapshot.data;
+                  return Padding(
+                      padding: EdgeInsets.all(18),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 8),
+                            Text(
+                              'Daftar Bab',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 24),
                             ),
-                );}
-                )
-                ]
-                ));}
+                            Padding(
+                              padding: EdgeInsets.only(top: 10),
+                              child: Text(
+                                '${chapter!.length} Bab | 0 Artikel',
+                                style: TextStyle(
+                                    color: hexToColor(ColorsRepo.darkGray),
+                                    fontSize: 18),
+                              ),
+                            ),
+                            ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: chapter.length,
+                                itemBuilder: (context, index) {
+                                  return InkWell(
+                                    onTap: () {
+                                      print('${chapter[index].title}');
+                                    },
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.only(top: 10, bottom: 10),
+                                      child: BabItemWidget(
+                                          idCourse: chapter[index].idCourse,
+                                          idChapter: chapter[index].id,
+                                          title: chapter[index].title),
+                                    ),
+                                  );
+                                })
+                          ]));
                 }
-                )
-      ),
+              })),
     );
   }
 }

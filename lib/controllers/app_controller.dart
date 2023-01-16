@@ -17,7 +17,7 @@ class AppController extends GetxController {
   String? fullnameById;
   final allCourseList = <CourseResponse>[].obs;
   final allChapterList = <ChapterResponse>[].obs;
-  
+
   @override
   void onInit() {
     fetchAllDivisions();
@@ -57,14 +57,14 @@ class AppController extends GetxController {
     }
   }
 
-Future<List<ChapterResponse>> fetchAllChapter(int idCourse) async {
+  Future<List<ChapterResponse>> fetchAllChapter(int idCourse) async {
     try {
       final allChapter = await chapterService.getAllChapter(idCourse);
       if (allChapter.isNotEmpty) {
         allChapterList.assignAll(allChapter);
-      }print(allChapterList);
+      }
+      print(allChapterList);
       return allChapterList;
-      
     } catch (e) {
       throw Exception(e);
     }
@@ -72,14 +72,24 @@ Future<List<ChapterResponse>> fetchAllChapter(int idCourse) async {
 
   deleteChapter(int idCourse, int idChapter) async {
     try {
-      final response = await chapterService.deleteChapter(idCourse,idChapter);
+      final response = await chapterService.deleteChapter(idCourse, idChapter);
       Get.offAndToNamed(AppRoutesRepo.bab);
-      
     } catch (e) {
       throw Exception(e);
-     
     }
   }
 
+  Future<void> deleteCourse(int? idCourse) async {
+    try {
+      final response = await courseService.deleteCourseById(idCourse);
+      if (response['status'] == 'success') {
+        print('berhasil hapus');
+      } else {
+        print('gagal');
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+    update();
+  }
 }
-

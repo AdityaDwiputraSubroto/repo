@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:repo/controllers/app_controller.dart';
+import 'package:repo/core/routes/app_routes.dart';
 import 'package:repo/core/shared/assets.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
@@ -375,6 +377,7 @@ Silakan mencoba kembali.''',
     );
   }
 
+// ganti dengan cached network image
   _thumbnailCourse(BuildContext context, String? imageThumbnail) {
     return Hero(
       tag: 1,
@@ -385,19 +388,26 @@ Silakan mencoba kembali.''',
           child: Container(
             width: double.infinity,
             color: Colors.white,
-            child: imageThumbnail != null
-                ? Image.network(
-                    imageThumbnail,
-                    height: 144,
-                    width: MediaQuery.of(context).size.width,
-                    fit: BoxFit.cover,
-                  )
-                : Image.asset(
-                    AssetsRepo.noPhoto,
-                    height: 144,
-                    width: MediaQuery.of(context).size.width,
+            child: CachedNetworkImage(
+              imageUrl: imageThumbnail!,
+              imageBuilder: (context, imageProvider) => Container(
+                height: 144,
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: imageProvider,
                     fit: BoxFit.cover,
                   ),
+                ),
+              ),
+              placeholder: (context, url) => Container(
+                alignment: Alignment.center,
+                height: 144,
+                child: Image.asset(AssetsRepo.noPhoto),
+              ),
+              errorWidget: (context, url, error) =>
+                  Image.asset(AssetsRepo.noPhoto),
+            ),
           ),
         ),
       ),

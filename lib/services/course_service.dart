@@ -8,10 +8,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/course/course_model.dart';
 
 class CourseService {
-  Future<List<CourseResponse>> getAllCourse() async {
+  Future<List<CourseResponse>> getAllCourse(int index) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var accesToken = sharedPreferences.getString('access-token');
-    Uri url = Uri.parse(ApiRoutesRepo.baseUrl + ApiRoutesRepo.course);
+    Uri url = Uri.parse(
+        ApiRoutesRepo.baseUrl + ApiRoutesRepo.course + index.toString());
     final response = await http.get(
       url,
       headers: {

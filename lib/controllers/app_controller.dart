@@ -7,6 +7,7 @@ import 'package:repo/services/division_service.dart';
 import 'package:repo/services/user_service.dart';
 import 'package:repo/services/chapter_service.dart';
 import 'package:repo/core/routes/app_routes.dart';
+import 'package:repo/views/screens/home_screen.dart';
 
 class AppController extends GetxController {
   CourseService courseService = CourseService();
@@ -17,6 +18,9 @@ class AppController extends GetxController {
   String? fullnameById;
   final allCourseList = <CourseResponse>[].obs;
   final allChapterList = <ChapterResponse>[].obs;
+  List<CourseResponse> allCourse = [];
+  var isLoading = true.obs;
+  int page = 1;
 
   @override
   void onInit() {
@@ -24,16 +28,18 @@ class AppController extends GetxController {
     super.onInit();
   }
 
-  Future<List<CourseResponse>> fetchAllCourse() async {
+  Future<void> fetchAllCourse() async {
     try {
-      final allCourse = await courseService.getAllCourse();
+      allCourse = await courseService.getAllCourse(page);
       if (allCourse.isNotEmpty) {
-        allCourseList.assignAll(allCourse);
+        allCourseList.addAll(allCourse);
+        allCourseList.refresh();
+        page++;
       }
-      return allCourseList;
     } catch (e) {
       throw Exception(e);
     }
+    update();
   }
 
   fetchAllDivisions() async {
@@ -52,6 +58,7 @@ class AppController extends GetxController {
     try {
       var userById = await userService.fetchUserById(idUser);
       fullnameById = userById.data.fullName;
+      return fullnameById;
     } catch (e) {
       throw Exception(e);
     }

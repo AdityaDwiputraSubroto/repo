@@ -24,7 +24,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final appController = Get.put(AppController());
-  bool isChanged = true;
+  ScrollController scrollController = ScrollController();
+
+  bool isLoading = false;
   bool isDescending = true;
   List<String> divisi = <String>[
     'Semua',
@@ -33,7 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
     'PM',
   ];
   String selectedDivision = 'Divisi';
-  List<CourseResponse>? courseItems;
+  var courseItems = <CourseResponse>[].obs;
+  var coursePerDivision = <CourseResponse>[].obs;
   var role;
 
   @override
@@ -43,7 +46,25 @@ class _HomeScreenState extends State<HomeScreen> {
         role = value.getInt('role');
       });
     });
+    appController.fetchAllCourse();
+    scrollController.addListener(_scrollListener);
     super.initState();
+  }
+
+  void _scrollListener() async {
+    if (isLoading) {
+      return;
+    }
+    if (scrollController.position.pixels ==
+        scrollController.position.maxScrollExtent) {
+      setState(() {
+        isLoading = true;
+      });
+      await appController.fetchAllCourse();
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -159,6 +180,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     onPressed: () => setState(() {
                       isDescending = !isDescending;
+                      courseItems.sort(
+                        (a, b) => isDescending
+                            ? a.title!.compareTo(b.title!)
+                            : b.title!.compareTo(a.title!),
+                      );
                     }),
                   ),
                 ),
@@ -169,42 +195,31 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             SizedBox(
               height: MediaQuery.of(context).size.height / 1.45,
-              child: FutureBuilder(
-                future: appController.fetchAllCourse(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting ||
-                      snapshot.data == null) {
-                    return const Center(
-                      heightFactor: 10,
-                      child: CircularProgressIndicator(),
-                    );
+              child: Obx(
+                () {
+                  courseItems = appController.allCourseList;
+                  final coursePerDivision = courseItems
+                      .where(
+                        (element) => selectedDivision == 'Web'
+                            ? element.idDivision == 1 || element.idDivision == 2
+                            : selectedDivision == 'Mobile'
+                                ? element.idDivision == 3
+                                : selectedDivision == 'PM'
+                                    ? element.idDivision == 4 ||
+                                        element.idDivision == 5
+                                    : element.idDivision != null,
+                      )
+                      .toList();
+                  if (courseItems.isEmpty) {
+                    return _emptyCourse();
                   } else {
-                    courseItems = snapshot.data;
-                    final course = courseItems!
-                      ..sort(
-                        (a, b) => isDescending
-                            ? a.title!.compareTo(b.title!)
-                            : b.title!.compareTo(a.title!),
-                      );
-                    final coursePerDivision = course
-                        .where(
-                          (element) => selectedDivision == 'Web'
-                              ? element.idDivision == 1 ||
-                                  element.idDivision == 2
-                              : selectedDivision == 'Mobile'
-                                  ? element.idDivision == 3
-                                  : selectedDivision == 'PM'
-                                      ? element.idDivision == 4 ||
-                                          element.idDivision == 5
-                                      : element.idDivision != null,
-                        )
-                        .toList();
-                    if (course.isEmpty) {
-                      return _emptyCourse();
-                    } else {
-                      return ListView.builder(
-                        itemCount: coursePerDivision.length,
-                        itemBuilder: (context, index) {
+                    return ListView.builder(
+                      itemCount: isLoading
+                          ? coursePerDivision.length + 1
+                          : coursePerDivision.length,
+                      controller: scrollController,
+                      itemBuilder: (context, index) {
+                        if (index < coursePerDivision.length) {
                           return InkWell(
                             onTap: () {},
                             child: Container(
@@ -271,9 +286,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                           );
-                        },
-                      );
-                    }
+                        } else {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                      },
+                    );
                   }
                 },
               ),
@@ -285,7 +304,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _labelDivision(int? idDivision, int? role, int? idCourse) {
-    final appController = Get.put(AppController());
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -377,7 +395,6 @@ Silakan mencoba kembali.''',
     );
   }
 
-// ganti dengan cached network image
   _thumbnailCourse(BuildContext context, String? imageThumbnail) {
     return Hero(
       tag: 1,
@@ -415,11 +432,10 @@ Silakan mencoba kembali.''',
   }
 
   _courseMakerLabel(int? idUser) {
-    final appController = Get.put(AppController());
     return FutureBuilder(
       future: appController.fetchUserById(idUser!),
       builder: (context, snapshot) {
-        if (appController.fullnameById == null) {
+        if (snapshot.data == null) {
           return Text(
             '-',
             style: TextStyle(
@@ -429,7 +445,7 @@ Silakan mencoba kembali.''',
           );
         } else {
           return Text(
-            '${appController.fullnameById}',
+            '${snapshot.data}',
             style: TextStyle(
               fontSize: 14,
               color: hexToColor(ColorsRepo.darkGray),

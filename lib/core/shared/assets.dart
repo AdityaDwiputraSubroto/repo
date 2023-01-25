@@ -9,4 +9,6 @@ abstract class AssetsRepo {
   static const String iconProfilUnselected =
       'assets/icons/profilUnselected.svg';
   static const String iconUpdateDate = 'assets/icons/updateDate.svg';
+  static const String iconDiskusiButton = 'assets/icons/diskusiButtonIcon.svg';
+  static const String iconProfilLabel = 'assets/icons/profil-icon-label.svg';
 }

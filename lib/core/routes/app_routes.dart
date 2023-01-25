@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:repo/views/screens/detail_course_screen.dart';
 import 'package:repo/views/screens/forgot_pass_msg.dart';
 import 'package:repo/views/screens/index.dart';
 import 'package:repo/views/widgets/bottom_navigation_widget.dart';
@@ -11,10 +12,11 @@ abstract class AppRoutesRepo {
   static const String pertanyaan = '/pertanyaan';
   static const String bottomNavigator = '/bottomNavigator';
   static const String discussMateri = '/discuss';
-  static const String addDiscuss = "/addDiscuss";
-  static const String daftarMateri = "/daftarMateri";
+  static const String addDiscuss = '/addDiscuss';
+  static const String daftarMateri = '/daftarMateri';
   static const String forgotPasswordMassage = '/forgotpassmsg';
   static const String bab = '/bab';
+  static const String detailMateri = '/detailMateri';
 
   static List<GetPage<Widget>> pages = [
     GetPage(
@@ -41,7 +43,10 @@ abstract class AppRoutesRepo {
       name: pertanyaan,
       page: () => const PertanyaanScreen(),
     ),
-    GetPage(name: bottomNavigator, page: () => const BottomNavRepo()),
+    GetPage(
+      name: bottomNavigator,
+      page: () => const BottomNavRepo(),
+    ),
     GetPage(
       name: addDiscuss,
       page: () => const AddDiscussScreen(),
@@ -50,9 +55,13 @@ abstract class AppRoutesRepo {
       name: daftarMateri,
       page: () => const DaftarMateriScreen(),
     ),
-     GetPage(
+    GetPage(
       name: bab,
       page: () => const BabScreen(),
     ),
+    GetPage(
+      name: detailMateri,
+      page: () => const DetailCourseScreen(),
+    )
   ];
 }

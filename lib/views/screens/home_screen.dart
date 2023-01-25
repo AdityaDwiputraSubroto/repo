@@ -228,7 +228,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (index < coursePerDivision.length) {
                           return InkWell(
                             onTap: () {
-                              Get.toNamed(AppRoutesRepo.detailMateri);
+                              Get.toNamed(
+                                AppRoutesRepo.detailMateri,
+                                arguments: {
+                                  'courseDetail': coursePerDivision[index],
+                                },
+                              );
                             },
                             child: Container(
                               width: MediaQuery.of(context).size.width,

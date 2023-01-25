@@ -7,6 +7,7 @@ import 'package:repo/services/division_service.dart';
 import 'package:repo/services/user_service.dart';
 import 'package:repo/services/chapter_service.dart';
 import 'package:repo/core/routes/app_routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppController extends GetxController {
   CourseService courseService = CourseService();
@@ -97,5 +98,16 @@ class AppController extends GetxController {
       throw Exception(e);
     }
     update();
+  }
+
+  void logout() async {
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    sharedPreferences.remove('logged-in');
+    sharedPreferences.remove('role');
+    sharedPreferences.remove('username');
+    sharedPreferences.remove('refresh-token');
+    sharedPreferences.remove('access-token');
+    Get.offAllNamed(AppRoutesRepo.login);
   }
 }

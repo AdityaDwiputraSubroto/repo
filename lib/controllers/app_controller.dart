@@ -7,7 +7,6 @@ import 'package:repo/services/division_service.dart';
 import 'package:repo/services/user_service.dart';
 import 'package:repo/services/chapter_service.dart';
 import 'package:repo/core/routes/app_routes.dart';
-import 'package:repo/views/screens/home_screen.dart';
 
 class AppController extends GetxController {
   CourseService courseService = CourseService();

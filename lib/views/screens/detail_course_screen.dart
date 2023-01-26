@@ -188,7 +188,8 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                       width: 5,
                     ),
                     FutureBuilder(
-                      future: appController.fetchUserById(courseDetail.idUser!),
+                      future: appController
+                          .fetchUserFullNameById(courseDetail.idUser!),
                       builder: (context, snapshot) {
                         if (snapshot.data == null) {
                           return Text(
@@ -332,10 +333,11 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                       Divider(
                         indent: 18,
                         thickness: 2,
+                        height: 0.5,
                       ),
                       ListTile(
                         title: Text(
-                          'Artikel #1',
+                          'Artikel #2',
                           style: TextStyle(
                             fontSize: 10,
                           ),
@@ -350,10 +352,11 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                       Divider(
                         indent: 18,
                         thickness: 2,
+                        height: 0.5,
                       ),
                       ListTile(
                         title: Text(
-                          'Artikel #1',
+                          'Artikel #3',
                           style: TextStyle(
                             fontSize: 10,
                           ),

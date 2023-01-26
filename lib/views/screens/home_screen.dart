@@ -444,7 +444,7 @@ Silakan mencoba kembali.''',
 
   _courseMakerLabel(int? idUser) {
     return FutureBuilder(
-      future: appController.fetchUserById(idUser!),
+      future: appController.fetchUserFullNameById(idUser!),
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           return Text(

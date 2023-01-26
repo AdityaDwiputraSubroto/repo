@@ -41,8 +41,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 dense: true,
                 leading: ClipOval(
                   child: CachedNetworkImage(
-                    imageUrl:
-                        'https://pbs.twimg.com/profile_images/1495491360107171840/xlVxD_jN_400x400.jpg',
+                    imageUrl: '',
                     imageBuilder: (context, imageProvider) => Container(
                       height: 50,
                       width: 50,
@@ -67,19 +66,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                 ),
-                title: const Text(
-                  'Muhammad Handi Rachmawan ',
+                title: Text(
+                  appController.userById!.fullName,
                   maxLines: 2,
                   overflow: TextOverflow.clip,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
                   ),
                 ),
-                subtitle: const Text(
-                  'Mobile Developer',
+                subtitle: Text(
+                  '${appController.allDivisionList!.data!.elementAt(appController.userById!.idDivision - 1).divisionName}',
                   maxLines: 1,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                   ),
                 ),
@@ -88,7 +87,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 thickness: 2,
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 8,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

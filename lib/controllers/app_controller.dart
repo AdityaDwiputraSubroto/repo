@@ -121,6 +121,7 @@ class AppController extends GetxController {
     sharedPreferences.remove('username');
     sharedPreferences.remove('refresh-token');
     sharedPreferences.remove('access-token');
+    sharedPreferences.remove('id-user');
     Get.offAllNamed(AppRoutesRepo.login);
   }
 }

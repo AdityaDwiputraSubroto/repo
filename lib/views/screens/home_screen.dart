@@ -228,7 +228,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (index < coursePerDivision.length) {
                           return InkWell(
                             onTap: () {
-                              Get.toNamed(AppRoutesRepo.detailMateri);
+                              Get.toNamed(
+                                AppRoutesRepo.detailMateri,
+                                arguments: {
+                                  'courseDetail': coursePerDivision[index],
+                                },
+                              );
                             },
                             child: Container(
                               width: MediaQuery.of(context).size.width,
@@ -439,7 +444,7 @@ Silakan mencoba kembali.''',
 
   _courseMakerLabel(int? idUser) {
     return FutureBuilder(
-      future: appController.fetchUserById(idUser!),
+      future: appController.fetchUserFullNameById(idUser!),
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           return Text(

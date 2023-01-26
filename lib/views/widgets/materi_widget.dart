@@ -35,7 +35,7 @@ class MateriItemWidget extends StatelessWidget {
                     return {0, 1}.map((int choice) {
                       return PopupMenuItem<String>(
                         value: choice.toString(),
-                        child: Text(choice==0 ? 'Edit [Materi]' : 'Hapus'),
+                        child: Text(choice == 0 ? 'Edit [Materi]' : 'Hapus'),
                       );
                     }).toList();
                   },
@@ -49,17 +49,18 @@ class MateriItemWidget extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 5),
               child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(3),
-                      color: hexToColor(ColorsRepo.blueDeFrance)),
-                  // ignore: prefer_const_constructors
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                    child: const Text(
-                      "Mobile Development",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  )),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(3),
+                    color: hexToColor(ColorsRepo.blueDeFrance)),
+                // ignore: prefer_const_constructors
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                  child: const Text(
+                    "Mobile Development",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
             )
           ],
         ),
@@ -69,10 +70,9 @@ class MateriItemWidget extends StatelessWidget {
 
   popmenuClicked(dynamic param) {
     param = int.parse(param);
-    if (param ==1) {
+    if (param == 1) {
       print('Hapus');
-    }
-    else {
+    } else {
       print('Edit');
     }
   }

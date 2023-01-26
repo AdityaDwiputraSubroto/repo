@@ -1,8 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:repo/controllers/app_controller.dart';
 import 'package:repo/core/shared/assets.dart';
+import 'package:repo/models/course/course_model.dart';
 import 'package:repo/views/widgets/button_widget.dart';
 
 import '../../core/shared/colors.dart';
@@ -16,7 +19,9 @@ class DetailCourseScreen extends StatefulWidget {
 }
 
 class _DetailCourseScreenState extends State<DetailCourseScreen> {
+  final appController = Get.put(AppController());
   final ScrollController _scrollController = ScrollController();
+  final courseDetail = Get.arguments['courseDetail'];
   bool isRole = true;
   void _scrollToSelectedContent({GlobalKey? expansionTileKey}) {
     final keyContext = expansionTileKey!.currentContext;
@@ -35,9 +40,9 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
         backgroundColor: hexToColor(ColorsRepo.primaryColor),
         title: Container(
           padding: const EdgeInsets.only(top: 4),
-          child: const Text(
-            '[Judul Course]',
-            style: TextStyle(
+          child: Text(
+            '${courseDetail.title}',
+            style: const TextStyle(
               color: Colors.white,
             ),
           ),
@@ -72,7 +77,7 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                 child: SizedBox(
                   width: double.infinity,
                   child: CachedNetworkImage(
-                    imageUrl: '',
+                    imageUrl: courseDetail.imageThumbnail,
                     imageBuilder: (context, imageProvider) => Container(
                       height: 212,
                       width: MediaQuery.of(context).size.width,
@@ -99,9 +104,9 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
               const SizedBox(
                 height: 10,
               ),
-              const Text(
-                'Lorem ipsum dolor sit amet consectetur adipiscing elit',
-                style: TextStyle(
+              Text(
+                '${courseDetail.title}',
+                style: const TextStyle(
                   color: Colors.black,
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -146,13 +151,21 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                 width: 138,
                 height: 22,
                 decoration: BoxDecoration(
-                  color: hexToColor(ColorsRepo.blueColorMobile),
+                  color: courseDetail.idDivision == 1
+                      ? hexToColor(ColorsRepo.grayColorBE)
+                      : courseDetail.idDivision == 2
+                          ? hexToColor(ColorsRepo.greenColorFE)
+                          : courseDetail.idDivision == 3
+                              ? hexToColor(ColorsRepo.blueColorMobile)
+                              : courseDetail.idDivision == 4
+                                  ? hexToColor(ColorsRepo.redColorPR)
+                                  : hexToColor(ColorsRepo.brownColorPM),
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: const Text(
+                child: Text(
                   textAlign: TextAlign.center,
-                  'Mobile Developer',
-                  style: TextStyle(
+                  '${appController.allDivisionList!.data!.elementAt(courseDetail.idDivision! - 1).divisionName}',
+                  style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
                     color: Colors.white,
@@ -174,17 +187,28 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                     const SizedBox(
                       width: 5,
                     ),
-                    Container(
-                      padding: const EdgeInsets.only(
-                        top: 1,
-                      ),
-                      child: Text(
-                        'Jaka Sembung',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: hexToColor(ColorsRepo.darkGray),
-                        ),
-                      ),
+                    FutureBuilder(
+                      future: appController
+                          .fetchUserFullNameById(courseDetail.idUser!),
+                      builder: (context, snapshot) {
+                        if (snapshot.data == null) {
+                          return Text(
+                            '-',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: hexToColor(ColorsRepo.darkGray),
+                            ),
+                          );
+                        } else {
+                          return Text(
+                            '${snapshot.data}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: hexToColor(ColorsRepo.darkGray),
+                            ),
+                          );
+                        }
+                      },
                     ),
                     const SizedBox(
                       width: 10,
@@ -202,8 +226,8 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                         top: 2,
                       ),
                       child: Text(
-                        DateFormat('dd/MM/yyyy')
-                            .format(DateTime.parse('2023-01-24T17:28:00.000Z')),
+                        DateFormat('dd/MM/yyyy').format(
+                            DateTime.parse('${courseDetail.createdAt}')),
                         style: TextStyle(
                           fontSize: 14,
                           color: hexToColor(ColorsRepo.darkGray),
@@ -226,9 +250,9 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
               const SizedBox(
                 height: 6,
               ),
-              const Text(
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vitae tellus nisl. Aliquam erat volutpat. In hac habitasse platea dictumst. Duis sit amet orci maximus, iaculis justo sollicitudin, congue turpis. Aliquam dictum tortor lacus, eu tempor metus blandit at. Fusce laoreet volutpat dolor in egestas. Sed accumsan tempus risus, ac hendrerit massa sodales non. Etiam a scelerisque lacus.',
-                style: TextStyle(
+              Text(
+                '${courseDetail.description}',
+                style: const TextStyle(
                   fontSize: 16,
                   height: 1.2,
                 ),
@@ -293,14 +317,57 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                   child: Column(
                     children: const [
                       ListTile(
-                        title: Text('test'),
+                        title: Text(
+                          'Artikel #1',
+                          style: TextStyle(
+                            fontSize: 10,
+                          ),
+                        ),
+                        subtitle: Text(
+                          'Lorem ipsum dolor sit amet',
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      Divider(
+                        indent: 18,
+                        thickness: 2,
+                        height: 0.5,
                       ),
                       ListTile(
-                        title: Text('test'),
+                        title: Text(
+                          'Artikel #2',
+                          style: TextStyle(
+                            fontSize: 10,
+                          ),
+                        ),
+                        subtitle: Text(
+                          'Lorem ipsum dolor sit amet',
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      Divider(
+                        indent: 18,
+                        thickness: 2,
+                        height: 0.5,
                       ),
                       ListTile(
-                        title: Text('test'),
-                      )
+                        title: Text(
+                          'Artikel #3',
+                          style: TextStyle(
+                            fontSize: 10,
+                          ),
+                        ),
+                        subtitle: Text(
+                          'Lorem ipsum dolor sit amet',
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),

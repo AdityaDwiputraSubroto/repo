@@ -482,6 +482,7 @@ Silakan mencoba kembali.''',
           fontSize: 16,
         ),
         maxLines: 2,
+        overflow: TextOverflow.clip,
       ),
     );
   }

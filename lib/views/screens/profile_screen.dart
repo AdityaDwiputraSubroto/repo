@@ -141,7 +141,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           subtitle:
                               const Text('Melihat daftar materi yang dibuat'),
                           onTap: () {
-                            Get.toNamed(AppRoutesRepo.daftarMateri);
+                            Navigator.pushNamed(context, '/daftarMateri');
                           },
                         ),
                         ListTile(

@@ -13,7 +13,7 @@ class DaftarMateriScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: hexToColor(ColorsRepo.lightGray),
       appBar: AppBar(
-        title: const Text("Daftar Materi"),
+        title: const Text('Daftar Materi'),
         backgroundColor: hexToColor(ColorsRepo.primaryColor),
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.search)),

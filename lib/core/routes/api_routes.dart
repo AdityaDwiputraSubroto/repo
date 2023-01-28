@@ -21,4 +21,8 @@ abstract class ApiRoutesRepo {
   static String deleteCourse(int idCourse) {
     return '$baseUrl/course/$idCourse';
   }
+
+  static String fetchAllChapterAndTitleById(int idCourse) {
+    return '$baseUrl/course/$idCourse/chapter/article';
+  }
 }

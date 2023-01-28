@@ -20,7 +20,7 @@ class ChapterService {
       },
     );
     if (response.statusCode == 200) {
-      print(response.body);
+      // print(response.body);
       List data = json.decode(response.body)['data'];
       return data.map((e) => ChapterResponse.fromJson(e)).toList();
     } else {
@@ -28,10 +28,34 @@ class ChapterService {
     }
   }
 
-    Future<String>deleteChapter(int idCourse, int idChapter) async {
+  Future<List<ChapterAndArticleResponse>> getAllChapterAndTitle(
+      int idCourse) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var accesToken = sharedPreferences.getString('access-token');
-    Uri url = Uri.parse(ApiRoutesRepo.deleteChapter(idCourse,idChapter));
+    Uri url = Uri.parse(ApiRoutesRepo.fetchAllChapterAndTitleById(idCourse));
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accesToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      List data = json.decode(response.body)['data'];
+      if (data.isNotEmpty) {
+        return data.map((e) => ChapterAndArticleResponse.fromJson(e)).toList();
+      } else {
+        return [];
+      }
+    } else {
+      throw Exception('Failed to load chapter');
+    }
+  }
+
+  Future<String> deleteChapter(int idCourse, int idChapter) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var accesToken = sharedPreferences.getString('access-token');
+    Uri url = Uri.parse(ApiRoutesRepo.deleteChapter(idCourse, idChapter));
     final response = await http.delete(
       url,
       headers: {

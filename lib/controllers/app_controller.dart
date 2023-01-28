@@ -20,6 +20,7 @@ class AppController extends GetxController {
   User? userById;
   final allCourseList = <CourseResponse>[].obs;
   final allChapterList = <ChapterResponse>[].obs;
+  final allChaptersAndTitleArticlesById = <ChapterAndArticleResponse>[].obs;
   List<CourseResponse> allCourse = [];
   var isLoading = true.obs;
   int page = 1;
@@ -85,6 +86,18 @@ class AppController extends GetxController {
       }
       print(allChapterList);
       return allChapterList;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<List<ChapterAndArticleResponse>> fetchAllChaptersAndTitleArticles(
+      int idCourse) async {
+    try {
+      final allChaptersAndTitleArticles =
+          await chapterService.getAllChapterAndTitle(idCourse);
+      allChaptersAndTitleArticlesById.assignAll(allChaptersAndTitleArticles);
+      return allChaptersAndTitleArticlesById;
     } catch (e) {
       throw Exception(e);
     }

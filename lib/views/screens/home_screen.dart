@@ -14,6 +14,7 @@ import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
 import 'package:repo/models/course/course_model.dart';
 import 'package:repo/views/screens/detail_course_screen.dart';
+import 'package:repo/views/screens/profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -533,7 +534,7 @@ Silakan mencoba kembali.''',
 
 class SearchScreen extends SearchDelegate {
   final appController = Get.put(AppController());
-  var allData = <CourseResponse>[].obs;
+  var allData = <CourseResponse>[];
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -559,20 +560,31 @@ class SearchScreen extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    allData = appController.allCourseList;
-    var matchQuery = <CourseResponse>[].obs;
-    for (var i = 0; i < allData.length; i++) {
-      if (allData[i].title!.toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(allData[i]);
-      }
-    }
-    return ListView.builder(
-      itemCount: matchQuery.length,
-      itemBuilder: (context, index) {
-        var result = matchQuery[index].title;
-        return ListTile(
-          title: Text(result!),
-        );
+    return FutureBuilder(
+      future: appController.searchCourseByTitle(query),
+      builder: (context, snapshot) {
+        if (snapshot.data != null) {
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(snapshot.data![index].title!),
+                onTap: () {
+                  Get.toNamed(
+                    AppRoutesRepo.detailMateri,
+                    arguments: {
+                      'courseDetail': snapshot.data![index],
+                    },
+                  );
+                },
+              );
+            },
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
       },
     );
   }
@@ -587,11 +599,20 @@ class SearchScreen extends SearchDelegate {
       }
     }
     return ListView.builder(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
       itemCount: matchQuery.length,
       itemBuilder: (context, index) {
         var result = matchQuery[index].title;
         return ListTile(
           title: Text(result!),
+          onTap: () {
+            Get.toNamed(
+              AppRoutesRepo.detailMateri,
+              arguments: {
+                'courseDetail': matchQuery[index],
+              },
+            );
+          },
         );
       },
     );

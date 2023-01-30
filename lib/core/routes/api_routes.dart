@@ -25,4 +25,8 @@ abstract class ApiRoutesRepo {
   static String fetchAllChapterAndTitleById(int idCourse) {
     return '$baseUrl/course/$idCourse/chapter/article';
   }
+
+  static String fetchCourseByTitleUrl(String title) {
+    return '$baseUrl/course/search/$title';
+  }
 }

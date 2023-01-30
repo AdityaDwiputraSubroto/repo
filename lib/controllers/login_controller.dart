@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:repo/core/routes/app_routes.dart';
 import 'package:repo/models/user/login.dart';
@@ -14,7 +13,6 @@ class LoginController extends GetxController {
 
     try {
       var response = await service.login(userLoginRequest);
-      debugPrint(response.data.user.toJson().toString());
       if (response.status == 'success') {
         await pref.setBool('logged-in', true);
         await pref.setInt('role', response.data.user.idRole);

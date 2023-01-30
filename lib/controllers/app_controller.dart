@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:repo/models/course/course_model.dart';
 import 'package:repo/models/division/division_model.dart';
@@ -20,6 +21,7 @@ class AppController extends GetxController {
   User? userById;
   final allCourseList = <CourseResponse>[].obs;
   final allChapterList = <ChapterResponse>[].obs;
+  final allChaptersAndTitleArticlesById = <ChapterAndArticleResponse>[].obs;
   List<CourseResponse> allCourse = [];
   var isLoading = true.obs;
   int page = 1;
@@ -38,6 +40,23 @@ class AppController extends GetxController {
         allCourseList.addAll(allCourse);
         allCourseList.refresh();
         page++;
+      } else {
+        page = page;
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+    update();
+  }
+
+  Future<void> fetchAllCourseAfterDelete() async {
+    try {
+      page = 1;
+      allCourse = await courseService.getAllCourse(page);
+      if (allCourse.isNotEmpty) {
+        allCourseList.value = [];
+        allCourseList.assignAll(allCourse);
+        allCourseList.refresh();
       }
     } catch (e) {
       throw Exception(e);
@@ -90,6 +109,27 @@ class AppController extends GetxController {
     }
   }
 
+  Future<List<ChapterAndArticleResponse>> fetchAllChaptersAndTitleArticles(
+      int idCourse) async {
+    try {
+      final allChaptersAndTitleArticles =
+          await chapterService.getAllChapterAndTitle(idCourse);
+      allChaptersAndTitleArticlesById.assignAll(allChaptersAndTitleArticles);
+      return allChaptersAndTitleArticlesById;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<List<CourseResponse>> searchCourseByTitle(String title) async {
+    try {
+      final resultCourse = await courseService.getCourseByTitle(title);
+      return resultCourse;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
   deleteChapter(int idCourse, int idChapter) async {
     try {
       final response = await chapterService.deleteChapter(idCourse, idChapter);
@@ -103,7 +143,7 @@ class AppController extends GetxController {
     try {
       final response = await courseService.deleteCourseById(idCourse);
       if (response['status'] == 'success') {
-        print('berhasil hapus');
+        fetchAllCourseAfterDelete();
       } else {
         print('gagal');
       }

@@ -6,11 +6,13 @@ import 'package:intl/intl.dart';
 import 'package:repo/controllers/app_controller.dart';
 import 'package:repo/core/shared/assets.dart';
 import 'package:repo/models/course/course_model.dart';
+import 'package:repo/views/screens/article_nav_screen.dart';
 import 'package:repo/views/widgets/button_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/shared/colors.dart';
 import '../../core/utils/formatting.dart';
+import '../widgets/accordion_widget.dart';
 
 class DetailCourseScreen extends StatefulWidget {
   const DetailCourseScreen({super.key});
@@ -25,16 +27,6 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
   final courseDetail = Get.arguments['courseDetail'];
   var role;
 
-  void _scrollToSelectedContent({GlobalKey? expansionTileKey}) {
-    final keyContext = expansionTileKey!.currentContext;
-    if (keyContext != null) {
-      Future.delayed(const Duration(milliseconds: 210)).then((value) {
-        Scrollable.ensureVisible(keyContext,
-            duration: const Duration(milliseconds: 200));
-      });
-    }
-  }
-
   @override
   void initState() {
     SharedPreferences.getInstance().then((value) {
@@ -42,6 +34,7 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
         role = value.getInt('role');
       });
     });
+    appController.fetchAllChaptersAndTitleArticles(courseDetail.id);
     super.initState();
   }
 
@@ -129,236 +122,244 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
               const SizedBox(
                 height: 5,
               ),
-              FutureBuilder(
-                future: appController
-                    .fetchAllChaptersAndTitleArticles(courseDetail.id),
-                builder: (context, snapshot) {
-                  if (snapshot.data != null) {
-                    List<String> articleTitle = [];
-                    int artikel = 0;
-                    for (var i = 0; i < snapshot.data!.length; i++) {
-                      artikel =
-                          artikel + snapshot.data!.elementAt(i).articles.length;
-                      for (var j = 0;
-                          j < snapshot.data!.elementAt(i).articles.length;
-                          j++) {
-                        articleTitle.add(snapshot.data!
+              Obx(() {
+                if (appController.isLoading.value) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
+                  List<String> articleTitle = [];
+                  int artikel = 0;
+                  for (var i = 0;
+                      i < appController.allChaptersAndTitleArticlesById.length;
+                      i++) {
+                    artikel = artikel +
+                        appController.allChaptersAndTitleArticlesById
                             .elementAt(i)
                             .articles
-                            .elementAt(j)
-                            .title);
-                      }
+                            .length;
+                    for (var j = 0;
+                        j <
+                            appController.allChaptersAndTitleArticlesById
+                                .elementAt(i)
+                                .articles
+                                .length;
+                        j++) {
+                      articleTitle.add(appController
+                          .allChaptersAndTitleArticlesById
+                          .elementAt(i)
+                          .articles
+                          .elementAt(j)
+                          .title);
                     }
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        IntrinsicHeight(
-                          child: Row(
-                            children: [
-                              snapshot.data != null
-                                  ? Text(
-                                      '${snapshot.data!.length} Bab',
-                                      style: TextStyle(
-                                        color: hexToColor(ColorsRepo.darkGray),
-                                        fontSize: 16,
-                                      ),
-                                    )
-                                  : Text(
-                                      '0 Bab',
-                                      style: TextStyle(
-                                        color: hexToColor(ColorsRepo.darkGray),
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                              const VerticalDivider(
-                                color: Colors.grey,
-                                thickness: 2,
-                              ),
-                              snapshot.data != null
-                                  ? Text(
-                                      '$artikel Artikel',
-                                      style: TextStyle(
-                                        color: hexToColor(ColorsRepo.darkGray),
-                                        fontSize: 16,
-                                      ),
-                                    )
-                                  : Text(
-                                      '0 Artikel',
-                                      style: TextStyle(
-                                        color: hexToColor(ColorsRepo.darkGray),
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          padding: const EdgeInsets.only(
-                            top: 5.5,
-                          ),
-                          width: 138,
-                          height: 22,
-                          decoration: BoxDecoration(
-                            color: courseDetail.idDivision == 1
-                                ? hexToColor(ColorsRepo.grayColorBE)
-                                : courseDetail.idDivision == 2
-                                    ? hexToColor(ColorsRepo.greenColorFE)
-                                    : courseDetail.idDivision == 3
-                                        ? hexToColor(ColorsRepo.blueColorMobile)
-                                        : courseDetail.idDivision == 4
-                                            ? hexToColor(ColorsRepo.redColorPR)
-                                            : hexToColor(
-                                                ColorsRepo.brownColorPM),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            textAlign: TextAlign.center,
-                            '${appController.allDivisionList!.data!.elementAt(courseDetail.idDivision! - 1).divisionName}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(
-                            top: 7,
-                          ),
-                          width: double.infinity,
-                          child: Row(
-                            children: [
-                              SvgPicture.asset(
-                                AssetsRepo.iconProfilLabel,
-                                color: hexToColor(ColorsRepo.darkGray),
-                                height: 16,
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              FutureBuilder(
-                                future: appController.fetchUserFullNameById(
-                                    courseDetail.idUser!),
-                                builder: (context, snapshot) {
-                                  if (snapshot.data == null) {
-                                    return Text(
-                                      '-',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: hexToColor(ColorsRepo.darkGray),
-                                      ),
-                                    );
-                                  } else {
-                                    return Text(
-                                      '${snapshot.data}',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: hexToColor(ColorsRepo.darkGray),
-                                      ),
-                                    );
-                                  }
-                                },
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Icon(
-                                Icons.date_range,
-                                size: 18,
-                                color: hexToColor(ColorsRepo.darkGray),
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              Container(
-                                padding: const EdgeInsets.only(
-                                  top: 2,
-                                ),
-                                child: Text(
-                                  DateFormat('dd/MM/yyyy').format(
-                                      DateTime.parse(
-                                          '${courseDetail.createdAt}')),
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: hexToColor(ColorsRepo.darkGray),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 12,
-                        ),
-                        const Text(
-                          'Deskripsi',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 6,
-                        ),
-                        Text(
-                          '${courseDetail.description}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            height: 1.2,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 12,
-                        ),
-                        const Text(
-                          'Daftar Materi',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 12,
-                        ),
-                        snapshot.data!.isNotEmpty
-                            ? ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: snapshot.data!.length,
-                                primary: false,
-                                itemBuilder: (context, index) {
-                                  return accordionJudulBab(
-                                    snapshot.data!
-                                        .elementAt(index)
-                                        .articles
-                                        .length,
-                                    snapshot.data!.elementAt(index).title,
-                                    articleTitle,
-                                  );
-                                },
-                              )
-                            : Center(
-                                heightFactor: 5,
-                                child: Text(
-                                  'Materi Belum Tersedia',
-                                  style: TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold,
-                                      color: hexToColor(
-                                          ColorsRepo.redColorDanger)),
-                                ),
-                              ),
-                      ],
-                    );
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
                   }
-                },
-              ),
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      IntrinsicHeight(
+                        child: Row(
+                          children: [
+                            appController.allChaptersAndTitleArticlesById != []
+                                ? Text(
+                                    '${appController.allChaptersAndTitleArticlesById.length} Bab',
+                                    style: TextStyle(
+                                      color: hexToColor(ColorsRepo.darkGray),
+                                      fontSize: 16,
+                                    ),
+                                  )
+                                : Text(
+                                    '0 Bab',
+                                    style: TextStyle(
+                                      color: hexToColor(ColorsRepo.darkGray),
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                            const VerticalDivider(
+                              color: Colors.grey,
+                              thickness: 2,
+                            ),
+                            appController.allChaptersAndTitleArticlesById != []
+                                ? Text(
+                                    '$artikel Artikel',
+                                    style: TextStyle(
+                                      color: hexToColor(ColorsRepo.darkGray),
+                                      fontSize: 16,
+                                    ),
+                                  )
+                                : Text(
+                                    '0 Artikel',
+                                    style: TextStyle(
+                                      color: hexToColor(ColorsRepo.darkGray),
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.only(
+                          top: 5.5,
+                        ),
+                        width: 138,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          color: courseDetail.idDivision == 1
+                              ? hexToColor(ColorsRepo.grayColorBE)
+                              : courseDetail.idDivision == 2
+                                  ? hexToColor(ColorsRepo.greenColorFE)
+                                  : courseDetail.idDivision == 3
+                                      ? hexToColor(ColorsRepo.blueColorMobile)
+                                      : courseDetail.idDivision == 4
+                                          ? hexToColor(ColorsRepo.redColorPR)
+                                          : hexToColor(ColorsRepo.brownColorPM),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          textAlign: TextAlign.center,
+                          '${appController.allDivisionList!.data!.elementAt(courseDetail.idDivision! - 1).divisionName}',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(
+                          top: 7,
+                        ),
+                        width: double.infinity,
+                        child: Row(
+                          children: [
+                            SvgPicture.asset(
+                              AssetsRepo.iconProfilLabel,
+                              color: hexToColor(ColorsRepo.darkGray),
+                              height: 16,
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            FutureBuilder(
+                              future: appController
+                                  .fetchUserFullNameById(courseDetail.idUser!),
+                              builder: (context, snapshot) {
+                                if (snapshot.data == null) {
+                                  return Text(
+                                    '-',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: hexToColor(ColorsRepo.darkGray),
+                                    ),
+                                  );
+                                } else {
+                                  return Text(
+                                    '${snapshot.data}',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: hexToColor(ColorsRepo.darkGray),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Icon(
+                              Icons.date_range,
+                              size: 18,
+                              color: hexToColor(ColorsRepo.darkGray),
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            Container(
+                              padding: const EdgeInsets.only(
+                                top: 2,
+                              ),
+                              child: Text(
+                                DateFormat('dd/MM/yyyy').format(DateTime.parse(
+                                    '${courseDetail.createdAt}')),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: hexToColor(ColorsRepo.darkGray),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      const Text(
+                        'Deskripsi',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 6,
+                      ),
+                      Text(
+                        '${courseDetail.description}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          height: 1.2,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      const Text(
+                        'Daftar Materi',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      appController.allChaptersAndTitleArticlesById.isNotEmpty
+                          ? ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: appController
+                                  .allChaptersAndTitleArticlesById.length,
+                              primary: false,
+                              itemBuilder: (context, index) {
+                                return accordionJudulBab(
+                                  context,
+                                  appController.allChaptersAndTitleArticlesById
+                                      .elementAt(index)
+                                      .articles
+                                      .length,
+                                  appController.allChaptersAndTitleArticlesById
+                                      .elementAt(index)
+                                      .title,
+                                  articleTitle,
+                                );
+                              },
+                            )
+                          : Center(
+                              heightFactor: 5,
+                              child: Text(
+                                'Materi Belum Tersedia',
+                                style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                    color:
+                                        hexToColor(ColorsRepo.redColorDanger)),
+                              ),
+                            ),
+                    ],
+                  );
+                }
+              })
             ],
           ),
         ),
@@ -369,77 +370,13 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
               padding: const EdgeInsets.all(5),
               color: Colors.white,
               child: ButtonRepo(
-                onPressed: () {},
+                onPressed: () {
+                  Get.to(() => const ArticleNavScreen());
+                },
                 backgroundColor: ColorsRepo.primaryColor,
                 text: 'Belajar Sekarang',
               ),
             ),
-    );
-  }
-
-  Widget accordionJudulBab(
-      int? artikel, String chapterTitle, List<String> articleTitle) {
-    final GlobalKey expansionTileKey = GlobalKey();
-    return Theme(
-      data: Theme.of(context).copyWith(
-        unselectedWidgetColor: Colors.white,
-      ),
-      child: Column(
-        children: [
-          Container(
-            color: hexToColor(ColorsRepo.primaryColor),
-            child: ExpansionTile(
-              key: expansionTileKey,
-              title: Text(
-                chapterTitle,
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-              iconColor: Colors.white,
-              backgroundColor: hexToColor(ColorsRepo.primaryColor),
-              children: [
-                Container(
-                  color: Colors.white,
-                  child: ListView.separated(
-                      shrinkWrap: true,
-                      primary: false,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(
-                            'Artikel # ${index + 1}',
-                            style: const TextStyle(
-                              fontSize: 10,
-                            ),
-                          ),
-                          subtitle: Text(
-                            articleTitle[index],
-                            style: const TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-                          onTap: () {},
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return const Divider(
-                          indent: 18,
-                          thickness: 2,
-                          height: 0.5,
-                        );
-                      },
-                      itemCount: artikel!),
-                ),
-              ],
-              onExpansionChanged: (value) {
-                if (value) {
-                  _scrollToSelectedContent(expansionTileKey: expansionTileKey);
-                }
-              },
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

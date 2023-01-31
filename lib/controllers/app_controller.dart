@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:repo/models/course/course_model.dart';
 import 'package:repo/models/division/division_model.dart';
@@ -23,7 +22,7 @@ class AppController extends GetxController {
   final allChapterList = <ChapterResponse>[].obs;
   final allChaptersAndTitleArticlesById = <ChapterAndArticleResponse>[].obs;
   List<CourseResponse> allCourse = [];
-  var isLoading = true.obs;
+  var isLoading = false.obs;
   int page = 1;
 
   @override
@@ -109,14 +108,18 @@ class AppController extends GetxController {
     }
   }
 
-  Future<List<ChapterAndArticleResponse>> fetchAllChaptersAndTitleArticles(
-      int idCourse) async {
+  fetchAllChaptersAndTitleArticles(int idCourse) async {
     try {
+      isLoading.value = true;
       final allChaptersAndTitleArticles =
           await chapterService.getAllChapterAndTitle(idCourse);
       allChaptersAndTitleArticlesById.assignAll(allChaptersAndTitleArticles);
-      return allChaptersAndTitleArticlesById;
+      isLoading.value = false;
     } catch (e) {
+      Future.delayed(
+        const Duration(seconds: 4),
+        () => fetchAllChaptersAndTitleArticles(idCourse),
+      );
       throw Exception(e);
     }
   }

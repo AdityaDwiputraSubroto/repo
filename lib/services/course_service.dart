@@ -53,9 +53,9 @@ class CourseService {
     if (response.statusCode == 200) {
       data = json.decode(response.body)['data'];
     } else {
-      // Future.delayed(const Duration(seconds: 2), () {
-      //   getCourseByTitle(title);
-      // });
+      Future.delayed(const Duration(seconds: 10), () {
+        getCourseByTitle(title);
+      });
       print('Failed to load course');
     }
     return data.map((e) => CourseResponse.fromJson(e)).toList();

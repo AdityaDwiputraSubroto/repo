@@ -8,6 +8,7 @@ class ButtonRepo extends StatelessWidget {
   final bool changeTextColor;
   final double widthButton;
   final VoidCallback onPressed;
+  final double heightButton;
 
   const ButtonRepo({
     super.key,
@@ -15,6 +16,7 @@ class ButtonRepo extends StatelessWidget {
     this.changeTextColor = false,
     required this.backgroundColor,
     this.widthButton = double.maxFinite,
+    this.heightButton = 44,
     required this.onPressed,
   });
 
@@ -23,7 +25,7 @@ class ButtonRepo extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        height: 44,
+        height: heightButton,
         width: widthButton,
         decoration: BoxDecoration(
           color: hexToColor(backgroundColor),
@@ -47,7 +49,6 @@ class ButtonRepo extends StatelessWidget {
 }
 
 class ButtonBalas extends StatelessWidget {
-  
   final VoidCallback onPressed;
 
   const ButtonBalas({
@@ -60,7 +61,6 @@ class ButtonBalas extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        
         height: 40,
         width: 100,
         decoration: BoxDecoration(
@@ -69,30 +69,25 @@ class ButtonBalas extends StatelessWidget {
         ),
         child: Center(
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,     
-            children: [
-            Icon(
-                Icons.reply,
-                color: hexToColor(ColorsRepo.primaryColor),
-                size: 24,
-            ),
-            SizedBox(
-              width:2
-            ),
-            Text(
-            "Balas",
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 16,
-              color: hexToColor(ColorsRepo.primaryColor),
-              ),
-            ),
-
-          ]
-          ),
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.reply,
+                  color: hexToColor(ColorsRepo.primaryColor),
+                  size: 24,
+                ),
+                SizedBox(width: 2),
+                Text(
+                  "Balas",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                    color: hexToColor(ColorsRepo.primaryColor),
+                  ),
+                ),
+              ]),
         ),
-        
       ),
     );
   }

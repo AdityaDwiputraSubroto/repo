@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:repo/core/shared/assets.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
 import 'package:repo/views/screens/article_screen.dart';
+import 'package:repo/views/screens/discussion_screen.dart';
+
+import '../widgets/accordion_widget.dart';
 
 class ArticleNavScreen extends StatefulWidget {
   const ArticleNavScreen({super.key});
@@ -12,13 +18,27 @@ class ArticleNavScreen extends StatefulWidget {
 }
 
 class _ArticleNavScreenState extends State<ArticleNavScreen> {
+  final courseArticle = Get.arguments['courseArticle'];
+  final courseTitle = Get.arguments['courseTitle'];
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('[Judul Materi]'),
+          actions: [
+            IconButton(
+              padding: const EdgeInsets.only(right: 20),
+              onPressed: () {
+                Get.to(() => const DiscussionScreen());
+              },
+              icon: SvgPicture.asset(
+                AssetsRepo.commentIcon,
+                height: 20,
+              ),
+            )
+          ],
+          title: Text(courseTitle),
           backgroundColor: hexToColor(ColorsRepo.primaryColor),
           bottom: const TabBar(
             indicatorColor: Colors.white,
@@ -32,13 +52,65 @@ class _ArticleNavScreenState extends State<ArticleNavScreen> {
             ],
           ),
         ),
-        body: const TabBarView(
+        body: TabBarView(
           children: [
-            ArticleScreen(),
-            Center(
-              child: Text('Accordion Materi'),
-            )
+            const ArticleScreen(),
+            DaftarMateri(courseArticle: courseArticle),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class DaftarMateri extends StatelessWidget {
+  const DaftarMateri({super.key, this.courseArticle});
+  final courseArticle;
+  @override
+  Widget build(BuildContext context) {
+    List<String> articleTitle = [];
+    for (var i = 0; i < courseArticle.length; i++) {
+      for (var j = 0; j < courseArticle.elementAt(i).articles.length; j++) {
+        articleTitle
+            .add(courseArticle.elementAt(i).articles.elementAt(j).title);
+      }
+    }
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.only(
+            top: 20,
+            left: 20,
+            right: 20,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Daftar Materi',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(
+                height: 12,
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: courseArticle.length,
+                primary: false,
+                itemBuilder: (context, index) {
+                  return accordionJudulBab(
+                    context,
+                    courseArticle.elementAt(index).articles.length,
+                    courseArticle.elementAt(index).title,
+                    articleTitle,
+                  );
+                },
+              )
+            ],
+          ),
         ),
       ),
     );

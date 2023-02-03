@@ -7,7 +7,7 @@ abstract class ApiRoutesRepo {
   static const String division = '/division';
   static const String course = '/course/page/';
   static String user(int id) {
-    return '$baseUrl/user/$id';
+    return '$baseUrl/user/${id.toString()}';
   }
 
   static String chapter(int id) {

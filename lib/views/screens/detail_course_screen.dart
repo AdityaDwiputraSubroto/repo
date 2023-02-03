@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:repo/controllers/app_controller.dart';
+import 'package:repo/core/routes/app_routes.dart';
 import 'package:repo/core/shared/assets.dart';
 import 'package:repo/models/course/course_model.dart';
 import 'package:repo/views/screens/article_nav_screen.dart';
@@ -13,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/shared/colors.dart';
 import '../../core/utils/formatting.dart';
 import '../widgets/accordion_widget.dart';
+import 'discussion_screen.dart';
 
 class DetailCourseScreen extends StatefulWidget {
   const DetailCourseScreen({super.key});
@@ -55,9 +57,11 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
         actions: [
           IconButton(
             padding: const EdgeInsets.only(right: 20),
-            onPressed: () {},
+            onPressed: () {
+              Get.to(() => const DiscussionScreen());
+            },
             icon: SvgPicture.asset(
-              AssetsRepo.iconDiskusiButton,
+              AssetsRepo.commentIcon,
               height: 20,
             ),
           )
@@ -371,7 +375,11 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
               color: Colors.white,
               child: ButtonRepo(
                 onPressed: () {
-                  Get.to(() => const ArticleNavScreen());
+                  Get.toNamed(AppRoutesRepo.articleNav, arguments: {
+                    'courseArticle':
+                        appController.allChaptersAndTitleArticlesById,
+                    'courseTitle': courseDetail.title,
+                  });
                 },
                 backgroundColor: ColorsRepo.primaryColor,
                 text: 'Belajar Sekarang',

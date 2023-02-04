@@ -4,12 +4,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:image_cropper/image_cropper.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
+import 'package:repo/views/widgets/button_widget.dart';
 
 import '../widgets/snackbar_widget.dart';
 import '../widgets/text_field_widget.dart';
@@ -77,22 +76,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       final image = await ImagePicker().pickImage(source: source);
       if (image == null) return;
       File? img = File(image.path);
-      img = await _cropImage(imageFile: img);
       setState(() {
         _image = img;
-        Navigator.of(context).pop();
+        Get.back();
       });
     } on PlatformException catch (e) {
       print(e);
-      Navigator.of(context).pop();
+      Get.back();
     }
-  }
-
-  Future<File?> _cropImage({required File imageFile}) async {
-    CroppedFile? croppedImage =
-        await ImageCropper().cropImage(sourcePath: imageFile.path);
-    if (croppedImage == null) return null;
-    return File(croppedImage.path);
   }
 
   void _showSelectPhotoOptions(BuildContext context) {
@@ -101,7 +92,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(25.0),
+          top: Radius.circular(5.0),
         ),
       ),
       builder: (context) => DraggableScrollableSheet(
@@ -110,9 +101,59 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           minChildSize: 0.28,
           expand: false,
           builder: (context, scrollController) {
-            return SingleChildScrollView(
-              controller: scrollController,
-              child: Text('data'),
+            return Stack(
+              alignment: AlignmentDirectional.topCenter,
+              clipBehavior: Clip.none,
+              children: [
+                Positioned(
+                  top: -15,
+                  child: Container(
+                    width: 50,
+                    height: 6,
+                    margin: const EdgeInsets.only(bottom: 20),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(2.5),
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
+                  child: Column(
+                    children: [
+                      ButtonRepo(
+                        text: 'Ambil dari galeri',
+                        backgroundColor: ColorsRepo.primaryColor,
+                        onPressed: () {
+                          _pickImage(ImageSource.gallery);
+                        },
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      ButtonRepo(
+                        text: 'Ambil dari kamera',
+                        backgroundColor: ColorsRepo.primaryColor,
+                        onPressed: () {
+                          _pickImage(ImageSource.camera);
+                        },
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      ButtonRepo(
+                        text: 'Hapus Gambar',
+                        backgroundColor: ColorsRepo.primaryColor,
+                        onPressed: () {
+                          setState(() {
+                            _image == null;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             );
           }),
     );

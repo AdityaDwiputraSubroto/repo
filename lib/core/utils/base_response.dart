@@ -37,3 +37,17 @@ class BaseListResponse<T> {
         message: json['message']);
   }
 }
+
+class BaseResponseError {
+  BaseResponseError({
+    required this.status,
+    this.message,
+  });
+
+  String status;
+  String? message;
+
+  factory BaseResponseError.fromJson(Map<String, dynamic> json) {
+    return BaseResponseError(status: json['status'], message: json['message']);
+  }
+}

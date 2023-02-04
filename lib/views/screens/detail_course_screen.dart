@@ -14,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/shared/colors.dart';
 import '../../core/utils/formatting.dart';
 import '../widgets/accordion_widget.dart';
-import 'discussion_screen.dart';
+import 'discussion_list_screen.dart';
 
 class DetailCourseScreen extends StatefulWidget {
   const DetailCourseScreen({super.key});
@@ -58,7 +58,7 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
           IconButton(
             padding: const EdgeInsets.only(right: 20),
             onPressed: () {
-              Get.to(() => const DiscussionScreen());
+              Get.to(() => const DiscussionListScreen());
             },
             icon: SvgPicture.asset(
               AssetsRepo.commentIcon,

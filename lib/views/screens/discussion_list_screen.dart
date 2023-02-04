@@ -1,22 +1,28 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:repo/core/routes/app_routes.dart';
 import 'package:repo/core/shared/assets.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
+import 'package:repo/views/screens/index.dart';
 
-class DiscussionScreen extends StatefulWidget {
-  const DiscussionScreen({super.key});
+import '../widgets/delete_overlay_widget.dart';
+import 'add_question_screen.dart';
+
+class DiscussionListScreen extends StatefulWidget {
+  const DiscussionListScreen({super.key});
 
   @override
-  State<DiscussionScreen> createState() => _DiscussionScreenState();
+  State<DiscussionListScreen> createState() => _DiscussionListScreenState();
 }
 
-class _DiscussionScreenState extends State<DiscussionScreen> {
+class _DiscussionListScreenState extends State<DiscussionListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: hexToColor(ColorsRepo.lightGray),
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: hexToColor(ColorsRepo.primaryColor),
         title: const Text('[Judul Materi]'),
@@ -57,7 +63,9 @@ class _DiscussionScreenState extends State<DiscussionScreen> {
                 itemCount: 10,
                 itemBuilder: (context, index) {
                   return InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Get.toNamed(AppRoutesRepo.pertanyaan);
+                    },
                     child: Container(
                       height: 178,
                       width: MediaQuery.of(context).size.width,
@@ -83,8 +91,7 @@ class _DiscussionScreenState extends State<DiscussionScreen> {
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(2),
                                 child: CachedNetworkImage(
-                                  imageUrl:
-                                      'https://1.bp.blogspot.com/-j8vxXp6cack/XlByzHkK1ZI/AAAAAAAAFJM/kbwdlu3xuYk_cNpuKTj5FIuRzSP8QModwCNcBGAsYHQ/w640/images%2B%252854%2529.jpg',
+                                  imageUrl: '',
                                   imageBuilder: (context, imageProvider) =>
                                       Container(
                                     height: 32,
@@ -98,16 +105,22 @@ class _DiscussionScreenState extends State<DiscussionScreen> {
                                   ),
                                   placeholder: (context, url) => Container(
                                     alignment: Alignment.center,
+                                    color: Colors.grey.shade200,
                                     height: 32,
                                     width: 32,
-                                    child: Image.asset(AssetsRepo.avatarIcon),
+                                    child: Icon(
+                                      Icons.person,
+                                      color: Colors.grey.shade400,
+                                    ),
                                   ),
                                   errorWidget: (context, url, error) =>
-                                      Image.asset(
-                                    AssetsRepo.avatarIcon,
-                                    height: 32,
-                                    width: 32,
-                                    fit: BoxFit.fill,
+                                      Container(
+                                    color: Colors.grey.shade200,
+                                    child: Icon(
+                                      Icons.person,
+                                      color: Colors.grey.shade400,
+                                      size: 32,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -143,11 +156,13 @@ class _DiscussionScreenState extends State<DiscussionScreen> {
                                   PopupMenuItem(
                                     value: '',
                                     child: const Text('Laporkan Pertanyaan'),
-                                    onTap: () {},
+                                    onTap: () {
+                                      print('Laporkan Pertanyaan');
+                                    },
                                   ),
                                   PopupMenuItem(
                                     value: '',
-                                    child: Text('Hapus'),
+                                    child: const Text('Hapus'),
                                     onTap: () {
                                       Future.delayed(
                                         const Duration(seconds: 0),
@@ -174,18 +189,13 @@ class _DiscussionScreenState extends State<DiscussionScreen> {
                           const SizedBox(
                             height: 4,
                           ),
-                          Container(
-                            padding: const EdgeInsets.only(
-                              right: 25,
-                            ),
-                            child: const Text(
-                              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vitae tellus nisl. Aliquam erat volutpat. In hac habitasse platea dictumst. Duis sit amet orci maximus, iaculis justo sollicitudin, congue turpis. Aliquam dictum tortor lacus, eu tempor metus blandit at. Fusce laoreet volutpat dolor in egestas. Sed accumsan tempus risus, ac hendrerit massa sodales non. Etiam a scelerisque lacus.',
-                              maxLines: 3,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                                height: 1.4,
-                              ),
+                          const Text(
+                            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vitae tellus nisl. Aliquam erat volutpat. In hac habitasse platea dictumst. Duis sit amet orci maximus, iaculis justo sollicitudin, congue turpis. Aliquam dictum tortor lacus, eu tempor metus blandit at. Fusce laoreet volutpat dolor in egestas. Sed accumsan tempus risus, ac hendrerit massa sodales non. Etiam a scelerisque lacus.',
+                            maxLines: 3,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              height: 1.4,
                             ),
                           ),
                         ],
@@ -199,51 +209,12 @@ class _DiscussionScreenState extends State<DiscussionScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Get.to(() => const AddQuestionScreen());
+        },
         backgroundColor: hexToColor(ColorsRepo.primaryColor),
         child: const Icon(Icons.add),
       ),
-    );
-  }
-
-  showAlertDialog(BuildContext context) {
-    // set up the buttons
-    Widget cancelButton = TextButton(
-      child: Text(
-        'Kembali',
-        style: TextStyle(
-          color: hexToColor(ColorsRepo.primaryColor),
-        ),
-      ),
-      onPressed: () {
-        Get.back();
-      },
-    );
-    Widget deleteButton = TextButton(
-      child: Text(
-        'Hapus',
-        style: TextStyle(
-          color: hexToColor(ColorsRepo.primaryColor),
-        ),
-      ),
-      onPressed: () {},
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      content: const Text('Hapus Komentar? '),
-      actions: [
-        cancelButton,
-        deleteButton,
-      ],
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
     );
   }
 }

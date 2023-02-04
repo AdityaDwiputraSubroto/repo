@@ -69,24 +69,28 @@ class ButtonBalas extends StatelessWidget {
         ),
         child: Center(
           child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.reply,
-                  color: hexToColor(ColorsRepo.primaryColor),
-                  size: 24,
-                ),
-                SizedBox(width: 2),
-                Text(
-                  "Balas",
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.reply,
+                color: hexToColor(ColorsRepo.primaryColor),
+                size: 20,
+              ),
+              const SizedBox(width: 6),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  'Balas',
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
                     fontSize: 16,
                     color: hexToColor(ColorsRepo.primaryColor),
                   ),
                 ),
-              ]),
+              ),
+            ],
+          ),
         ),
       ),
     );

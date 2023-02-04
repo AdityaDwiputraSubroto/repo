@@ -5,7 +5,9 @@ import 'package:get/get.dart';
 import 'package:repo/controllers/app_controller.dart';
 import 'package:repo/core/routes/app_routes.dart';
 import 'package:repo/core/shared/assets.dart';
+import 'package:repo/views/screens/bab_screen.dart';
 import 'package:repo/views/screens/daftar_materi_screen.dart';
+import 'package:repo/views/screens/edit_profile_screen.dart';
 
 import '../../core/shared/colors.dart';
 import '../../core/utils/formatting.dart';
@@ -121,27 +123,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           subtitle: const Text('Mengubah profil akun anda'),
-                          onTap: () {},
-                        ),
-                        ListTile(
-                          leading: Padding(
-                            padding: const EdgeInsets.fromLTRB(2, 8, 8, 8),
-                            child: SvgPicture.asset(
-                              AssetsRepo.bookContentIcon,
-                              height: 25,
-                            ),
-                          ),
-                          title: const Text(
-                            'Daftar Materi',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                            ),
-                          ),
-                          subtitle:
-                              const Text('Melihat daftar materi yang dibuat'),
                           onTap: () {
-                            Navigator.pushNamed(context, '/daftarMateri');
+                            Navigator.pushNamed(context, '/ubahProfil');
                           },
                         ),
                         ListTile(
@@ -167,7 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           onTap: () {
                             appController.logout();
                           },
-                        )
+                        ),
                       ],
                     )
                   ],

@@ -22,6 +22,9 @@ class LoginController extends GetxController {
         await pref.setInt('id-user', response.data.user.id);
         Get.offAllNamed(AppRoutesRepo.bottomNavigator);
       }
+      if (response.status == 'error') {
+        snackbarRepo('Error', response.message);
+      }
     } catch (e) {
       snackbarRepo('Kesalahan Login', 'Email/Username/Password Salah');
     }

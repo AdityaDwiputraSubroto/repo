@@ -6,7 +6,7 @@ import 'package:repo/core/shared/assets.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
 import 'package:repo/views/screens/article_screen.dart';
-import 'package:repo/views/screens/discussion_screen.dart';
+import 'package:repo/views/screens/discussion_list_screen.dart';
 
 import '../widgets/accordion_widget.dart';
 
@@ -30,7 +30,7 @@ class _ArticleNavScreenState extends State<ArticleNavScreen> {
             IconButton(
               padding: const EdgeInsets.only(right: 20),
               onPressed: () {
-                Get.to(() => const DiscussionScreen());
+                Get.to(() => const DiscussionListScreen());
               },
               icon: SvgPicture.asset(
                 AssetsRepo.commentIcon,

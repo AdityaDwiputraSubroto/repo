@@ -13,8 +13,7 @@ class UserService extends GetConnect implements GetxService {
     interceptors: [AuthorizationInterceptor()],
     retryPolicy: ExpiredTokenRetryPolicy(),
   );
-  Future<BaseResponse<UserLoginResponseWrapper>> login(
-      UserLoginRequest body) async {
+  Future login(UserLoginRequest body) async {
     String uri = ApiRoutesRepo.baseUrl + ApiRoutesRepo.login;
     Response response = await post(
       uri,
@@ -25,6 +24,7 @@ class UserService extends GetConnect implements GetxService {
     if (response.statusCode != 200) {
       // ignore: avoid_print
       print(response.statusCode);
+      return BaseResponseError.fromJson(response.body);
     }
 
     return BaseResponse<UserLoginResponseWrapper>.fromJson(

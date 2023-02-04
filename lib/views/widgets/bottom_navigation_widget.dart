@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:repo/views/screens/daftar_materi_screen.dart';
+import 'package:repo/views/screens/edit_profile_screen.dart';
 
 import '../../core/shared/assets.dart';
 import '../../core/shared/colors.dart';
@@ -105,8 +106,8 @@ class _ProfileNavigatorState extends State<ProfileNavigator> {
             switch (settings.name) {
               case '/':
                 return const ProfileScreen();
-              case '/daftarMateri':
-                return const DaftarMateriScreen();
+              case '/ubahProfil':
+                return const EditProfileScreen();
               default:
                 return const ProfileScreen();
             }

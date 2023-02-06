@@ -13,6 +13,8 @@ import 'package:repo/core/shared/assets.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
 import 'package:repo/models/course/course_model.dart';
+import 'package:repo/views/screens/detail_course_screen.dart';
+import 'package:repo/views/screens/profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -84,7 +86,12 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             padding: const EdgeInsets.only(right: 20),
-            onPressed: () {},
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: SearchScreen(),
+              );
+            },
             icon: const Icon(
               Icons.search_outlined,
             ),
@@ -221,7 +228,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemBuilder: (context, index) {
                         if (index < coursePerDivision.length) {
                           return InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              Get.toNamed(
+                                AppRoutesRepo.detailMateri,
+                                arguments: {
+                                  'courseDetail': coursePerDivision[index],
+                                },
+                              );
+                            },
                             child: Container(
                               width: MediaQuery.of(context).size.width,
                               height: 310,
@@ -258,7 +272,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: Row(
                                       children: [
                                         SvgPicture.asset(
-                                          AssetsRepo.iconProfilSelected,
+                                          AssetsRepo.iconProfilLabel,
                                           color:
                                               hexToColor(ColorsRepo.darkGray),
                                           height: 16,
@@ -310,12 +324,9 @@ class _HomeScreenState extends State<HomeScreen> {
         Container(
           margin: const EdgeInsets.only(
             left: 12,
-            // bottom: 8,
           ),
           padding: const EdgeInsets.only(
-            top: 4,
-            left: 8,
-            right: 4,
+            top: 4.5,
           ),
           width: 138,
           height: 18,
@@ -332,6 +343,7 @@ class _HomeScreenState extends State<HomeScreen> {
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
+            textAlign: TextAlign.center,
             '${appController.allDivisionList!.data!.elementAt(idDivision! - 1).divisionName}',
             style: const TextStyle(
               fontSize: 12,
@@ -396,34 +408,34 @@ Silakan mencoba kembali.''',
   }
 
   _thumbnailCourse(BuildContext context, String? imageThumbnail) {
-    return Hero(
-      tag: 1,
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(12, 12, 12, 0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Container(
-            width: double.infinity,
-            color: Colors.white,
-            child: CachedNetworkImage(
-              imageUrl: imageThumbnail!,
-              imageBuilder: (context, imageProvider) => Container(
-                height: 144,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: imageProvider,
-                    fit: BoxFit.cover,
-                  ),
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          width: double.infinity,
+          color: Colors.white,
+          child: CachedNetworkImage(
+            imageUrl: imageThumbnail!,
+            imageBuilder: (context, imageProvider) => Container(
+              height: 144,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: imageProvider,
+                  fit: BoxFit.cover,
                 ),
               ),
-              placeholder: (context, url) => Container(
-                alignment: Alignment.center,
-                height: 144,
-                child: Image.asset(AssetsRepo.noPhoto),
-              ),
-              errorWidget: (context, url, error) =>
-                  Image.asset(AssetsRepo.noPhoto),
+            ),
+            placeholder: (context, url) => Container(
+              alignment: Alignment.center,
+              height: 144,
+              child: Image.asset(AssetsRepo.noPhoto),
+            ),
+            errorWidget: (context, url, error) => Image.asset(
+              AssetsRepo.noPhoto,
+              height: 144,
+              fit: BoxFit.cover,
             ),
           ),
         ),
@@ -433,7 +445,7 @@ Silakan mencoba kembali.''',
 
   _courseMakerLabel(int? idUser) {
     return FutureBuilder(
-      future: appController.fetchUserById(idUser!),
+      future: appController.fetchUserFullNameById(idUser!),
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           return Text(
@@ -471,58 +483,138 @@ Silakan mencoba kembali.''',
           fontSize: 16,
         ),
         maxLines: 2,
+        overflow: TextOverflow.clip,
       ),
     );
   }
 
   _courseCreateAndUpdate(DateTime? createAt, DateTime? updateAt) {
-    return Row(
-      children: [
-        Icon(
-          Icons.date_range,
-          size: 16,
-          color: hexToColor(ColorsRepo.darkGray),
-        ),
-        const SizedBox(
-          width: 5,
-        ),
-        Text(
-          DateFormat('dd/MM/yyyy').format(DateTime.parse('$createAt')),
-          // '${course[index].createdAt}',
-          style: TextStyle(
-            fontSize: 14,
+    return IntrinsicHeight(
+      child: Row(
+        children: [
+          Icon(
+            Icons.date_range,
+            size: 16,
             color: hexToColor(ColorsRepo.darkGray),
           ),
-        ),
-        const SizedBox(
-          width: 5,
-        ),
-        Text(
-          '|',
-          style: TextStyle(
-            fontSize: 14,
-            color: hexToColor(ColorsRepo.darkGray),
+          const SizedBox(
+            width: 5,
           ),
-        ),
-        const SizedBox(
-          width: 5,
-        ),
-        SvgPicture.asset(
-          AssetsRepo.iconUpdateDate,
-          color: hexToColor(ColorsRepo.darkGray),
-          height: 18,
-        ),
-        const SizedBox(
-          width: 5,
-        ),
-        Text(
-          DateFormat('dd/MM/yyyy').format(DateTime.parse('$updateAt')),
-          style: TextStyle(
-            fontSize: 14,
-            color: hexToColor(ColorsRepo.darkGray),
+          Text(
+            DateFormat('dd/MM/yyyy').format(DateTime.parse('$createAt')),
+            style: TextStyle(
+              fontSize: 14,
+              color: hexToColor(ColorsRepo.darkGray),
+            ),
           ),
-        )
-      ],
+          const VerticalDivider(
+            color: Colors.grey,
+            thickness: 2,
+          ),
+          SvgPicture.asset(
+            AssetsRepo.iconUpdateDate,
+            color: hexToColor(ColorsRepo.darkGray),
+            height: 18,
+          ),
+          const SizedBox(
+            width: 5,
+          ),
+          Text(
+            DateFormat('dd/MM/yyyy').format(DateTime.parse('$updateAt')),
+            style: TextStyle(
+              fontSize: 14,
+              color: hexToColor(ColorsRepo.darkGray),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class SearchScreen extends SearchDelegate {
+  final appController = Get.put(AppController());
+  var allData = <CourseResponse>[];
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        onPressed: () {
+          query = '';
+        },
+        icon: const Icon(Icons.clear),
+      )
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        close(context, null);
+      },
+      icon: const Icon(Icons.arrow_back),
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return FutureBuilder(
+      future: appController.searchCourseByTitle(query),
+      builder: (context, snapshot) {
+        if (snapshot.data != null) {
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(snapshot.data![index].title!),
+                onTap: () {
+                  Get.toNamed(
+                    AppRoutesRepo.detailMateri,
+                    arguments: {
+                      'courseDetail': snapshot.data![index],
+                    },
+                  );
+                },
+              );
+            },
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    allData = appController.allCourseList;
+    var matchQuery = <CourseResponse>[].obs;
+    for (var i = 0; i < allData.length; i++) {
+      if (allData[i].title!.toLowerCase().contains(query.toLowerCase())) {
+        matchQuery.add(allData[i]);
+      }
+    }
+    return ListView.builder(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
+      itemCount: matchQuery.length,
+      itemBuilder: (context, index) {
+        var result = matchQuery[index].title;
+        return ListTile(
+          title: Text(result!),
+          onTap: () {
+            Get.toNamed(
+              AppRoutesRepo.detailMateri,
+              arguments: {
+                'courseDetail': matchQuery[index],
+              },
+            );
+          },
+        );
+      },
     );
   }
 }

@@ -11,8 +11,9 @@ class DaftarMateriScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: hexToColor(ColorsRepo.lightGray),
       appBar: AppBar(
-        title: const Text("Daftar Materi"),
+        title: const Text('Daftar Materi'),
         backgroundColor: hexToColor(ColorsRepo.primaryColor),
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.search)),
@@ -27,22 +28,28 @@ class DaftarMateriScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               // ignore: prefer_const_literals_to_create_immutables
               children: [
-                Text('Daftar Materi',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 28),),
-                Padding(padding: EdgeInsets.only(top: 10), child: Text('4 Materi'),),
+                Text(
+                  'Daftar Materi',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
+                ),
                 Padding(
-                  padding: EdgeInsets.only(top:10, bottom: 10),
+                  padding: EdgeInsets.only(top: 10),
+                  child: Text('4 Materi'),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 10, bottom: 10),
                   child: MateriItemWidget(),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(top:10, bottom: 10),
+                  padding: EdgeInsets.only(top: 10, bottom: 10),
                   child: MateriItemWidget(),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(top:10, bottom: 10),
+                  padding: EdgeInsets.only(top: 10, bottom: 10),
                   child: MateriItemWidget(),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(top:10, bottom: 10),
+                  padding: EdgeInsets.only(top: 10, bottom: 10),
                   child: MateriItemWidget(),
                 ),
               ],

@@ -7,7 +7,9 @@ import 'package:repo/services/division_service.dart';
 import 'package:repo/services/user_service.dart';
 import 'package:repo/services/chapter_service.dart';
 import 'package:repo/core/routes/app_routes.dart';
-import 'package:repo/views/screens/home_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../models/user/index.dart';
 
 class AppController extends GetxController {
   CourseService courseService = CourseService();
@@ -15,16 +17,18 @@ class AppController extends GetxController {
   DivisionService divisionService = DivisionService();
   ChapterService chapterService = ChapterService();
   DivisionWrapper? allDivisionList;
-  String? fullnameById;
+  User? userById;
   final allCourseList = <CourseResponse>[].obs;
   final allChapterList = <ChapterResponse>[].obs;
+  final allChaptersAndTitleArticlesById = <ChapterAndArticleResponse>[].obs;
   List<CourseResponse> allCourse = [];
-  var isLoading = true.obs;
+  var isLoading = false.obs;
   int page = 1;
 
   @override
   void onInit() {
     fetchAllDivisions();
+    fetchUserById();
     super.onInit();
   }
 
@@ -35,6 +39,23 @@ class AppController extends GetxController {
         allCourseList.addAll(allCourse);
         allCourseList.refresh();
         page++;
+      } else {
+        page = page;
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+    update();
+  }
+
+  Future<void> fetchAllCourseAfterDelete() async {
+    try {
+      page = 1;
+      allCourse = await courseService.getAllCourse(page);
+      if (allCourse.isNotEmpty) {
+        allCourseList.value = [];
+        allCourseList.assignAll(allCourse);
+        allCourseList.refresh();
       }
     } catch (e) {
       throw Exception(e);
@@ -54,11 +75,21 @@ class AppController extends GetxController {
     update();
   }
 
-  fetchUserById(int idUser) async {
+  fetchUserFullNameById(int idUser) async {
     try {
-      var userById = await userService.fetchUserById(idUser);
-      fullnameById = userById.data.fullName;
-      return fullnameById;
+      var fetchUserById = await userService.fetchUserById(idUser);
+      return fetchUserById.fullName;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  fetchUserById() async {
+    try {
+      final SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      var idUser = sharedPreferences.getInt('id-user');
+      userById = await userService.fetchUserById(idUser!);
     } catch (e) {
       throw Exception(e);
     }
@@ -77,6 +108,31 @@ class AppController extends GetxController {
     }
   }
 
+  fetchAllChaptersAndTitleArticles(int idCourse) async {
+    try {
+      isLoading.value = true;
+      final allChaptersAndTitleArticles =
+          await chapterService.getAllChapterAndTitle(idCourse);
+      allChaptersAndTitleArticlesById.assignAll(allChaptersAndTitleArticles);
+      isLoading.value = false;
+    } catch (e) {
+      Future.delayed(
+        const Duration(seconds: 4),
+        () => fetchAllChaptersAndTitleArticles(idCourse),
+      );
+      throw Exception(e);
+    }
+  }
+
+  Future<List<CourseResponse>> searchCourseByTitle(String title) async {
+    try {
+      final resultCourse = await courseService.getCourseByTitle(title);
+      return resultCourse;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
   deleteChapter(int idCourse, int idChapter) async {
     try {
       final response = await chapterService.deleteChapter(idCourse, idChapter);
@@ -90,7 +146,7 @@ class AppController extends GetxController {
     try {
       final response = await courseService.deleteCourseById(idCourse);
       if (response['status'] == 'success') {
-        print('berhasil hapus');
+        fetchAllCourseAfterDelete();
       } else {
         print('gagal');
       }
@@ -98,5 +154,17 @@ class AppController extends GetxController {
       throw Exception(e);
     }
     update();
+  }
+
+  void logout() async {
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    sharedPreferences.remove('logged-in');
+    sharedPreferences.remove('role');
+    sharedPreferences.remove('username');
+    sharedPreferences.remove('refresh-token');
+    sharedPreferences.remove('access-token');
+    sharedPreferences.remove('id-user');
+    Get.offAllNamed(AppRoutesRepo.login);
   }
 }

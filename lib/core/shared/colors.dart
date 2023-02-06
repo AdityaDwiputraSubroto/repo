@@ -11,4 +11,5 @@ abstract class ColorsRepo {
   static const String greenColorFE = '#369869';
   static const String grayColorBE = '#707070';
   static const String blueDeFrance = '#318CE7';
+  static const String whiteColor = '#FFFFFF';
 }

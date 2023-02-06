@@ -34,6 +34,7 @@ void main() async {
         await pref.setString('username', '');
         await pref.setString('refresh-token', '');
         await pref.setString('access-token', '');
+        await pref.setInt('id-user', 0);
       }
     } catch (e) {
       initialRoute = AppRoutesRepo.login;
@@ -42,6 +43,7 @@ void main() async {
       await pref.setString('username', '');
       await pref.setString('refresh-token', '');
       await pref.setString('access-token', '');
+      await pref.setInt('id-user', 0);
     }
   }
   FlutterNativeSplash.remove();

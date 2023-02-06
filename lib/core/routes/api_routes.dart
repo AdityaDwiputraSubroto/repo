@@ -7,7 +7,7 @@ abstract class ApiRoutesRepo {
   static const String division = '/division';
   static const String course = '/course/page/';
   static String user(int id) {
-    return '$baseUrl/user/$id';
+    return '$baseUrl/user/${id.toString()}';
   }
 
   static String chapter(int id) {
@@ -20,5 +20,13 @@ abstract class ApiRoutesRepo {
 
   static String deleteCourse(int idCourse) {
     return '$baseUrl/course/$idCourse';
+  }
+
+  static String fetchAllChapterAndTitleById(int idCourse) {
+    return '$baseUrl/course/$idCourse/chapter/article';
+  }
+
+  static String fetchCourseByTitleUrl(String title) {
+    return '$baseUrl/course/search/$title';
   }
 }

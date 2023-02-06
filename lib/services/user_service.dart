@@ -1,13 +1,19 @@
 import 'package:get/get.dart';
+import 'package:http_interceptor/http/http.dart';
 import 'package:repo/core/routes/routes.dart';
 import 'package:repo/models/user/index.dart';
 import 'package:repo/core/utils/base_response.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:repo/services/course_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserService extends GetConnect implements GetxService {
-  Future<BaseResponse<UserLoginResponseWrapper>> login(
-      UserLoginRequest body) async {
+  static final client = InterceptedClient.build(
+    interceptors: [AuthorizationInterceptor()],
+    retryPolicy: ExpiredTokenRetryPolicy(),
+  );
+  Future login(UserLoginRequest body) async {
     String uri = ApiRoutesRepo.baseUrl + ApiRoutesRepo.login;
     Response response = await post(
       uri,
@@ -18,6 +24,7 @@ class UserService extends GetConnect implements GetxService {
     if (response.statusCode != 200) {
       // ignore: avoid_print
       print(response.statusCode);
+      return BaseResponseError.fromJson(response.body);
     }
 
     return BaseResponse<UserLoginResponseWrapper>.fromJson(
@@ -51,14 +58,24 @@ class UserService extends GetConnect implements GetxService {
     return BaseResponse<User>.fromJson(body, (data) => User.fromJson(data));
   }
 
-  Future<BaseResponse<User>> fetchUserById(int id) async {
-    Response response = await get(ApiRoutesRepo.user(id));
-
-    if (response.statusCode != 200) {
-      throw Error();
+  Future<User> fetchUserById(int id) async {
+    var data;
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    var accessToken = sharedPreferences.getString('access-token');
+    Uri url = Uri.parse(ApiRoutesRepo.user(id));
+    final response = await client.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      data = json.decode(response.body)['data'];
+    } else {
+      print('Failed to load user');
     }
-
-    return BaseResponse<User>.fromJson(
-        response.body, (data) => User.fromJson(data));
+    return User.fromJson(data);
   }
 }

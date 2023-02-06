@@ -124,6 +124,18 @@ class AppController extends GetxController {
     }
   }
 
+  Future fetchArticleByIdChapterAndIdArticle(
+      int idCourse, int idChapter, int idArticle) async {
+    try {
+      final response = await chapterService.getArticleByIdChapterAndIdArticle(
+          idCourse, idChapter, idArticle);
+      return response;
+    } catch (e) {
+      fetchArticleByIdChapterAndIdArticle(idCourse, idChapter, idArticle);
+      throw Exception(e);
+    }
+  }
+
   Future<List<CourseResponse>> searchCourseByTitle(String title) async {
     try {
       final resultCourse = await courseService.getCourseByTitle(title);

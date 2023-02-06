@@ -201,7 +201,11 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 12,
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.height / 1.45,
+              height: MediaQuery.of(context).size.height -
+                  kToolbarHeight -
+                  MediaQuery.of(context).padding.top -
+                  kBottomNavigationBarHeight -
+                  104,
               child: Obx(
                 () {
                   courseItems = appController.allCourseList;
@@ -220,7 +224,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (courseItems.isEmpty) {
                     return _emptyCourse();
                   } else {
-                    return ListView.builder(
+                    return ListView.separated(
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 12),
                       itemCount: isLoading
                           ? coursePerDivision.length + 1
                           : coursePerDivision.length,
@@ -239,7 +245,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Container(
                               width: MediaQuery.of(context).size.width,
                               height: 310,
-                              margin: const EdgeInsets.only(bottom: 12),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(10),

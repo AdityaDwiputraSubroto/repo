@@ -81,14 +81,14 @@ class Article {
   int idChapter;
 
   factory Article.fromJson(Map<String, dynamic> json) => Article(
-        id: json["id"],
-        title: json["title"],
-        idChapter: json["id_chapter"],
+        id: json['id'],
+        title: json['title'],
+        idChapter: json['id_chapter'],
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "title": title,
-        "id_chapter": idChapter,
+        'id': id,
+        'title': title,
+        'id_chapter': idChapter,
       };
 }

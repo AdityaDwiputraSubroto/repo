@@ -1,9 +1,10 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
+
 import 'package:repo/controllers/app_controller.dart';
 import 'package:repo/core/utils/formatting.dart';
-import 'package:repo/views/widgets/button_widget.dart';
 
 import '../../core/shared/colors.dart';
 
@@ -29,30 +30,52 @@ class _ArticleScreenState extends State<ArticleScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
-        future: appController.fetchArticleByIdChapterAndIdArticle(
-            widget.idCourse!,
-            widget.listIdChapter![pageIndex],
-            widget.listIdArticle![pageIndex]),
-        builder: (context, snapshot) {
-          if (snapshot.data == null) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            return Html(
-              data: '''${snapshot.data['body']} ${snapshot.data['id']}''',
-              style: {
-                'body': Style(
-                  fontSize: FontSize(18.0),
-                  fontWeight: FontWeight.bold,
-                ),
+      body: widget.listIdArticle!.isNotEmpty
+          ? FutureBuilder(
+              future: appController.fetchArticleByIdChapterAndIdArticle(
+                  widget.idCourse!,
+                  widget.listIdChapter![pageIndex],
+                  widget.listIdArticle![pageIndex]),
+              builder: (context, snapshot) {
+                if (snapshot.data == null) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
+                  return SingleChildScrollView(
+                    child: Html(
+                      data:
+                          '''${snapshot.data['body']} ${snapshot.data['body']} 
+                    ${snapshot.data['body']} ${snapshot.data['body']}
+                    ${snapshot.data['body']} ${snapshot.data['body']} 
+                    ${snapshot.data['body']}${snapshot.data['body']}
+                    ${snapshot.data['body']}${snapshot.data['body']}
+                    ${snapshot.data['body']}${snapshot.data['body']}
+                    ${snapshot.data['body']}${snapshot.data['body']}
+                    ${snapshot.data['body']}${snapshot.data['body']}''',
+                      style: {
+                        'body': Style(
+                          fontSize: FontSize(18.0),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      },
+                    ),
+                  );
+                }
               },
-            );
-          }
-        },
-      ),
-      bottomNavigationBar: navbar(context),
+            )
+          : Center(
+              child: Text(
+                'Artikel Belum Tersedia',
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                  color: hexToColor(ColorsRepo.redColorDanger),
+                ),
+              ),
+            ),
+      bottomNavigationBar:
+          widget.listIdArticle!.isNotEmpty ? navbar(context) : null,
     );
   }
 
@@ -132,6 +155,72 @@ class _ArticleScreenState extends State<ArticleScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ArticleScreenOnTap extends StatelessWidget {
+  int? idCourse;
+  int? idChapter;
+  int? idArticle;
+  String? articleTitle;
+  String? chapterTitle;
+  ArticleScreenOnTap({
+    Key? key,
+    this.idCourse,
+    this.idChapter,
+    this.idArticle,
+    this.articleTitle,
+    this.chapterTitle,
+  }) : super(key: key);
+
+  final appController = Get.put(AppController());
+
+  @override
+  Widget build(BuildContext context) {
+    print(articleTitle);
+    print(chapterTitle);
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: hexToColor(ColorsRepo.primaryColor),
+        title: Text(
+          '$chapterTitle - $articleTitle',
+          maxLines: 1,
+        ),
+      ),
+      body: FutureBuilder(
+        future: appController.fetchArticleByIdChapterAndIdArticle(
+          idCourse!,
+          idChapter!,
+          idArticle!,
+        ),
+        builder: (context, snapshot) {
+          if (snapshot.data == null) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            return SingleChildScrollView(
+              child: Html(
+                data: '''${snapshot.data['body']} ${snapshot.data['body']} 
+                    ${snapshot.data['body']} ${snapshot.data['body']}
+                    ${snapshot.data['body']} ${snapshot.data['body']} 
+                    ${snapshot.data['body']}${snapshot.data['body']}
+                    ${snapshot.data['body']}${snapshot.data['body']}
+                    ${snapshot.data['body']}${snapshot.data['body']}
+                    ${snapshot.data['body']}${snapshot.data['body']}
+                    ${snapshot.data['body']}${snapshot.data['body']}''',
+                style: {
+                  'body': Style(
+                    fontSize: FontSize(18.0),
+                    fontWeight: FontWeight.bold,
+                  ),
+                },
+              ),
+            );
+          }
+        },
       ),
     );
   }

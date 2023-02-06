@@ -6,7 +6,7 @@ import 'package:repo/core/routes/api_routes.dart';
 import 'package:repo/core/routes/routes.dart';
 import 'package:repo/services/course_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:http/http.dart' as http;
 import '../models/chapter/chapter_model.dart';
 
 class ChapterService {
@@ -75,6 +75,29 @@ class ChapterService {
     } else {
       //throw Exception('Failed to load chapter');
       return "failed";
+    }
+  }
+
+  Future getArticleByIdChapterAndIdArticle(
+      int idCourse, int idChapter, int idArticle) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var accesToken = sharedPreferences.getString('access-token');
+    Uri url = Uri.parse(ApiRoutesRepo.fetchArticleByIdChapterAndIdArticle(
+        idCourse, idChapter, idArticle));
+    final response = await client.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accesToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      return json.decode(response.body)['data'];
+    } else {
+      Future.delayed(const Duration(seconds: 0), () {
+        getArticleByIdChapterAndIdArticle(idCourse, idChapter, idArticle);
+      });
+      throw Exception('Failed to load article');
     }
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:repo/core/shared/assets.dart';
@@ -19,7 +18,11 @@ class ArticleNavScreen extends StatefulWidget {
 
 class _ArticleNavScreenState extends State<ArticleNavScreen> {
   final courseArticle = Get.arguments['courseArticle'];
+  final courseId = Get.arguments['courseId'];
   final courseTitle = Get.arguments['courseTitle'];
+  final listIdChapter = Get.arguments['listIdChapter'];
+  final listIdArticle = Get.arguments['listIdArticle'];
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -54,7 +57,11 @@ class _ArticleNavScreenState extends State<ArticleNavScreen> {
         ),
         body: TabBarView(
           children: [
-            const ArticleScreen(),
+            ArticleScreen(
+              listIdArticle: listIdArticle,
+              listIdChapter: listIdChapter,
+              idCourse: courseId,
+            ),
             DaftarMateri(courseArticle: courseArticle),
           ],
         ),

@@ -151,7 +151,7 @@ class _DiscussionListScreenState extends State<DiscussionListScreen> {
                                 width: 99,
                               ),
                               PopupMenuButton(
-                                padding: EdgeInsets.all(0),
+                                padding: const EdgeInsets.all(0),
                                 itemBuilder: (BuildContext context) => [
                                   PopupMenuItem(
                                     value: '',

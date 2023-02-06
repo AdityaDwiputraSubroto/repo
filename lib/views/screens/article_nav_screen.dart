@@ -62,7 +62,12 @@ class _ArticleNavScreenState extends State<ArticleNavScreen> {
               listIdChapter: listIdChapter,
               idCourse: courseId,
             ),
-            DaftarMateri(courseArticle: courseArticle),
+            DaftarMateri(
+              courseArticle: courseArticle,
+              listIdChapter: listIdChapter,
+              listIdArticle: listIdArticle,
+              idCourse: courseId,
+            ),
           ],
         ),
       ),
@@ -71,8 +76,20 @@ class _ArticleNavScreenState extends State<ArticleNavScreen> {
 }
 
 class DaftarMateri extends StatelessWidget {
-  const DaftarMateri({super.key, this.courseArticle});
+  List? listIdChapter;
+  List? listIdArticle;
+
+  int? idCourse;
+
+  DaftarMateri({
+    super.key,
+    this.courseArticle,
+    this.listIdChapter,
+    this.listIdArticle,
+    this.idCourse,
+  });
   final courseArticle;
+  bool isOnTap = true;
   @override
   Widget build(BuildContext context) {
     List<String> articleTitle = [];
@@ -108,11 +125,14 @@ class DaftarMateri extends StatelessWidget {
                 itemCount: courseArticle.length,
                 primary: false,
                 itemBuilder: (context, index) {
-                  return accordionJudulBab(
-                    context,
-                    courseArticle.elementAt(index).articles.length,
-                    courseArticle.elementAt(index).title,
-                    articleTitle,
+                  return AccordionJudulBab(
+                    isOnTap: true,
+                    artikel: courseArticle.elementAt(index).articles.length,
+                    articleTitle: articleTitle,
+                    chapterTitle: courseArticle.elementAt(index).title,
+                    idCourse: idCourse,
+                    idChapter: listIdChapter!.elementAt(index),
+                    idArticle: listIdArticle!.elementAt(index),
                   );
                 },
               )

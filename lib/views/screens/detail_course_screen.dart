@@ -30,6 +30,8 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
   var role = 0.obs;
   List listIdArticle = [];
   List listIdChapter = [];
+  int artikel = 0;
+  List<String> articleTitle = [];
 
   @override
   void initState() {
@@ -135,8 +137,6 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                       child: CircularProgressIndicator(),
                     );
                   } else {
-                    List<String> articleTitle = [];
-                    int artikel = 0;
                     if (listIdArticle.isEmpty && listIdChapter.isEmpty) {
                       for (var i = 0;
                           i <
@@ -357,18 +357,22 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                                     .allChaptersAndTitleArticlesById.length,
                                 primary: false,
                                 itemBuilder: (context, index) {
-                                  return accordionJudulBab(
-                                    context,
-                                    appController
-                                        .allChaptersAndTitleArticlesById
-                                        .elementAt(index)
-                                        .articles
-                                        .length,
-                                    appController
-                                        .allChaptersAndTitleArticlesById
-                                        .elementAt(index)
-                                        .title,
-                                    articleTitle,
+                                  return Obx(
+                                    () {
+                                      return AccordionJudulBab(
+                                        isOnTap: false,
+                                        articleTitle: articleTitle,
+                                        artikel: appController
+                                            .allChaptersAndTitleArticlesById
+                                            .elementAt(index)
+                                            .articles
+                                            .length,
+                                        chapterTitle: appController
+                                            .allChaptersAndTitleArticlesById
+                                            .elementAt(index)
+                                            .title,
+                                      );
+                                    },
                                   );
                                 },
                               )

@@ -131,7 +131,11 @@ class AppController extends GetxController {
           idCourse, idChapter, idArticle);
       return response;
     } catch (e) {
-      fetchArticleByIdChapterAndIdArticle(idCourse, idChapter, idArticle);
+      Future.delayed(
+        const Duration(seconds: 2),
+        () =>
+            fetchArticleByIdChapterAndIdArticle(idCourse, idChapter, idArticle),
+      );
       throw Exception(e);
     }
   }

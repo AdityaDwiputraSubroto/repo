@@ -29,24 +29,26 @@ class _PertanyaanScreenState extends State<PertanyaanScreen> {
           color: hexToColor(ColorsRepo.lightGray),
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          child: Stack(children: [
-            Container(
-              padding: const EdgeInsets.only(bottom: 55),
-              child: ListView(children: [
-                const KomentarBoxParent(
-                    avatar: '',
-                    title: 'Lorem ipsum dolor sit amet',
-                    username: 'Muhammad Rafli',
-                    text:
-                        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-                    date: '12/03/2022'),
-                const SizedBox(
-                  height: 10,
-                ),
-                Container(
-                    color: hexToColor(ColorsRepo.lightGray),
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
+          child: Stack(
+            children: [
+              Container(
+                padding: const EdgeInsets.only(bottom: 55),
+                child: ListView(
+                  children: [
+                    const KomentarBoxParent(
+                        avatar: '',
+                        title: 'Lorem ipsum dolor sit amet',
+                        username: 'Muhammad Rafli',
+                        text:
+                            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+                        date: '12/03/2022'),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      color: hexToColor(ColorsRepo.lightGray),
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: const [
                           Text(
@@ -63,49 +65,53 @@ class _PertanyaanScreenState extends State<PertanyaanScreen> {
                             text:
                                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
                           )
-                        ]))
-              ]),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Material(
-                elevation: 10,
-                child: Container(
-                  color: Colors.white,
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width - 40,
-                        child: const TextField(
-                          maxLines: 5,
-                          minLines: 1,
-                          decoration: InputDecoration(
-                            hintText: 'Comment',
-                            contentPadding: EdgeInsets.all(20),
-                            border: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            errorBorder: InputBorder.none,
-                            disabledBorder: InputBorder.none,
-                            filled: true,
-                            fillColor: Colors.white,
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Material(
+                  elevation: 10,
+                  child: Container(
+                    color: Colors.white,
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width - 40,
+                          child: const TextField(
+                            maxLines: 5,
+                            minLines: 1,
+                            decoration: InputDecoration(
+                              hintText: 'Comment',
+                              contentPadding: EdgeInsets.all(20),
+                              border: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              errorBorder: InputBorder.none,
+                              disabledBorder: InputBorder.none,
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
                           ),
                         ),
-                      ),
-                      InkWell(
-                        child: Icon(
-                          Icons.send,
-                          color: hexToColor(ColorsRepo.primaryColor),
-                          size: 24.0,
+                        InkWell(
+                          child: Icon(
+                            Icons.send,
+                            color: hexToColor(ColorsRepo.primaryColor),
+                            size: 24.0,
+                          ),
+                          onTap: () {},
                         ),
-                        onTap: () {},
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ]),
+            ],
+          ),
         ),
       ),
     );

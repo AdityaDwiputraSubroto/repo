@@ -27,13 +27,17 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
   final appController = Get.put(AppController());
   final ScrollController _scrollController = ScrollController();
   final courseDetail = Get.arguments['courseDetail'];
-  var role;
+  var role = 0.obs;
+  List listIdArticle = [];
+  List listIdChapter = [];
+  int artikel = 0;
+  List<String> articleTitle = [];
 
   @override
   void initState() {
     SharedPreferences.getInstance().then((value) {
       setState(() {
-        role = value.getInt('role');
+        role.value = value.getInt('role')!;
       });
     });
     appController.fetchAllChaptersAndTitleArticles(courseDetail.id);
@@ -72,7 +76,7 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
       ),
       body: SingleChildScrollView(
         controller: _scrollController,
-        padding: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.only(bottom: 100),
         child: Container(
           padding: const EdgeInsets.only(
             top: 20,
@@ -129,265 +133,305 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
               const SizedBox(
                 height: 5,
               ),
-              Obx(() {
-                if (appController.isLoading.value) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else {
-                  List<String> articleTitle = [];
-                  int artikel = 0;
-                  for (var i = 0;
-                      i < appController.allChaptersAndTitleArticlesById.length;
-                      i++) {
-                    artikel = artikel +
-                        appController.allChaptersAndTitleArticlesById
-                            .elementAt(i)
-                            .articles
-                            .length;
-                    for (var j = 0;
-                        j <
+              Obx(
+                () {
+                  if (appController.isLoading.value) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else {
+                    if (listIdArticle.isEmpty && listIdChapter.isEmpty) {
+                      for (var i = 0;
+                          i <
+                              appController
+                                  .allChaptersAndTitleArticlesById.length;
+                          i++) {
+                        artikel = artikel +
                             appController.allChaptersAndTitleArticlesById
                                 .elementAt(i)
                                 .articles
                                 .length;
-                        j++) {
-                      articleTitle.add(appController
-                          .allChaptersAndTitleArticlesById
-                          .elementAt(i)
-                          .articles
-                          .elementAt(j)
-                          .title);
+                        for (var j = 0;
+                            j <
+                                appController.allChaptersAndTitleArticlesById
+                                    .elementAt(i)
+                                    .articles
+                                    .length;
+                            j++) {
+                          articleTitle.add(appController
+                              .allChaptersAndTitleArticlesById
+                              .elementAt(i)
+                              .articles
+                              .elementAt(j)
+                              .title);
+                          listIdArticle.add(appController
+                              .allChaptersAndTitleArticlesById
+                              .elementAt(i)
+                              .articles
+                              .elementAt(j)
+                              .id);
+                          listIdChapter.add(appController
+                              .allChaptersAndTitleArticlesById
+                              .elementAt(i)
+                              .id);
+                        }
+                      }
                     }
-                  }
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      IntrinsicHeight(
-                        child: Row(
-                          children: [
-                            appController.allChaptersAndTitleArticlesById != []
-                                ? Text(
-                                    '${appController.allChaptersAndTitleArticlesById.length} Bab',
-                                    style: TextStyle(
-                                      color: hexToColor(ColorsRepo.darkGray),
-                                      fontSize: 16,
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        IntrinsicHeight(
+                          child: Row(
+                            children: [
+                              appController.allChaptersAndTitleArticlesById !=
+                                      []
+                                  ? Text(
+                                      '${appController.allChaptersAndTitleArticlesById.length} Bab',
+                                      style: TextStyle(
+                                        color: hexToColor(ColorsRepo.darkGray),
+                                        fontSize: 16,
+                                      ),
+                                    )
+                                  : Text(
+                                      '0 Bab',
+                                      style: TextStyle(
+                                        color: hexToColor(ColorsRepo.darkGray),
+                                        fontSize: 16,
+                                      ),
                                     ),
-                                  )
-                                : Text(
-                                    '0 Bab',
-                                    style: TextStyle(
-                                      color: hexToColor(ColorsRepo.darkGray),
-                                      fontSize: 16,
+                              const VerticalDivider(
+                                color: Colors.grey,
+                                thickness: 2,
+                              ),
+                              appController.allChaptersAndTitleArticlesById !=
+                                      []
+                                  ? Text(
+                                      '$artikel Artikel',
+                                      style: TextStyle(
+                                        color: hexToColor(ColorsRepo.darkGray),
+                                        fontSize: 16,
+                                      ),
+                                    )
+                                  : Text(
+                                      '0 Artikel',
+                                      style: TextStyle(
+                                        color: hexToColor(ColorsRepo.darkGray),
+                                        fontSize: 16,
+                                      ),
                                     ),
-                                  ),
-                            const VerticalDivider(
-                              color: Colors.grey,
-                              thickness: 2,
-                            ),
-                            appController.allChaptersAndTitleArticlesById != []
-                                ? Text(
-                                    '$artikel Artikel',
-                                    style: TextStyle(
-                                      color: hexToColor(ColorsRepo.darkGray),
-                                      fontSize: 16,
-                                    ),
-                                  )
-                                : Text(
-                                    '0 Artikel',
-                                    style: TextStyle(
-                                      color: hexToColor(ColorsRepo.darkGray),
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.only(
-                          top: 5.5,
-                        ),
-                        width: 138,
-                        height: 22,
-                        decoration: BoxDecoration(
-                          color: courseDetail.idDivision == 1
-                              ? hexToColor(ColorsRepo.grayColorBE)
-                              : courseDetail.idDivision == 2
-                                  ? hexToColor(ColorsRepo.greenColorFE)
-                                  : courseDetail.idDivision == 3
-                                      ? hexToColor(ColorsRepo.blueColorMobile)
-                                      : courseDetail.idDivision == 4
-                                          ? hexToColor(ColorsRepo.redColorPR)
-                                          : hexToColor(ColorsRepo.brownColorPM),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          textAlign: TextAlign.center,
-                          '${appController.allDivisionList!.data!.elementAt(courseDetail.idDivision! - 1).divisionName}',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white,
+                            ],
                           ),
                         ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(
-                          top: 7,
+                        const SizedBox(
+                          height: 10,
                         ),
-                        width: double.infinity,
-                        child: Row(
-                          children: [
-                            SvgPicture.asset(
-                              AssetsRepo.iconProfilLabel,
-                              color: hexToColor(ColorsRepo.darkGray),
-                              height: 16,
+                        Container(
+                          padding: const EdgeInsets.only(
+                            top: 5.5,
+                          ),
+                          width: 138,
+                          height: 22,
+                          decoration: BoxDecoration(
+                            color: courseDetail.idDivision == 1
+                                ? hexToColor(ColorsRepo.grayColorBE)
+                                : courseDetail.idDivision == 2
+                                    ? hexToColor(ColorsRepo.greenColorFE)
+                                    : courseDetail.idDivision == 3
+                                        ? hexToColor(ColorsRepo.blueColorMobile)
+                                        : courseDetail.idDivision == 4
+                                            ? hexToColor(ColorsRepo.redColorPR)
+                                            : hexToColor(
+                                                ColorsRepo.brownColorPM),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            textAlign: TextAlign.center,
+                            '${appController.allDivisionList!.data!.elementAt(courseDetail.idDivision! - 1).divisionName}',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.white,
                             ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            FutureBuilder(
-                              future: appController
-                                  .fetchUserFullNameById(courseDetail.idUser!),
-                              builder: (context, snapshot) {
-                                if (snapshot.data == null) {
-                                  return Text(
-                                    '-',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: hexToColor(ColorsRepo.darkGray),
-                                    ),
-                                  );
-                                } else {
-                                  return Text(
-                                    '${snapshot.data}',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: hexToColor(ColorsRepo.darkGray),
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Icon(
-                              Icons.date_range,
-                              size: 18,
-                              color: hexToColor(ColorsRepo.darkGray),
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Container(
-                              padding: const EdgeInsets.only(
-                                top: 2,
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(
+                            top: 7,
+                          ),
+                          width: double.infinity,
+                          child: Row(
+                            children: [
+                              SvgPicture.asset(
+                                AssetsRepo.iconProfilLabel,
+                                color: hexToColor(ColorsRepo.darkGray),
+                                height: 16,
                               ),
-                              child: Text(
-                                DateFormat('dd/MM/yyyy').format(DateTime.parse(
-                                    '${courseDetail.createdAt}')),
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: hexToColor(ColorsRepo.darkGray),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              FutureBuilder(
+                                future: appController.fetchUserFullNameById(
+                                    courseDetail.idUser!),
+                                builder: (context, snapshot) {
+                                  if (snapshot.data == null) {
+                                    return Text(
+                                      '-',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: hexToColor(ColorsRepo.darkGray),
+                                      ),
+                                    );
+                                  } else {
+                                    return Text(
+                                      '${snapshot.data}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: hexToColor(ColorsRepo.darkGray),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Icon(
+                                Icons.date_range,
+                                size: 18,
+                                color: hexToColor(ColorsRepo.darkGray),
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              Container(
+                                padding: const EdgeInsets.only(
+                                  top: 2,
+                                ),
+                                child: Text(
+                                  DateFormat('dd/MM/yyyy').format(
+                                      DateTime.parse(
+                                          '${courseDetail.createdAt}')),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: hexToColor(ColorsRepo.darkGray),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 12,
-                      ),
-                      const Text(
-                        'Deskripsi',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                        const SizedBox(
+                          height: 12,
                         ),
-                      ),
-                      const SizedBox(
-                        height: 6,
-                      ),
-                      Text(
-                        '${courseDetail.description}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          height: 1.2,
+                        const Text(
+                          'Deskripsi',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 12,
-                      ),
-                      const Text(
-                        'Daftar Materi',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                        const SizedBox(
+                          height: 6,
                         ),
-                      ),
-                      const SizedBox(
-                        height: 12,
-                      ),
-                      appController.allChaptersAndTitleArticlesById.isNotEmpty
-                          ? ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: appController
-                                  .allChaptersAndTitleArticlesById.length,
-                              primary: false,
-                              itemBuilder: (context, index) {
-                                return accordionJudulBab(
-                                  context,
-                                  appController.allChaptersAndTitleArticlesById
-                                      .elementAt(index)
-                                      .articles
-                                      .length,
-                                  appController.allChaptersAndTitleArticlesById
-                                      .elementAt(index)
-                                      .title,
-                                  articleTitle,
-                                );
-                              },
-                            )
-                          : Center(
-                              heightFactor: 5,
-                              child: Text(
-                                'Materi Belum Tersedia',
-                                style: TextStyle(
+                        Text(
+                          '${courseDetail.description}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            height: 1.2,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 12,
+                        ),
+                        const Text(
+                          'Daftar Materi',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 12,
+                        ),
+                        appController.allChaptersAndTitleArticlesById.isNotEmpty
+                            ? ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: appController
+                                    .allChaptersAndTitleArticlesById.length,
+                                primary: false,
+                                itemBuilder: (context, index) {
+                                  return Obx(
+                                    () {
+                                      return AccordionJudulBab(
+                                        isOnTap: false,
+                                        articleTitle: articleTitle,
+                                        artikel: appController
+                                            .allChaptersAndTitleArticlesById
+                                            .elementAt(index)
+                                            .articles
+                                            .length,
+                                        chapterTitle: appController
+                                            .allChaptersAndTitleArticlesById
+                                            .elementAt(index)
+                                            .title,
+                                      );
+                                    },
+                                  );
+                                },
+                              )
+                            : Center(
+                                heightFactor: 5,
+                                child: Text(
+                                  'Materi Belum Tersedia',
+                                  style: TextStyle(
                                     fontSize: 25,
                                     fontWeight: FontWeight.bold,
                                     color:
-                                        hexToColor(ColorsRepo.redColorDanger)),
+                                        hexToColor(ColorsRepo.redColorDanger),
+                                  ),
+                                ),
                               ),
-                            ),
-                    ],
-                  );
-                }
-              })
+                      ],
+                    );
+                  }
+                },
+              ),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: role != courseDetail.idDivision
-          ? null
-          : Container(
+      bottomSheet: Obx(
+        () {
+          if (role.value != courseDetail.idDivision) {
+            return Container(
+              color: Colors.white,
+              height: 1,
+            );
+          } else {
+            return Container(
               padding: const EdgeInsets.all(5),
               color: Colors.white,
               child: ButtonRepo(
                 onPressed: () {
-                  Get.toNamed(AppRoutesRepo.articleNav, arguments: {
-                    'courseArticle':
-                        appController.allChaptersAndTitleArticlesById,
-                    'courseTitle': courseDetail.title,
-                  });
+                  Get.toNamed(
+                    AppRoutesRepo.articleNav,
+                    arguments: {
+                      'courseArticle':
+                          appController.allChaptersAndTitleArticlesById,
+                      'courseTitle': courseDetail.title,
+                      'courseId': courseDetail.id,
+                      'listIdChapter': listIdChapter,
+                      'listIdArticle': listIdArticle,
+                    },
+                  );
                 },
                 backgroundColor: ColorsRepo.primaryColor,
                 text: 'Belajar Sekarang',
               ),
-            ),
+            );
+          }
+        },
+      ),
     );
   }
 }

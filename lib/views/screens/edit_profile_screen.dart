@@ -78,11 +78,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       File? img = File(image.path);
       setState(() {
         _image = img;
-        Get.back();
+        Navigator.of(context).pop();
       });
     } on PlatformException catch (e) {
       print(e);
-      Get.back();
+      Navigator.of(context).pop();
     }
   }
 
@@ -146,7 +146,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         backgroundColor: ColorsRepo.primaryColor,
                         onPressed: () {
                           setState(() {
-                            _image == null;
+                            _image = null;
+                            Navigator.of(context).pop();
                           });
                         },
                       ),

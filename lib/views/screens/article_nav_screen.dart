@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:repo/core/shared/assets.dart';
@@ -19,7 +18,11 @@ class ArticleNavScreen extends StatefulWidget {
 
 class _ArticleNavScreenState extends State<ArticleNavScreen> {
   final courseArticle = Get.arguments['courseArticle'];
+  final courseId = Get.arguments['courseId'];
   final courseTitle = Get.arguments['courseTitle'];
+  final listIdChapter = Get.arguments['listIdChapter'];
+  final listIdArticle = Get.arguments['listIdArticle'];
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -54,8 +57,17 @@ class _ArticleNavScreenState extends State<ArticleNavScreen> {
         ),
         body: TabBarView(
           children: [
-            const ArticleScreen(),
-            DaftarMateri(courseArticle: courseArticle),
+            ArticleScreen(
+              listIdArticle: listIdArticle,
+              listIdChapter: listIdChapter,
+              idCourse: courseId,
+            ),
+            DaftarMateri(
+              courseArticle: courseArticle,
+              listIdChapter: listIdChapter,
+              listIdArticle: listIdArticle,
+              idCourse: courseId,
+            ),
           ],
         ),
       ),
@@ -64,8 +76,20 @@ class _ArticleNavScreenState extends State<ArticleNavScreen> {
 }
 
 class DaftarMateri extends StatelessWidget {
-  const DaftarMateri({super.key, this.courseArticle});
+  List? listIdChapter;
+  List? listIdArticle;
+
+  int? idCourse;
+
+  DaftarMateri({
+    super.key,
+    this.courseArticle,
+    this.listIdChapter,
+    this.listIdArticle,
+    this.idCourse,
+  });
   final courseArticle;
+  bool isOnTap = true;
   @override
   Widget build(BuildContext context) {
     List<String> articleTitle = [];
@@ -101,11 +125,14 @@ class DaftarMateri extends StatelessWidget {
                 itemCount: courseArticle.length,
                 primary: false,
                 itemBuilder: (context, index) {
-                  return accordionJudulBab(
-                    context,
-                    courseArticle.elementAt(index).articles.length,
-                    courseArticle.elementAt(index).title,
-                    articleTitle,
+                  return AccordionJudulBab(
+                    isOnTap: true,
+                    artikel: courseArticle.elementAt(index).articles.length,
+                    articleTitle: articleTitle,
+                    chapterTitle: courseArticle.elementAt(index).title,
+                    idCourse: idCourse,
+                    idChapter: listIdChapter!.elementAt(index),
+                    idArticle: listIdArticle!.elementAt(index),
                   );
                 },
               )

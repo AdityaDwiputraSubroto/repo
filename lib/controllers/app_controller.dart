@@ -133,6 +133,22 @@ class AppController extends GetxController {
     }
   }
 
+  Future fetchArticleByIdChapterAndIdArticle(
+      int idCourse, int idChapter, int idArticle) async {
+    try {
+      final response = await chapterService.getArticleByIdChapterAndIdArticle(
+          idCourse, idChapter, idArticle);
+      return response;
+    } catch (e) {
+      Future.delayed(
+        const Duration(seconds: 2),
+        () =>
+            fetchArticleByIdChapterAndIdArticle(idCourse, idChapter, idArticle),
+      );
+      throw Exception(e);
+    }
+  }
+
   Future<List<Datum>> TestAlldiscussionById(int idCourse) async {
     try {
       final allDiscussion = await discussionService.getAllDiscussion(idCourse);

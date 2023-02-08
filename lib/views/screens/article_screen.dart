@@ -1,25 +1,81 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:get/get.dart';
+
+import 'package:repo/controllers/app_controller.dart';
 import 'package:repo/core/utils/formatting.dart';
-import 'package:repo/views/widgets/button_widget.dart';
 
 import '../../core/shared/colors.dart';
 
 class ArticleScreen extends StatefulWidget {
-  const ArticleScreen({super.key});
+  List? listIdChapter;
+  List? listIdArticle;
+  int? idCourse;
+  ArticleScreen({
+    super.key,
+    this.idCourse,
+    this.listIdChapter,
+    this.listIdArticle,
+  });
 
   @override
   State<ArticleScreen> createState() => _ArticleScreenState();
 }
 
 class _ArticleScreenState extends State<ArticleScreen> {
+  final appController = Get.put(AppController());
   int pageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Page1(pageIndex: pageIndex),
-      bottomNavigationBar: navbar(context),
+      body: widget.listIdArticle!.isNotEmpty
+          ? FutureBuilder(
+              future: appController.fetchArticleByIdChapterAndIdArticle(
+                  widget.idCourse!,
+                  widget.listIdChapter![pageIndex],
+                  widget.listIdArticle![pageIndex]),
+              builder: (context, snapshot) {
+                if (snapshot.data == null) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
+                  return SingleChildScrollView(
+                    child: Html(
+                      data:
+                          '''${snapshot.data['body']} ${snapshot.data['body']} 
+                    ${snapshot.data['body']} ${snapshot.data['body']}
+                    ${snapshot.data['body']} ${snapshot.data['body']} 
+                    ${snapshot.data['body']}${snapshot.data['body']}
+                    ${snapshot.data['body']}${snapshot.data['body']}
+                    ${snapshot.data['body']}${snapshot.data['body']}
+                    ${snapshot.data['body']}${snapshot.data['body']}
+                    ${snapshot.data['body']}${snapshot.data['body']}''',
+                      style: {
+                        'body': Style(
+                          fontSize: FontSize(18.0),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      },
+                    ),
+                  );
+                }
+              },
+            )
+          : Center(
+              child: Text(
+                'Artikel Belum Tersedia',
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                  color: hexToColor(ColorsRepo.redColorDanger),
+                ),
+              ),
+            ),
+      bottomNavigationBar:
+          widget.listIdArticle!.isNotEmpty ? navbar(context) : null,
     );
   }
 
@@ -50,15 +106,13 @@ class _ArticleScreenState extends State<ArticleScreen> {
               ),
               backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
             ),
-            onPressed: () {
-              setState(() {
-                if (pageIndex == 0) {
-                  pageIndex = pageIndex;
-                } else {
-                  pageIndex--;
-                }
-              });
-            },
+            onPressed: pageIndex == 0
+                ? null
+                : () {
+                    setState(() {
+                      pageIndex--;
+                    });
+                  },
             child: Container(
               alignment: Alignment.center,
               height: 60,
@@ -81,15 +135,13 @@ class _ArticleScreenState extends State<ArticleScreen> {
               ),
               backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
             ),
-            onPressed: () {
-              setState(() {
-                if (pageIndex == htmlData.length - 1) {
-                  pageIndex = pageIndex;
-                } else {
-                  pageIndex++;
-                }
-              });
-            },
+            onPressed: pageIndex == widget.listIdArticle!.length - 1
+                ? null
+                : () {
+                    setState(() {
+                      pageIndex++;
+                    });
+                  },
             child: Container(
               alignment: Alignment.center,
               height: 60,
@@ -108,127 +160,67 @@ class _ArticleScreenState extends State<ArticleScreen> {
   }
 }
 
-List htmlData = [
-  """
-      <img alt='Broken image' src='https://www.notgoogle.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' />
-      <h3>MathML Support:</h3>
-      <math>
-      <mrow>
-        <mi>x</mi>
-        <mo>=</mo>
-        <mfrac>
-          <mrow>
-            <mrow>
-              <mo>-</mo>
-              <mi>b</mi>
-            </mrow>
-            <mo>&PlusMinus;</mo>
-            <msqrt>
-              <mrow>
-                <msup>
-                  <mi>b</mi>
-                  <mn>2</mn>
-                </msup>
-                <mo>-</mo>
-                <mrow>
-                  <mn>4</mn>
-                  <mo>&InvisibleTimes;</mo>
-                  <mi>a</mi>
-                  <mo>&InvisibleTimes;</mo>
-                  <mi>c</mi>
-                </mrow>
-              </mrow>
-            </msqrt>
-          </mrow>
-          <mrow>
-            <mn>2</mn>
-            <mo>&InvisibleTimes;</mo>
-            <mi>a</mi>
-          </mrow>
-        </mfrac>
-      </mrow>
-      </math>
-      <math>
-        <munderover >
-          <mo> &int; </mo>
-          <mn> 0 </mn>
-          <mi> 5 </mi>
-        </munderover>
-        <msup>
-          <mi>x</mi>
-          <mn>2</mn>
-       </msup>
-        <mo>&sdot;</mo>
-        <mi>&dd;</mi><mi>x</mi>
-        <mo>=</mo>
-        <mo>[</mo>
-        <mfrac>
-          <mn>1</mn>
-          <mi>3</mi>
-       </mfrac>
-       <msup>
-          <mi>x</mi>
-          <mn>3</mn>
-       </msup>
-       <msubsup>
-          <mo>]</mo>
-          <mn>0</mn>
-          <mn>5</mn>
-       </msubsup>
-       <mo>=</mo>
-       <mfrac>
-          <mn>125</mn>
-          <mi>3</mi>
-       </mfrac>
-       <mo>-</mo>
-       <mn>0</mn>
-       <mo>=</mo>
-       <mfrac>
-          <mn>125</mn>
-          <mi>3</mi>
-       </mfrac>
-      </math>
-      <math>
-        <msup>
-          <mo>sin</mo>
-          <mn>2</mn>
-        </msup>
-        <mo>&theta;</mo>
-        <mo>+</mo>
-        <msup>
-          <mo>cos</mo>
-          <mn>2</mn>
-        </msup>
-        <mo>&theta;</mo>
-        <mo>=</mo>
-        <mn>1</mn>
-      </math>
-      <h3>Tex Support with the custom tex tag:</h3>
-      <tex>i\hbar\frac{\partial}{\partial t}\Psi(\vec x,t) = -\frac{\hbar}{2m}\nabla^2\Psi(\vec x,t)+ V(\vec x)\Psi(\vec x,t)</tex>
-      <p id='bottom'><a href='#top'>Scroll to top</a></p>
-""",
-  ''' <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed auctor tortor mauris, et dictum lorem blandit quis. Aenean semper sed.</p>
-<img alt="Qries" src="https://www.qries.com/images/banner_logo.png" width=150" height="70">''',
-  '''
-<p id='top'><a href='#bottom'>Scroll to bottom</a></p>
-      <h1>Header 1</h1>
-      <h2>Header 2</h2>
-      <h3>Header 3</h3>
-      <h4>Header 4</h4>
-      <h5>Header 5</h5>
-      <h6>Header 6</h6>
-      <h3>Ruby Support:</h3>
-      '''
-];
+class ArticleScreenOnTap extends StatelessWidget {
+  int? idCourse;
+  int? idChapter;
+  int? idArticle;
+  String? articleTitle;
+  String? chapterTitle;
+  ArticleScreenOnTap({
+    Key? key,
+    this.idCourse,
+    this.idChapter,
+    this.idArticle,
+    this.articleTitle,
+    this.chapterTitle,
+  }) : super(key: key);
 
-class Page1 extends StatelessWidget {
-  const Page1({Key? key, required this.pageIndex}) : super(key: key);
-  final int pageIndex;
+  final appController = Get.put(AppController());
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Html(
-        data: htmlData[pageIndex],
+    print(articleTitle);
+    print(chapterTitle);
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: hexToColor(ColorsRepo.primaryColor),
+        title: Text(
+          '$chapterTitle - $articleTitle',
+          maxLines: 1,
+        ),
+      ),
+      body: FutureBuilder(
+        future: appController.fetchArticleByIdChapterAndIdArticle(
+          idCourse!,
+          idChapter!,
+          idArticle!,
+        ),
+        builder: (context, snapshot) {
+          if (snapshot.data == null) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            return SingleChildScrollView(
+              child: Html(
+                data: '''${snapshot.data['body']} ${snapshot.data['body']} 
+                    ${snapshot.data['body']} ${snapshot.data['body']}
+                    ${snapshot.data['body']} ${snapshot.data['body']} 
+                    ${snapshot.data['body']}${snapshot.data['body']}
+                    ${snapshot.data['body']}${snapshot.data['body']}
+                    ${snapshot.data['body']}${snapshot.data['body']}
+                    ${snapshot.data['body']}${snapshot.data['body']}
+                    ${snapshot.data['body']}${snapshot.data['body']}''',
+                style: {
+                  'body': Style(
+                    fontSize: FontSize(18.0),
+                    fontWeight: FontWeight.bold,
+                  ),
+                },
+              ),
+            );
+          }
+        },
       ),
     );
   }

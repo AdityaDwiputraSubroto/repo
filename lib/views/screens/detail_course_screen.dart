@@ -58,7 +58,10 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
           IconButton(
             padding: const EdgeInsets.only(right: 20),
             onPressed: () {
-              Get.to(() => const DiscussionListScreen());
+              Get.toNamed(AppRoutesRepo.diskusimateri, arguments: {
+                'courseId': courseDetail.id,
+                'judul': courseDetail.title
+              });
             },
             icon: SvgPicture.asset(
               AssetsRepo.commentIcon,

@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:repo/models/course/course_model.dart';
-import 'package:repo/models/discussion/all_discussion.dart';
+import 'package:repo/models/discussion/DiscussionByCourseId_model.dart';
 import 'package:repo/models/division/division_model.dart';
 import 'package:repo/models/chapter/chapter_model.dart';
 import 'package:repo/services/course_service.dart';

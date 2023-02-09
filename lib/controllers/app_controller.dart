@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:repo/models/course/course_model.dart';
+import 'package:repo/models/discussion/DiscussionByCourseId_model.dart';
 import 'package:repo/models/division/division_model.dart';
 import 'package:repo/models/chapter/chapter_model.dart';
 import 'package:repo/services/course_service.dart';
@@ -9,6 +10,8 @@ import 'package:repo/services/chapter_service.dart';
 import 'package:repo/core/routes/app_routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:repo/services/discussion_service.dart';
+import 'package:flutter/foundation.dart';
 import '../models/user/index.dart';
 
 class AppController extends GetxController {
@@ -16,11 +19,17 @@ class AppController extends GetxController {
   UserService userService = UserService();
   DivisionService divisionService = DivisionService();
   ChapterService chapterService = ChapterService();
+
+  DiscussionService discussionService = DiscussionService();
+
   DivisionWrapper? allDivisionList;
   User? userById;
   final allCourseList = <CourseResponse>[].obs;
   final allChapterList = <ChapterResponse>[].obs;
   final allChaptersAndTitleArticlesById = <ChapterAndArticleResponse>[].obs;
+
+  final discussionByID = <Datum>[].obs;
+
   List<CourseResponse> allCourse = [];
   var isLoading = false.obs;
   int page = 1;
@@ -136,6 +145,19 @@ class AppController extends GetxController {
         () =>
             fetchArticleByIdChapterAndIdArticle(idCourse, idChapter, idArticle),
       );
+      throw Exception(e);
+    }
+  }
+
+  Future<List<Datum>> TestAlldiscussionById(int idCourse) async {
+    try {
+      final allDiscussion = await discussionService.getAllDiscussion(idCourse);
+      if (allDiscussion.isNotEmpty) {
+        discussionByID.assignAll(allDiscussion);
+      }
+      print(discussionByID);
+      return discussionByID;
+    } catch (e) {
       throw Exception(e);
     }
   }

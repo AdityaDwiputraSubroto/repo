@@ -5,6 +5,7 @@ import 'package:repo/views/screens/detail_course_screen.dart';
 import 'package:repo/views/screens/forgot_pass_msg.dart';
 import 'package:repo/views/screens/index.dart';
 import 'package:repo/views/widgets/bottom_navigation_widget.dart';
+import 'package:repo/views/screens/discussion_list_screen.dart';
 
 abstract class AppRoutesRepo {
   static const String login = '/login';
@@ -17,6 +18,7 @@ abstract class AppRoutesRepo {
   static const String bab = '/bab';
   static const String detailMateri = '/detailMateri';
   static const String articleNav = '/articleNav';
+  static const String diskusimateri = '/diskusimateri';
 
   static List<GetPage<Widget>> pages = [
     GetPage(
@@ -58,6 +60,10 @@ abstract class AppRoutesRepo {
     GetPage(
       name: articleNav,
       page: () => const ArticleNavScreen(),
+    ),
+    GetPage(
+      name: diskusimateri,
+      page: () => const DiscussionListScreen(),
     )
   ];
 }

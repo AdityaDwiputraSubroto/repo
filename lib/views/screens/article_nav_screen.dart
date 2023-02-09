@@ -131,8 +131,12 @@ class DaftarMateri extends StatelessWidget {
                     articleTitle: articleTitle,
                     chapterTitle: courseArticle.elementAt(index).title,
                     idCourse: idCourse,
-                    idChapter: listIdChapter!.elementAt(index),
-                    idArticle: listIdArticle!.elementAt(index),
+                    idChapter: listIdChapter!.isNotEmpty
+                        ? listIdChapter!.elementAt(index)
+                        : -1,
+                    idArticle: listIdArticle!.isNotEmpty
+                        ? listIdArticle!.elementAt(index)
+                        : -1,
                   );
                 },
               )

@@ -13,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:repo/services/discussion_service.dart';
 import 'package:flutter/foundation.dart';
 import '../models/user/index.dart';
+import 'package:repo/models/discussion/store_discussion_model.dart';
 
 class AppController extends GetxController {
   CourseService courseService = CourseService();
@@ -204,5 +205,15 @@ class AppController extends GetxController {
     sharedPreferences.remove('access-token');
     sharedPreferences.remove('id-user');
     Get.offAllNamed(AppRoutesRepo.login);
+  }
+
+  Future<void> StoreDiscussionController(
+      StoreDiscussionRequest request, int idCourse) async {
+    try {
+      var response = await discussionService.storeDiscussion(request, idCourse);
+      print(response);
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 }

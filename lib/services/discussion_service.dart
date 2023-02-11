@@ -8,6 +8,8 @@ import 'package:repo/services/course_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/discussion/DiscussionByCourseId_model.dart';
+import '../models/discussion/store_discussion_model.dart';
+import 'package:http/http.dart' as http;
 
 class DiscussionService {
   static final client = InterceptedClient.build(
@@ -36,6 +38,30 @@ class DiscussionService {
       throw Exception('Failed to load discussion');
     }
     return data.map((e) => Datum.fromJson(e)).toList();
+  }
+
+  Future storeDiscussion(StoreDiscussionRequest request, int idCourse) async {
+    Uri uri = Uri.parse(ApiRoutesRepo.StoreDiscussion(idCourse));
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var accesToken = sharedPreferences.getString('access-token');
+    final response = await http.post(
+      uri,
+      body: jsonEncode(request),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accesToken',
+      },
+    );
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      // ignore: avoid_print
+      print(response.statusCode);
+      //throw Exception('Failed to store discussion');
+      throw Exception('Failed to store discussion');
+    } else {
+      var body = jsonDecode(response.body);
+      return "Store Discussion Success";
+    }
   }
 
   // Future<String> deleteChapter(int idCourse, int idChapter) async {

@@ -239,7 +239,11 @@ class _DiscussionListScreenState extends State<DiscussionListScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.to(() => const AddQuestionScreen());
+          //Get.to(() => const AddQuestionScreen());
+          Get.to(
+            AddQuestionScreen(),
+            arguments: {'idCourse': courseid, 'title': title},
+          );
         },
         backgroundColor: hexToColor(ColorsRepo.primaryColor),
         child: const Icon(Icons.add),

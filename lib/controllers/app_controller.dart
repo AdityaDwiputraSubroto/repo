@@ -150,15 +150,19 @@ class AppController extends GetxController {
     }
   }
 
-  Future<List<Datum>> TestAlldiscussionById(int idCourse) async {
+  Future fetchAllDiscussionByidCourse(int idCourse) async {
     try {
-      final allDiscussion = await discussionService.getAllDiscussion(idCourse);
-      if (allDiscussion.isNotEmpty) {
-        discussionByID.assignAll(allDiscussion);
+      final response = await discussionService.getAllDiscussion(idCourse);
+      if (response.isEmpty) {
+        return 'Tidak ada data';
+      } else {
+        return response;
       }
-      print(discussionByID);
-      return discussionByID;
     } catch (e) {
+      Future.delayed(
+        const Duration(seconds: 2),
+        () => fetchAllDiscussionByidCourse(idCourse),
+      );
       throw Exception(e);
     }
   }

@@ -18,11 +18,16 @@ void main() async {
     initialRoute = AppRoutesRepo.bottomNavigator;
     try {
       var resp = await post(
-          Uri.parse('${ApiRoutesRepo.baseUrl}/user/refresh-token'),
-          body: <String, dynamic>{
-            'username': pref.getString('username'),
-            'refreshToken': pref.getString('refresh-token')
-          });
+        Uri.parse('${ApiRoutesRepo.baseUrl}/user/refresh-token'),
+        body: <String, dynamic>{
+          'username': pref.getString('username'),
+          'refreshToken': pref.getString('refresh-token')
+        },
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer ${pref.getString('access-token')}',
+        },
+      );
       var body = jsonDecode(resp.body);
       print(body);
       if (body['status'] == 'success') {
@@ -34,7 +39,7 @@ void main() async {
         await pref.setString('username', '');
         await pref.setString('refresh-token', '');
         await pref.setString('access-token', '');
-        await pref.setInt('id-user', 0);
+        await pref.setInt('id-division', 0);
       }
     } catch (e) {
       initialRoute = AppRoutesRepo.login;
@@ -44,6 +49,7 @@ void main() async {
       await pref.setString('refresh-token', '');
       await pref.setString('access-token', '');
       await pref.setInt('id-user', 0);
+      await pref.setInt('id-division', 0);
     }
   }
   FlutterNativeSplash.remove();

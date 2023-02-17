@@ -27,7 +27,7 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
   final appController = Get.put(AppController());
   final ScrollController _scrollController = ScrollController();
   final courseDetail = Get.arguments['courseDetail'];
-  var role = 0.obs;
+  var idDivision = 0.obs;
   List listIdArticle = [];
   List listIdChapter = [];
   int artikel = 0;
@@ -37,7 +37,7 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
   void initState() {
     SharedPreferences.getInstance().then((value) {
       setState(() {
-        role.value = value.getInt('role')!;
+        idDivision.value = value.getInt('id-division')!;
       });
     });
     appController.fetchAllChaptersAndTitleArticles(courseDetail.id);
@@ -402,7 +402,7 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
       ),
       bottomSheet: Obx(
         () {
-          if (role.value != courseDetail.idDivision) {
+          if (idDivision.value != courseDetail.idDivision) {
             return Container(
               color: Colors.white,
               height: 1,

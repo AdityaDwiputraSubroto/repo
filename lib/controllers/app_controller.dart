@@ -1,8 +1,10 @@
 import 'package:get/get.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:repo/models/course/course_model.dart';
 import 'package:repo/models/discussion/DiscussionByCourseId_model.dart';
 import 'package:repo/models/division/division_model.dart';
 import 'package:repo/models/chapter/chapter_model.dart';
+import 'package:repo/models/user/user.dart';
 import 'package:repo/services/course_service.dart';
 import 'package:repo/services/division_service.dart';
 import 'package:repo/services/user_service.dart';
@@ -24,7 +26,8 @@ class AppController extends GetxController {
   DiscussionService discussionService = DiscussionService();
 
   DivisionWrapper? allDivisionList;
-  User? userById;
+  UserOwnProfile? userById;
+  UserOwnProfile? userOwnProfile;
   final allCourseList = <CourseResponse>[].obs;
   final allChapterList = <ChapterResponse>[].obs;
   final allChaptersAndTitleArticlesById = <ChapterAndArticleResponse>[].obs;
@@ -37,6 +40,7 @@ class AppController extends GetxController {
 
   @override
   void onInit() {
+    fetchUserOwnProfile();
     fetchAllDivisions();
     fetchUserById();
     super.onInit();
@@ -159,10 +163,6 @@ class AppController extends GetxController {
         return response;
       }
     } catch (e) {
-      Future.delayed(
-        const Duration(seconds: 2),
-        () => fetchAllDiscussionByidCourse(idCourse),
-      );
       throw Exception(e);
     }
   }
@@ -208,6 +208,7 @@ class AppController extends GetxController {
     sharedPreferences.remove('refresh-token');
     sharedPreferences.remove('access-token');
     sharedPreferences.remove('id-user');
+    sharedPreferences.remove('id-division');
     Get.offAllNamed(AppRoutesRepo.login);
   }
 
@@ -216,6 +217,22 @@ class AppController extends GetxController {
     try {
       var response = await discussionService.storeDiscussion(request, idCourse);
       print(response);
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  fetchUserOwnProfile() async {
+    try {
+      final SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      var accessToken = sharedPreferences.getString('access-token');
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(accessToken!);
+      sharedPreferences.setInt('id-user', decodedToken['id']);
+      userOwnProfile = await userService.fetchUserById(decodedToken['id']);
+      sharedPreferences.setInt('role', userOwnProfile!.idRole!);
+      sharedPreferences.setString('username', userOwnProfile!.username!);
+      sharedPreferences.setInt('id-division', userOwnProfile!.idDivision!);
     } catch (e) {
       throw Exception(e);
     }

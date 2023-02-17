@@ -71,7 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 title: Text(
-                  appController.userById!.fullName,
+                  appController.userById!.fullName!,
                   maxLines: 2,
                   overflow: TextOverflow.clip,
                   style: const TextStyle(
@@ -80,7 +80,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 subtitle: Text(
-                  '${appController.allDivisionList!.data!.elementAt(appController.userById!.idDivision - 1).divisionName}',
+                  appController.allDivisionList!.data!
+                      .elementAt(appController.userById!.idDivision! - 1)
+                      .divisionName!,
                   maxLines: 1,
                   style: const TextStyle(
                     fontSize: 16,

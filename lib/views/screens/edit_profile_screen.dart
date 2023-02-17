@@ -323,14 +323,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               const SizedBox(
                 height: 6,
               ),
-              TextFieldRepo(
-                textController: passwordController,
-                hintText: 'Password',
-                obscureText: true,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
               Text(
                 'Divisi',
                 style: TextStyle(
@@ -399,8 +391,69 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 hintText: 'Nomor Telepon',
                 isNumber: true,
               ),
+              const SizedBox(
+                height: 12,
+              ),
+              ButtonRepo(
+                text: 'Ubah Password',
+                backgroundColor: ColorsRepo.lightGray,
+                onPressed: () {
+                  Navigator.pushNamed(context, '/ubahPassword');
+                },
+                changeTextColor: true,
+              )
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class ChangePasswordScreen extends StatelessWidget {
+  ChangePasswordScreen({super.key});
+  TextEditingController changePasswordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: hexToColor(ColorsRepo.primaryColor),
+        actions: [
+          IconButton(
+            padding: const EdgeInsets.only(
+              right: 20,
+            ),
+            onPressed: () {
+              print('oke');
+            },
+            icon: const Icon(Icons.save),
+          ),
+        ],
+      ),
+      body: Container(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+        margin: const EdgeInsets.only(bottom: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Masukkan Password Baru',
+              style: TextStyle(
+                color: hexToColor(ColorsRepo.primaryColor),
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(
+              height: 6,
+            ),
+            TextFieldRepo(
+              textController: changePasswordController,
+              hintText: 'Password',
+              obscureText: true,
+            ),
+          ],
         ),
       ),
     );

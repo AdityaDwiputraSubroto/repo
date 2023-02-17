@@ -68,9 +68,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
         dropdownlist = resBody;
       });
 
-      return "Success";
+      return 'Success';
     } catch (e) {
-      return "failed";
+      return 'failed';
     }
   }
 

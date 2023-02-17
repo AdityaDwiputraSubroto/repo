@@ -5,6 +5,7 @@ import 'package:repo/models/user/index.dart';
 import 'package:repo/core/utils/base_response.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:repo/models/user/user.dart';
 import 'package:repo/services/course_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,11 +25,12 @@ class UserService extends GetConnect implements GetxService {
     if (response.statusCode != 200) {
       // ignore: avoid_print
       print(response.statusCode);
-      return BaseResponseError.fromJson(response.body);
+      return BaseResponseErrorAndMessageOnly.fromJson(response.body);
     }
 
-    return BaseResponse<UserLoginResponseWrapper>.fromJson(
-        response.body, (data) => UserLoginResponseWrapper.fromJson(data));
+    print(response.statusCode);
+
+    return LoginResponse.fromJson(response.body);
   }
 
   Future<ForgotPasswordResponse> forgotPassword(
@@ -43,7 +45,8 @@ class UserService extends GetConnect implements GetxService {
     return ForgotPasswordResponse.fromJson(response.body);
   }
 
-  Future<BaseResponse<User>> register(UserRegisterRequest request) async {
+  Future<BaseResponseErrorAndMessageOnly> register(
+      UserRegisterRequest request) async {
     var response = await http.post(
         Uri.parse(ApiRoutesRepo.baseUrl + ApiRoutesRepo.register),
         body: jsonEncode(request),
@@ -55,10 +58,10 @@ class UserService extends GetConnect implements GetxService {
       throw body['message'] ?? 'Unkown Error';
     }
 
-    return BaseResponse<User>.fromJson(body, (data) => User.fromJson(data));
+    return BaseResponseErrorAndMessageOnly.fromJson(body);
   }
 
-  Future<User> fetchUserById(int id) async {
+  Future<UserOwnProfile> fetchUserById(int id) async {
     var data;
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
@@ -76,6 +79,6 @@ class UserService extends GetConnect implements GetxService {
     } else {
       print('Failed to load user');
     }
-    return User.fromJson(data);
+    return UserOwnProfile.fromJson(data);
   }
 }

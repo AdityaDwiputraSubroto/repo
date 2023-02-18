@@ -97,13 +97,10 @@ class CourseService {
           'Authorization': 'Bearer $accessToken',
         },
       );
-      print(response.statusCode);
 
       var jsonResponse = json.decode(response.body);
-      print(jsonResponse['data']);
       sharedPreferences.setString(
           'access-token', jsonResponse['data']['accessToken']);
-      print('new accessToken $accessToken');
     } catch (e) {
       throw e;
     }

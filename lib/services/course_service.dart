@@ -93,7 +93,6 @@ class CourseService {
           'refreshToken': refreshToken,
         },
         headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $accessToken',
         },
       );

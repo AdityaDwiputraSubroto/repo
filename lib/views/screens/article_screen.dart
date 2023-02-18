@@ -44,8 +44,8 @@ class _ArticleScreenState extends State<ArticleScreen> {
                 } else {
                   return SingleChildScrollView(
                     child: Html(
-                      data:
-                          '''${snapshot.data['body']} ${snapshot.data['body']} 
+                      data: '''${snapshot.data['id']}
+                    ${snapshot.data['body']} ${snapshot.data['body']} 
                     ${snapshot.data['body']} ${snapshot.data['body']}
                     ${snapshot.data['body']} ${snapshot.data['body']} 
                     ${snapshot.data['body']}${snapshot.data['body']}
@@ -160,6 +160,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
   }
 }
 
+// ignore: must_be_immutable
 class ArticleScreenOnTap extends StatelessWidget {
   int? idCourse;
   int? idChapter;
@@ -179,8 +180,6 @@ class ArticleScreenOnTap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(articleTitle);
-    print(chapterTitle);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: hexToColor(ColorsRepo.primaryColor),
@@ -196,6 +195,7 @@ class ArticleScreenOnTap extends StatelessWidget {
           idArticle!,
         ),
         builder: (context, snapshot) {
+          print(snapshot.data);
           if (snapshot.data == null) {
             return const Center(
               child: CircularProgressIndicator(),
@@ -203,7 +203,8 @@ class ArticleScreenOnTap extends StatelessWidget {
           } else {
             return SingleChildScrollView(
               child: Html(
-                data: '''${snapshot.data['body']} ${snapshot.data['body']} 
+                data: '''${snapshot.data['id']}
+                    ${snapshot.data['body']} ${snapshot.data['body']} 
                     ${snapshot.data['body']} ${snapshot.data['body']}
                     ${snapshot.data['body']} ${snapshot.data['body']} 
                     ${snapshot.data['body']}${snapshot.data['body']}

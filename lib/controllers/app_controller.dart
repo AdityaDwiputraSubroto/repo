@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:repo/models/course/course_model.dart';
-import 'package:repo/models/discussion/DiscussionByCourseId_model.dart';
+import 'package:repo/models/discussion/discussion_by_course_id_model.dart';
 import 'package:repo/models/division/division_model.dart';
 import 'package:repo/models/chapter/chapter_model.dart';
 import 'package:repo/models/user/user.dart';
@@ -11,10 +11,7 @@ import 'package:repo/services/user_service.dart';
 import 'package:repo/services/chapter_service.dart';
 import 'package:repo/core/routes/app_routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:repo/services/discussion_service.dart';
-import 'package:flutter/foundation.dart';
-import '../models/user/index.dart';
 import 'package:repo/models/discussion/store_discussion_model.dart';
 
 class AppController extends GetxController {
@@ -32,7 +29,7 @@ class AppController extends GetxController {
   final allChapterList = <ChapterResponse>[].obs;
   final allChaptersAndTitleArticlesById = <ChapterAndArticleResponse>[].obs;
 
-  final discussionByID = <Datum>[].obs;
+  final discussionByID = <DiscussionResponse>[].obs;
 
   List<CourseResponse> allCourse = [];
   var isLoading = false.obs;
@@ -158,7 +155,7 @@ class AppController extends GetxController {
     try {
       final response = await discussionService.getAllDiscussion(idCourse);
       if (response.isEmpty) {
-        return 'Tidak ada data';
+        return null;
       } else {
         return response;
       }
@@ -171,15 +168,6 @@ class AppController extends GetxController {
     try {
       final resultCourse = await courseService.getCourseByTitle(title);
       return resultCourse;
-    } catch (e) {
-      throw Exception(e);
-    }
-  }
-
-  deleteChapter(int idCourse, int idChapter) async {
-    try {
-      final response = await chapterService.deleteChapter(idCourse, idChapter);
-      Get.offAndToNamed(AppRoutesRepo.bab);
     } catch (e) {
       throw Exception(e);
     }
@@ -233,6 +221,18 @@ class AppController extends GetxController {
       sharedPreferences.setInt('role', userOwnProfile!.idRole!);
       sharedPreferences.setString('username', userOwnProfile!.username!);
       sharedPreferences.setInt('id-division', userOwnProfile!.idDivision!);
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<List<DiscussionResponse>> searchDiscussionTitle(
+      int idCourse, String title) async {
+    print(title);
+    try {
+      final response =
+          await discussionService.searchDiscussion(idCourse, title);
+      return response;
     } catch (e) {
       throw Exception(e);
     }

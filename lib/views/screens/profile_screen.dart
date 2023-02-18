@@ -3,11 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:repo/controllers/app_controller.dart';
-import 'package:repo/core/routes/app_routes.dart';
+
 import 'package:repo/core/shared/assets.dart';
-import 'package:repo/views/screens/bab_screen.dart';
-import 'package:repo/views/screens/daftar_materi_screen.dart';
-import 'package:repo/views/screens/edit_profile_screen.dart';
 
 import '../../core/shared/colors.dart';
 import '../../core/utils/formatting.dart';

@@ -31,7 +31,7 @@ abstract class ApiRoutesRepo {
   }
 
   static String fetchCourseByTitleUrl(String title) {
-    return '$baseUrl/courses/search/$title';
+    return '$baseUrl/courses/search?title=$title';
   }
 
   static String fetchArticleByIdChapterAndIdArticle(
@@ -41,5 +41,9 @@ abstract class ApiRoutesRepo {
 
   static String StoreDiscussion(int idCourse) {
     return '$baseUrl/courses/$idCourse/discussions';
+  }
+
+  static String searchDiscussion(int idCourse, String title) {
+    return '$baseUrl/courses/$idCourse/discussions/search?keyword=$title';
   }
 }

@@ -13,9 +13,7 @@ abstract class AppRoutesRepo {
   static const String forgotPassword = '/forgotpass';
   static const String pertanyaan = '/pertanyaan';
   static const String bottomNavigator = '/bottomNavigator';
-  static const String daftarMateri = '/daftarMateri';
   static const String forgotPasswordMassage = '/forgotpassmsg';
-  static const String bab = '/bab';
   static const String detailMateri = '/detailMateri';
   static const String articleNav = '/articleNav';
   static const String diskusimateri = '/diskusimateri';
@@ -44,14 +42,6 @@ abstract class AppRoutesRepo {
     GetPage(
       name: bottomNavigator,
       page: () => const BottomNavRepo(),
-    ),
-    GetPage(
-      name: daftarMateri,
-      page: () => const DaftarMateriScreen(),
-    ),
-    GetPage(
-      name: bab,
-      page: () => const BabScreen(),
     ),
     GetPage(
       name: detailMateri,

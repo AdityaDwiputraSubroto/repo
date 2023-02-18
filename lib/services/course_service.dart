@@ -25,7 +25,6 @@ class CourseService {
     final response = await client.get(
       url,
       headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $accesToken',
       },
     );
@@ -85,12 +84,17 @@ class CourseService {
           await SharedPreferences.getInstance();
       var refreshToken = sharedPreferences.getString('refresh-token');
       var username = sharedPreferences.getString('username');
+      var accessToken = sharedPreferences.getString('access-token');
 
       var response = await http.post(
-        Uri.parse('${ApiRoutesRepo.baseUrl}/user/refresh-token'),
+        Uri.parse('${ApiRoutesRepo.baseUrl}/users/refresh-token'),
         body: <String, dynamic>{
           'username': username,
           'refreshToken': refreshToken,
+        },
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $accessToken',
         },
       );
       print(response.statusCode);
@@ -99,6 +103,7 @@ class CourseService {
       print(jsonResponse['data']);
       sharedPreferences.setString(
           'access-token', jsonResponse['data']['accessToken']);
+      print('new accessToken $accessToken');
     } catch (e) {
       throw e;
     }

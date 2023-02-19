@@ -91,13 +91,13 @@ class LoginResponse {
   Data data;
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) => LoginResponse(
-        status: json["status"],
-        data: Data.fromJson(json["data"]),
+        status: json['status'],
+        data: Data.fromJson(json['data']),
       );
 
   Map<String, dynamic> toJson() => {
-        "status": status,
-        "data": data.toJson(),
+        'status': status,
+        'data': data.toJson(),
       };
 }
 

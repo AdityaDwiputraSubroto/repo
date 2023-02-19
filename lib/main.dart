@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart';
 import 'package:repo/core/routes/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -15,19 +15,25 @@ void main() async {
   final loggedIn = pref.getBool('logged-in') ?? false;
   print(loggedIn);
   if (loggedIn) {
+    print(loggedIn);
     initialRoute = AppRoutesRepo.bottomNavigator;
+    print(initialRoute);
     try {
-      var resp = await post(
-        Uri.parse('${ApiRoutesRepo.baseUrl}/user/refresh-token'),
-        body: <String, dynamic>{
+      print(pref.getString('access-token'));
+      print(pref.getString('username'));
+      print(pref.getString('refresh-token'));
+      var resp = await http.post(
+        Uri.parse('${ApiRoutesRepo.baseUrl}/users/refresh-token'),
+        body: {
           'username': pref.getString('username'),
           'refreshToken': pref.getString('refresh-token')
         },
         headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer ${pref.getString('access-token')}',
         },
       );
+      print(resp);
+      print(initialRoute);
       var body = jsonDecode(resp.body);
       print(body);
       if (body['status'] == 'success') {

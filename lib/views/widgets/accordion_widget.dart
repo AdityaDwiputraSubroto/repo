@@ -14,7 +14,7 @@ class AccordionJudulBab extends StatelessWidget {
   bool isOnTap;
   int? idCourse;
   int? idChapter;
-  int? idArticle;
+  List? idArticle;
   AccordionJudulBab({
     Key? key,
     this.artikel,
@@ -81,7 +81,7 @@ class AccordionJudulBab extends StatelessWidget {
                               ? () {
                                   Get.to(
                                     () => ArticleScreenOnTap(
-                                      idArticle: idArticle,
+                                      idArticle: idArticle!.elementAt(index),
                                       idChapter: idChapter,
                                       idCourse: idCourse,
                                       articleTitle:

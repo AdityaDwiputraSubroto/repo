@@ -313,17 +313,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 height: 20,
               ),
               Text(
-                'Password',
-                style: TextStyle(
-                  color: hexToColor(ColorsRepo.primaryColor),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(
-                height: 6,
-              ),
-              Text(
                 'Divisi',
                 style: TextStyle(
                   color: hexToColor(ColorsRepo.primaryColor),

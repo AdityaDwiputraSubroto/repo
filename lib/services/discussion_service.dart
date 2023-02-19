@@ -7,7 +7,7 @@ import 'package:repo/core/routes/routes.dart';
 import 'package:repo/services/course_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/discussion/DiscussionByCourseId_model.dart';
+import '../models/discussion/discussion_by_course_id_model.dart';
 import '../models/discussion/store_discussion_model.dart';
 import 'package:http/http.dart' as http;
 
@@ -16,7 +16,7 @@ class DiscussionService {
     interceptors: [AuthorizationInterceptor()],
     retryPolicy: ExpiredTokenRetryPolicy(),
   );
-  Future<List<Datum>> getAllDiscussion(int idCourse) async {
+  Future<List<DiscussionResponse>> getAllDiscussion(int idCourse) async {
     List data = [];
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var accesToken = sharedPreferences.getString('access-token');
@@ -28,8 +28,8 @@ class DiscussionService {
         'Authorization': 'Bearer $accesToken',
       },
     );
+    // print('getAllDiscussion ${response.statusCode}');
     if (response.statusCode == 200) {
-      // print(response.body);
       data = json.decode(response.body)['data'];
     } else {
       Future.delayed(const Duration(seconds: 2), () {
@@ -37,7 +37,32 @@ class DiscussionService {
       });
       throw Exception('Failed to load discussion');
     }
-    return data.map((e) => Datum.fromJson(e)).toList();
+    return data.map((e) => DiscussionResponse.fromJson(e)).toList();
+  }
+
+  Future<List<DiscussionResponse>> searchDiscussion(
+      int idCourse, String title) async {
+    List data = [];
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var accesToken = sharedPreferences.getString('access-token');
+    Uri url = Uri.parse(ApiRoutesRepo.searchDiscussion(idCourse, title));
+
+    final response = await client.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accesToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      data = json.decode(response.body)['data'];
+    } else {
+      Future.delayed(const Duration(seconds: 2), () {
+        searchDiscussion(idCourse, title);
+      });
+      throw Exception('Failed to load search discussion');
+    }
+    return data.map((e) => DiscussionResponse.fromJson(e)).toList();
   }
 
   Future storeDiscussion(StoreDiscussionRequest request, int idCourse) async {

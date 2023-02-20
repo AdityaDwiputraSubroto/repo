@@ -39,15 +39,9 @@ class _HomeScreenState extends State<HomeScreen> {
   String selectedDivision = 'Divisi';
   var courseItems = <CourseResponse>[].obs;
   var coursePerDivision = <CourseResponse>[].obs;
-  var role;
 
   @override
   void initState() {
-    SharedPreferences.getInstance().then((value) {
-      setState(() {
-        role = value.getInt('role');
-      });
-    });
     appController.fetchAllCourse();
     scrollController.addListener(_scrollListener);
     super.initState();
@@ -212,13 +206,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   final coursePerDivision = courseItems
                       .where(
                         (element) => selectedDivision == 'Web'
-                            ? element.idDivision == 1 || element.idDivision == 2
+                            ? element.division!.divisionName ==
+                                    'Back-end Developer' ||
+                                element.division!.divisionName ==
+                                    'Front-end Developer'
                             : selectedDivision == 'Mobile'
-                                ? element.idDivision == 3
+                                ? element.division!.divisionName ==
+                                    'Mobile Developer'
                                 : selectedDivision == 'PM'
-                                    ? element.idDivision == 4 ||
-                                        element.idDivision == 5
-                                    : element.idDivision != null,
+                                    ? element.division!.divisionName ==
+                                            'Public Relations' ||
+                                        element.division!.divisionName ==
+                                            'Project Manager'
+                                    : element.division!.divisionName != null,
                       )
                       .toList();
                   if (courseItems.isEmpty) {
@@ -263,8 +263,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   _thumbnailCourse(context,
                                       coursePerDivision[index].imageThumbnail),
                                   _labelDivision(
-                                      coursePerDivision[index].idDivision,
-                                      role,
+                                      coursePerDivision[index]
+                                          .division!
+                                          .divisionName,
                                       coursePerDivision[index].id),
                                   _courseTitle(coursePerDivision[index].title),
                                   Container(
@@ -286,7 +287,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                           width: 5,
                                         ),
                                         _courseMakerLabel(
-                                            coursePerDivision[index].idUser),
+                                            coursePerDivision[index]
+                                                .user!
+                                                .fullName),
                                       ],
                                     ),
                                   ),
@@ -322,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  _labelDivision(int? idDivision, int? role, int? idCourse) {
+  _labelDivision(String? division, int? idCourse) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -336,20 +339,20 @@ class _HomeScreenState extends State<HomeScreen> {
           width: 138,
           height: 18,
           decoration: BoxDecoration(
-            color: idDivision == 1
+            color: division == 'Back-end Developer'
                 ? hexToColor(ColorsRepo.grayColorBE)
-                : idDivision == 2
+                : division == 'Front-end Developer'
                     ? hexToColor(ColorsRepo.greenColorFE)
-                    : idDivision == 3
+                    : division == 'Mobile Developer'
                         ? hexToColor(ColorsRepo.blueColorMobile)
-                        : idDivision == 4
+                        : division == 'Public Relations'
                             ? hexToColor(ColorsRepo.redColorPR)
                             : hexToColor(ColorsRepo.brownColorPM),
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
             textAlign: TextAlign.center,
-            '${appController.allDivisionList!.data!.elementAt(idDivision! - 1).divisionName}',
+            '$division',
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w400,
@@ -357,22 +360,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        role == 2
-            ? PopupMenuButton(
-                itemBuilder: (BuildContext context) => [
-                  PopupMenuItem(
-                    value: idCourse,
-                    child: const Text('Hapus'),
-                    onTap: () {
-                      appController.deleteCourse(idCourse);
-                    },
-                  ),
-                ],
-              )
-            : Container(
-                height: 18,
-                margin: const EdgeInsets.only(top: 30),
-              )
+        Container(
+          height: 18,
+          margin: const EdgeInsets.only(top: 30),
+        )
       ],
     );
   }
@@ -448,28 +439,13 @@ Silakan mencoba kembali.''',
     );
   }
 
-  _courseMakerLabel(int? idUser) {
-    return FutureBuilder(
-      future: appController.fetchUserFullNameById(idUser!),
-      builder: (context, snapshot) {
-        if (snapshot.data == null) {
-          return Text(
-            '-',
-            style: TextStyle(
-              fontSize: 14,
-              color: hexToColor(ColorsRepo.darkGray),
-            ),
-          );
-        } else {
-          return Text(
-            '${snapshot.data}',
-            style: TextStyle(
-              fontSize: 14,
-              color: hexToColor(ColorsRepo.darkGray),
-            ),
-          );
-        }
-      },
+  _courseMakerLabel(String? divisionName) {
+    return Text(
+      '$divisionName',
+      style: TextStyle(
+        fontSize: 14,
+        color: hexToColor(ColorsRepo.darkGray),
+      ),
     );
   }
 

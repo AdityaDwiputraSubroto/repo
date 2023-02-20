@@ -9,7 +9,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
 import 'package:repo/views/widgets/button_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../controllers/app_controller.dart';
 import '../widgets/snackbar_widget.dart';
 import '../widgets/text_field_widget.dart';
 
@@ -21,13 +23,39 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController usernameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController noTelpController = TextEditingController();
-  String? divisionController;
-  String selectedDivision = 'Divisi';
+  final appController = Get.put(AppController());
+  String? photoProfile;
+  String? name;
+  String? username;
+  String? email;
+  String? noTelp;
+  String? division;
+  var password;
+  late TextEditingController nameController = TextEditingController(text: name);
+  late TextEditingController usernameController =
+      TextEditingController(text: username);
+  late TextEditingController emailController =
+      TextEditingController(text: email);
+  late TextEditingController noTelpController =
+      TextEditingController(text: noTelp);
+  @override
+  void initState() {
+    SharedPreferences.getInstance().then((value) {
+      setState(() {
+        password = value.getString('password')!;
+      });
+    });
+    appController.fetchUserById();
+    name = appController.userById!.fullName!;
+    username = appController.userById!.username!;
+    email = appController.userById!.email!;
+    photoProfile = appController.userById!.photoProfile ?? '';
+    noTelp = appController.userById!.phoneNumber ?? '';
+    division = appController.userById!.division!.divisionName ?? '';
+    super.initState();
+  }
+
+  late String? divisionController = division;
   List<String> divisi = <String>[
     'Back-End Developer',
     'Front-End Developer',
@@ -39,10 +67,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   inputHandler() {
     bool isFilled = true;
     if (emailController.text == '' ||
-        passwordController.text == '' ||
         usernameController.text == '' ||
-        nameController.text == '' ||
-        noTelpController.text == '') {
+        nameController.text == '') {
       snackbarRepo('Warning!', 'Data Tidak Boleh Kosong!');
       isFilled = false;
     } else if (!RegExp(
@@ -53,18 +79,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     } else if (nameController.text.length < 6) {
       snackbarRepo('Warning!', 'Nama Minimal 6 Karakter!');
       isFilled = false;
-    } else if (passwordController.text.length < 8) {
-      snackbarRepo('Warning!', 'Password Minimal 8 Karakter !');
-      isFilled = false;
     } else if (usernameController.text.length < 4) {
       snackbarRepo('Warning!', 'Username Minimal 4 Karakter !');
       isFilled = false;
     } else if (divisionController == null) {
       snackbarRepo('Warning!', 'Divisi Harus Diisi !');
       isFilled = false;
-    } else if (!RegExp('[0-9]').hasMatch(noTelpController.text)) {
-      snackbarRepo('Warning!', 'Hanya Boleh Angka !');
-      isFilled = false;
+    } else if (noTelpController.text != '') {
+      if (!RegExp('[0-9]').hasMatch(noTelpController.text)) {
+        snackbarRepo('Warning!', 'Nomor Telepon Hanya Boleh Angka !');
+        isFilled = false;
+      }
+    } else if (noTelpController.text == '') {
+      isFilled = true;
     }
     return isFilled;
   }
@@ -96,67 +123,68 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
       ),
       builder: (context) => DraggableScrollableSheet(
-          initialChildSize: 0.28,
-          maxChildSize: 0.4,
-          minChildSize: 0.28,
-          expand: false,
-          builder: (context, scrollController) {
-            return Stack(
-              alignment: AlignmentDirectional.topCenter,
-              clipBehavior: Clip.none,
-              children: [
-                Positioned(
-                  top: -15,
-                  child: Container(
-                    width: 50,
-                    height: 6,
-                    margin: const EdgeInsets.only(bottom: 20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(2.5),
-                      color: Colors.white,
+        initialChildSize: 0.28,
+        maxChildSize: 0.4,
+        minChildSize: 0.28,
+        expand: false,
+        builder: (context, scrollController) {
+          return Stack(
+            alignment: AlignmentDirectional.topCenter,
+            clipBehavior: Clip.none,
+            children: [
+              Positioned(
+                top: -15,
+                child: Container(
+                  width: 50,
+                  height: 6,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(2.5),
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
+                child: Column(
+                  children: [
+                    ButtonRepo(
+                      text: 'Ambil dari galeri',
+                      backgroundColor: ColorsRepo.primaryColor,
+                      onPressed: () {
+                        _pickImage(ImageSource.gallery);
+                      },
                     ),
-                  ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    ButtonRepo(
+                      text: 'Ambil dari kamera',
+                      backgroundColor: ColorsRepo.primaryColor,
+                      onPressed: () {
+                        _pickImage(ImageSource.camera);
+                      },
+                    ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    ButtonRepo(
+                      text: 'Hapus Gambar',
+                      backgroundColor: ColorsRepo.primaryColor,
+                      onPressed: () {
+                        setState(() {
+                          _image = null;
+                          Navigator.of(context).pop();
+                        });
+                      },
+                    ),
+                  ],
                 ),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
-                  child: Column(
-                    children: [
-                      ButtonRepo(
-                        text: 'Ambil dari galeri',
-                        backgroundColor: ColorsRepo.primaryColor,
-                        onPressed: () {
-                          _pickImage(ImageSource.gallery);
-                        },
-                      ),
-                      const SizedBox(
-                        height: 12,
-                      ),
-                      ButtonRepo(
-                        text: 'Ambil dari kamera',
-                        backgroundColor: ColorsRepo.primaryColor,
-                        onPressed: () {
-                          _pickImage(ImageSource.camera);
-                        },
-                      ),
-                      const SizedBox(
-                        height: 12,
-                      ),
-                      ButtonRepo(
-                        text: 'Hapus Gambar',
-                        backgroundColor: ColorsRepo.primaryColor,
-                        onPressed: () {
-                          setState(() {
-                            _image = null;
-                            Navigator.of(context).pop();
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          }),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -176,7 +204,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             onPressed: () {
               if (inputHandler()) {
-                print('oke');
+                print(emailController.text);
+                print(usernameController.text);
+                print(noTelpController.text);
+                print(divisionController);
               }
             },
             icon: const Icon(Icons.save),
@@ -215,7 +246,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           Center(
                             child: _image == null
                                 ? CachedNetworkImage(
-                                    imageUrl: '',
+                                    imageUrl: photoProfile!,
                                     imageBuilder: (context, imageProvider) {
                                       return Container(
                                         decoration: BoxDecoration(
@@ -346,7 +377,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     return Padding(
                       padding: const EdgeInsets.only(top: 8),
                       child: Text(
-                        selectedItem ?? 'Divisi',
+                        selectedItem ?? '$divisionController',
                         style: const TextStyle(
                           color: Colors.black54,
                           fontSize: 16,
@@ -356,7 +387,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   },
                   onChanged: (selectedItem) {
                     setState(() {
-                      divisionController = selectedItem!;
+                      divisionController = selectedItem ?? division;
+                      print(divisionController);
                     });
                   },
                 ),
@@ -387,7 +419,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 text: 'Ubah Password',
                 backgroundColor: ColorsRepo.lightGray,
                 onPressed: () {
-                  Navigator.pushNamed(context, '/ubahPassword');
+                  Navigator.pushNamed(
+                    context,
+                    '/ubahPassword',
+                    arguments: Password(
+                      password,
+                    ),
+                  );
                 },
                 changeTextColor: true,
               )
@@ -399,14 +437,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 }
 
+class Password {
+  String password;
+  Password(this.password);
+}
+
+// ignore: must_be_immutable
 class ChangePasswordScreen extends StatelessWidget {
-  ChangePasswordScreen({super.key});
-  TextEditingController changePasswordController = TextEditingController();
+  const ChangePasswordScreen({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as Password;
+    String password = args.password;
+    late TextEditingController changePasswordController =
+        TextEditingController(text: password);
+    handler() {
+      bool isGood = true;
+      if (changePasswordController.text == password) {
+        snackbarRepo('Warning !!',
+            'Password baru tidak boleh sama dengan password lama !!');
+        isGood = false;
+      }
+      return isGood;
+    }
+
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Ganti Password'),
         backgroundColor: hexToColor(ColorsRepo.primaryColor),
         actions: [
           IconButton(
@@ -414,7 +474,9 @@ class ChangePasswordScreen extends StatelessWidget {
               right: 20,
             ),
             onPressed: () {
-              print('oke');
+              if (handler()) {
+                print('oke');
+              }
             },
             icon: const Icon(Icons.save),
           ),

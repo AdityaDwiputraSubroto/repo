@@ -22,13 +22,13 @@ class _DiscussionListScreenState extends State<DiscussionListScreen> {
   final appController = Get.put(AppController());
   final courseid = Get.arguments['courseId'];
   final title = Get.arguments['judul'];
-  var role;
+  var idUser;
 
   @override
   void initState() {
     SharedPreferences.getInstance().then((value) {
       setState(() {
-        role = value.getInt('role');
+        idUser = value.getInt('id-user');
       });
     });
     super.initState();
@@ -66,9 +66,18 @@ class _DiscussionListScreenState extends State<DiscussionListScreen> {
             if (snapshot.connectionState == ConnectionState.waiting ||
                 snapshot.data == 'Tidak ada data' ||
                 snapshot.data == null) {
-              return const Center(
-                heightFactor: 10,
-                child: CircularProgressIndicator(),
+              return Container(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: Center(
+                  heightFactor: MediaQuery.of(context).size.height / 38,
+                  child: const Text(
+                    'Belum ada diskusi',
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               );
             } else {
               return Container(
@@ -202,26 +211,50 @@ class _DiscussionListScreenState extends State<DiscussionListScreen> {
                                       ),
                                       PopupMenuButton(
                                         padding: const EdgeInsets.all(0),
-                                        itemBuilder: (BuildContext context) => [
-                                          PopupMenuItem(
-                                            value: '',
-                                            child: const Text(
-                                                'Laporkan Pertanyaan'),
-                                            onTap: () {
-                                              print('Laporkan Pertanyaan');
-                                            },
-                                          ),
-                                          PopupMenuItem(
-                                            value: '',
-                                            child: const Text('Hapus'),
-                                            onTap: () {
-                                              Future.delayed(
-                                                const Duration(seconds: 0),
-                                                () => showAlertDialog(context),
-                                              );
-                                            },
-                                          ),
-                                        ],
+                                        itemBuilder: (BuildContext context) =>
+                                            idUser ==
+                                                    snapshot.data![index].idUser
+                                                ? [
+                                                    PopupMenuItem(
+                                                      value: '',
+                                                      child: const Text(
+                                                          'Laporkan Pertanyaan'),
+                                                      onTap: () {
+                                                        print(
+                                                            'Laporkan Pertanyaan');
+                                                      },
+                                                    ),
+                                                    PopupMenuItem(
+                                                      value: '',
+                                                      child:
+                                                          const Text('Hapus'),
+                                                      onTap: () {
+                                                        print(courseid);
+                                                        Future.delayed(
+                                                          const Duration(
+                                                              seconds: 0),
+                                                          () => showAlertDialog(
+                                                            context,
+                                                            courseid,
+                                                            snapshot
+                                                                .data[index].id,
+                                                            title,
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
+                                                  ]
+                                                : [
+                                                    PopupMenuItem(
+                                                      value: '',
+                                                      child: const Text(
+                                                          'Laporkan Pertanyaan'),
+                                                      onTap: () {
+                                                        print(
+                                                            'Laporkan Pertanyaan');
+                                                      },
+                                                    ),
+                                                  ],
                                       )
                                     ],
                                   ),
@@ -315,8 +348,6 @@ class SearchDiscussionScreen extends SearchDelegate {
     return FutureBuilder(
       future: appController.searchDiscussionTitle(courseId!, query),
       builder: (context, snapshot) {
-        // print(snapshot.data);
-        // return Text('data');
         if (snapshot.data != null) {
           return ListView.builder(
             itemCount: snapshot.data!.length,
@@ -324,13 +355,7 @@ class SearchDiscussionScreen extends SearchDelegate {
               return ListTile(
                 title: Text(snapshot.data![index].title!),
                 onTap: () {
-                  // Get.toNamed(
-                  //   AppRoutesRepo.detailMateri,
-                  //   arguments: {
-                  //     'courseDetail': snapshot.data![index],
-                  //   },
-                  // );
-                  print('test');
+                  Get.toNamed(AppRoutesRepo.pertanyaan);
                 },
               );
             },

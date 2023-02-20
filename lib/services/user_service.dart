@@ -66,7 +66,7 @@ class UserService extends GetConnect implements GetxService {
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
     var accessToken = sharedPreferences.getString('access-token');
-    Uri url = Uri.parse(ApiRoutesRepo.user(id));
+    Uri url = Uri.parse(ApiRoutesRepo.user());
     final response = await client.get(
       url,
       headers: {

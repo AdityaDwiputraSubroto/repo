@@ -27,7 +27,7 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
   final appController = Get.put(AppController());
   final ScrollController _scrollController = ScrollController();
   final courseDetail = Get.arguments['courseDetail'];
-  var idDivision = 0.obs;
+  var nameDivision = ''.obs;
   List listIdArticle = [];
   List listIdChapter = [];
   int artikel = 0;
@@ -37,7 +37,7 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
   void initState() {
     SharedPreferences.getInstance().then((value) {
       setState(() {
-        idDivision.value = value.getInt('id-division')!;
+        nameDivision.value = value.getString('division-name')!;
       });
     });
     appController.fetchAllChaptersAndTitleArticles(courseDetail.id);
@@ -59,19 +59,21 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
           ),
         ),
         actions: [
-          IconButton(
-            padding: const EdgeInsets.only(right: 20),
-            onPressed: () {
-              Get.toNamed(AppRoutesRepo.diskusimateri, arguments: {
-                'courseId': courseDetail.id,
-                'judul': courseDetail.title
-              });
-            },
-            icon: SvgPicture.asset(
-              AssetsRepo.commentIcon,
-              height: 20,
-            ),
-          )
+          nameDivision.value != courseDetail.division.divisionName
+              ? Container()
+              : IconButton(
+                  padding: const EdgeInsets.only(right: 20),
+                  onPressed: () {
+                    Get.toNamed(AppRoutesRepo.diskusimateri, arguments: {
+                      'courseId': courseDetail.id,
+                      'judul': courseDetail.title
+                    });
+                  },
+                  icon: SvgPicture.asset(
+                    AssetsRepo.commentIcon,
+                    height: 20,
+                  ),
+                )
         ],
       ),
       body: SingleChildScrollView(
@@ -232,13 +234,17 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                           width: 138,
                           height: 22,
                           decoration: BoxDecoration(
-                            color: courseDetail.idDivision == 1
+                            color: courseDetail.division.divisionName ==
+                                    'Back-end Developer'
                                 ? hexToColor(ColorsRepo.grayColorBE)
-                                : courseDetail.idDivision == 2
+                                : courseDetail.division.divisionName ==
+                                        'Front-end Developer'
                                     ? hexToColor(ColorsRepo.greenColorFE)
-                                    : courseDetail.idDivision == 3
+                                    : courseDetail.division.divisionName ==
+                                            'Mobile Developer'
                                         ? hexToColor(ColorsRepo.blueColorMobile)
-                                        : courseDetail.idDivision == 4
+                                        : courseDetail.division.divisionName ==
+                                                'Public Relations'
                                             ? hexToColor(ColorsRepo.redColorPR)
                                             : hexToColor(
                                                 ColorsRepo.brownColorPM),
@@ -246,7 +252,7 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                           ),
                           child: Text(
                             textAlign: TextAlign.center,
-                            '${appController.allDivisionList!.data!.elementAt(courseDetail.idDivision! - 1).divisionName}',
+                            '${courseDetail.division.divisionName}',
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
@@ -269,28 +275,12 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                               const SizedBox(
                                 width: 5,
                               ),
-                              FutureBuilder(
-                                future: appController.fetchUserFullNameById(
-                                    courseDetail.idUser!),
-                                builder: (context, snapshot) {
-                                  if (snapshot.data == null) {
-                                    return Text(
-                                      '-',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: hexToColor(ColorsRepo.darkGray),
-                                      ),
-                                    );
-                                  } else {
-                                    return Text(
-                                      '${snapshot.data}',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: hexToColor(ColorsRepo.darkGray),
-                                      ),
-                                    );
-                                  }
-                                },
+                              Text(
+                                '${courseDetail.user.fullName}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: hexToColor(ColorsRepo.darkGray),
+                                ),
                               ),
                               const SizedBox(
                                 width: 10,
@@ -402,7 +392,7 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
       ),
       bottomSheet: Obx(
         () {
-          if (idDivision.value != courseDetail.idDivision) {
+          if (nameDivision.value != courseDetail.division.divisionName) {
             return Container(
               color: Colors.white,
               height: 1,

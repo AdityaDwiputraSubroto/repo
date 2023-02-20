@@ -50,10 +50,14 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
                   body: deskripsiController.text.trim(),
                 );
                 Get.find<AppController>()
-                    .StoreDiscussionController(request, idCourse);
-                Get.to(
-                  DiscussionListScreen(),
-                  arguments: {'courseId': idCourse, 'judul': title},
+                    .storeDiscussionController(request, idCourse);
+                Get.back();
+                Get.off(
+                  () => const DiscussionListScreen(),
+                  arguments: {
+                    'courseId': idCourse,
+                    'judul': title,
+                  },
                 );
               }
             },

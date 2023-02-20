@@ -7,6 +7,7 @@ import 'package:repo/core/utils/formatting.dart';
 import 'package:repo/views/screens/article_screen.dart';
 import 'package:repo/views/screens/discussion_list_screen.dart';
 
+import '../../core/routes/app_routes.dart';
 import '../widgets/accordion_widget.dart';
 
 class ArticleNavScreen extends StatefulWidget {
@@ -33,7 +34,13 @@ class _ArticleNavScreenState extends State<ArticleNavScreen> {
             IconButton(
               padding: const EdgeInsets.only(right: 20),
               onPressed: () {
-                Get.to(() => const DiscussionListScreen());
+                Get.toNamed(
+                  AppRoutesRepo.diskusimateri,
+                  arguments: {
+                    'courseId': courseId,
+                    'judul': courseTitle,
+                  },
+                );
               },
               icon: SvgPicture.asset(
                 AssetsRepo.commentIcon,

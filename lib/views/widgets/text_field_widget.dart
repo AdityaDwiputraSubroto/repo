@@ -26,7 +26,7 @@ class TextFieldRepo extends StatefulWidget {
 class _TextFieldRepoState extends State<TextFieldRepo> {
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       keyboardType:
           widget.isNumber ? TextInputType.number : TextInputType.multiline,
       controller: widget.textController,

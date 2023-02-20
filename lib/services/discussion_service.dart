@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:repo/core/routes/api_routes.dart';
 import 'package:repo/core/routes/routes.dart';
+import 'package:repo/core/utils/base_response.dart';
 import 'package:repo/services/course_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -66,7 +67,7 @@ class DiscussionService {
   }
 
   Future storeDiscussion(StoreDiscussionRequest request, int idCourse) async {
-    Uri uri = Uri.parse(ApiRoutesRepo.StoreDiscussion(idCourse));
+    Uri uri = Uri.parse(ApiRoutesRepo.storeDiscussion(idCourse));
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var accesToken = sharedPreferences.getString('access-token');
     final response = await http.post(
@@ -89,23 +90,24 @@ class DiscussionService {
     }
   }
 
-  // Future<String> deleteChapter(int idCourse, int idChapter) async {
-  //   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-  //   var accesToken = sharedPreferences.getString('access-token');
-  //   Uri url = Uri.parse(ApiRoutesRepo.deleteChapter(idCourse, idChapter));
-  //   final response = await client.delete(
-  //     url,
-  //     headers: {
-  //       'Content-Type': 'application/json; charset=UTF-8',
-  //       'Authorization': 'Bearer $accesToken',
-  //     },
-  //   );
-  //   if (response.statusCode == 200) {
-  //     print(response.body);
-  //     return "success";
-  //   } else {
-  //     //throw Exception('Failed to load chapter');
-  //     return "failed";
-  //   }
-  // }
+  Future deleteDiscussion(int idCourse, int idDiscussion) async {
+    Uri uri = Uri.parse(ApiRoutesRepo.deleteDiscussion(idCourse, idDiscussion));
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var accesToken = sharedPreferences.getString('access-token');
+    final response = await http.delete(
+      uri,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accesToken',
+      },
+    );
+    var body = jsonDecode(response.body);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      print(response.statusCode);
+      return BaseResponseErrorAndMessageOnly.fromJson(body);
+    } else {
+      print(response.statusCode);
+      return BaseResponseErrorAndMessageOnly.fromJson(body);
+    }
+  }
 }

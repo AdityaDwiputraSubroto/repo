@@ -10,6 +10,7 @@ import 'package:repo/services/division_service.dart';
 import 'package:repo/services/user_service.dart';
 import 'package:repo/services/chapter_service.dart';
 import 'package:repo/core/routes/app_routes.dart';
+import 'package:repo/views/widgets/index.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:repo/services/discussion_service.dart';
 import 'package:repo/models/discussion/store_discussion_model.dart';
@@ -84,15 +85,6 @@ class AppController extends GetxController {
       throw Exception(e);
     }
     update();
-  }
-
-  fetchUserFullNameById(int idUser) async {
-    try {
-      var fetchUserById = await userService.fetchUserById(idUser);
-      return fetchUserById.fullName;
-    } catch (e) {
-      throw Exception(e);
-    }
   }
 
   fetchUserById() async {
@@ -173,20 +165,6 @@ class AppController extends GetxController {
     }
   }
 
-  Future<void> deleteCourse(int? idCourse) async {
-    try {
-      final response = await courseService.deleteCourseById(idCourse);
-      if (response['status'] == 'success') {
-        fetchAllCourseAfterDelete();
-      } else {
-        print('gagal');
-      }
-    } catch (e) {
-      throw Exception(e);
-    }
-    update();
-  }
-
   void logout() async {
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
@@ -197,14 +175,20 @@ class AppController extends GetxController {
     sharedPreferences.remove('access-token');
     sharedPreferences.remove('id-user');
     sharedPreferences.remove('id-division');
+    sharedPreferences.remove('division-name');
+    sharedPreferences.remove('password');
     Get.offAllNamed(AppRoutesRepo.login);
   }
 
-  Future<void> StoreDiscussionController(
+  Future<void> storeDiscussionController(
       StoreDiscussionRequest request, int idCourse) async {
     try {
       var response = await discussionService.storeDiscussion(request, idCourse);
-      print(response);
+      if (response.status == 'success') {
+        snackbarRepoSuccess(response.status, response.message);
+      } else {
+        snackbarRepo(response.status, response.message);
+      }
     } catch (e) {
       throw Exception(e);
     }
@@ -221,6 +205,8 @@ class AppController extends GetxController {
       sharedPreferences.setInt('role', userOwnProfile!.idRole!);
       sharedPreferences.setString('username', userOwnProfile!.username!);
       sharedPreferences.setInt('id-division', userOwnProfile!.idDivision!);
+      sharedPreferences.setString(
+          'division-name', userOwnProfile!.division!.divisionName!);
     } catch (e) {
       throw Exception(e);
     }
@@ -228,11 +214,24 @@ class AppController extends GetxController {
 
   Future<List<DiscussionResponse>> searchDiscussionTitle(
       int idCourse, String title) async {
-    print(title);
     try {
       final response =
           await discussionService.searchDiscussion(idCourse, title);
       return response;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<void> deleteDiscussion(int idCourse, int idDiscussion) async {
+    try {
+      var response =
+          await discussionService.deleteDiscussion(idCourse, idDiscussion);
+      if (response.status == 'success') {
+        snackbarRepoSuccess(response.status, response.message);
+      } else {
+        snackbarRepo(response.status, response.message);
+      }
     } catch (e) {
       throw Exception(e);
     }

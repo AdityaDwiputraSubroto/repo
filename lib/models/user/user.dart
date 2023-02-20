@@ -3,9 +3,9 @@ class UserOwnProfile {
   String? username;
   String? fullName;
   String? email;
-  dynamic generation;
-  dynamic phoneNumber;
-  dynamic photoProfile;
+  String? generation;
+  String? phoneNumber;
+  String? photoProfile;
   int? idDivision;
   int? idRole;
   bool? verify;

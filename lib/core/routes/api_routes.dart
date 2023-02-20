@@ -4,10 +4,10 @@ abstract class ApiRoutesRepo {
   static const String forgot = '/password-reset';
   static const String register = '/users/register';
   static const String division = '/divisions';
-  static const String course = '/courses/page/';
+  static const String course = '/courses/mobile?page=';
   static const String discussion = 'discussions/';
-  static String user(int id) {
-    return '$baseUrl/users/${id.toString()}';
+  static String user() {
+    return '$baseUrl/users/profile';
   }
 
   static String chapter(int id) {
@@ -39,11 +39,15 @@ abstract class ApiRoutesRepo {
     return '$baseUrl/courses/$idCourse/chapters/$idChapter/articles/$idArticle';
   }
 
-  static String StoreDiscussion(int idCourse) {
+  static String storeDiscussion(int idCourse) {
     return '$baseUrl/courses/$idCourse/discussions';
   }
 
   static String searchDiscussion(int idCourse, String title) {
     return '$baseUrl/courses/$idCourse/discussions/search?keyword=$title';
+  }
+
+  static String deleteDiscussion(int idCourse, int idDiscussion) {
+    return '$baseUrl/courses/$idCourse/discussions/$idDiscussion';
   }
 }

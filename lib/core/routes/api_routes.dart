@@ -1,5 +1,5 @@
 abstract class ApiRoutesRepo {
-  static const String baseUrl = 'http://10.0.2.2:3000';
+  static const String baseUrl = 'http://192.168.56.1:3000';
   static const String login = '/users/login';
   static const String forgot = '/password-reset';
   static const String register = '/users/register';
@@ -7,7 +7,8 @@ abstract class ApiRoutesRepo {
   static const String course = '/courses/page/';
   static const String discussion = 'discussions/';
   static String user(int id) {
-    return '$baseUrl/users/${id.toString()}';
+    // return '$baseUrl/users/${id.toString()}';
+    return '$baseUrl/users/profile';
   }
 
   static String chapter(int id) {

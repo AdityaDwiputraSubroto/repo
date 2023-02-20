@@ -1,45 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:repo/controllers/forgot_pass_controller.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/routes/routes.dart';
 import 'package:repo/core/utils/formatting.dart';
-import 'package:repo/models/user/forgot_password.dart';
 import 'package:repo/views/widgets/index.dart';
 import 'package:get/get.dart';
+
+import '../../controllers/forgotpass_controller.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
-  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  // State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  nullHandler() {
-    bool isFilled = true;
-    if (_emailController.text == '') {
-      snackbarRepo('Warning!', 'Email Tidak Boleh Kosong!');
-      isFilled = false;
-    }
-    return isFilled;
-  }
+  //
+  final controller = ForgotPasswordController();
+  bool isLoading = false;
+  // nullHandler() {
+  //   bool isFilled = true;
+  //   if (forgotController == '') {
+  //     snackbarRepo('Warning!', 'Email Tidak Boleh Kosong!');
+  //     isFilled = false;
+  //   }
+  //   return isFilled;
+  // }
 
-  emailHandler() {
-    bool emailValidation =
-        RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
-            .hasMatch(_emailController.text);
-    if (!emailValidation) {
-      snackbarRepo('Warning!', 'Email Salah!');
-    }
-    return emailValidation;
-  }
+  // emailHandler() {
+  //   bool emailValidation =
+  //       RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
+  //           .hasMatch(_emailController.text);
+  //   if (!emailValidation) {
+  //     snackbarRepo('Warning!', 'Email Salah!');
+  //   }
+  //   return emailValidation;
+  // }
 
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut(
-      () => ForgotpassController(),
-    );
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -66,7 +66,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   height: 12,
                 ),
                 TextFieldRepo(
-                  textController: _emailController,
+                  textController: controller.emailController,
                   hintText: 'Masukkan Alamat Email',
                 ),
                 const SizedBox(
@@ -76,17 +76,29 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   text: 'Kirim',
                   backgroundColor: ColorsRepo.primaryColor,
                   changeTextColor: false,
-                  onPressed: () {
-                    if (nullHandler()) {
-                      if (emailHandler()) {
-                        ForgotPasswordRequest request = ForgotPasswordRequest(
-                          email: _emailController.text.trim(),
-                        );
-                        Get.find<ForgotpassController>().login(request);
-                      }
-                    }
+                  onPressed: () async {
+                    // if (nullHandler()) {
+                    //   if (emailHandler()) {
+                    //     // ForgotPasswordRequest request = ForgotPasswordRequest(
+                    //     //   email: _emailController.text.trim(),
+                    //     // );
+
+                    //   }
+                    // }
+                    setState(() {
+                      isLoading = true;
+                    });
+                    await controller.forgotPassword();
+
+                    setState(() {
+                      isLoading = false;
+                    });
                   },
                 ),
+                SizedBox(height: 16.0),
+                isLoading
+                    ? const CircularProgressIndicator()
+                    : const SizedBox.shrink(),
                 const SizedBox(
                   height: 10,
                 ),

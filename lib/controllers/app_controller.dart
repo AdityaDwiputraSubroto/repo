@@ -14,6 +14,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:repo/services/discussion_service.dart';
 import 'package:repo/models/discussion/store_discussion_model.dart';
 
+import '../models/user/forgot_password.dart';
+
 class AppController extends GetxController {
   CourseService courseService = CourseService();
   UserService userService = UserService();

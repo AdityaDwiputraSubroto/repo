@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:repo/controllers/forgot_pass_controller.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/routes/routes.dart';
 import 'package:repo/core/utils/formatting.dart';
-import 'package:repo/models/user/forgot_password.dart';
 import 'package:repo/views/widgets/index.dart';
 import 'package:get/get.dart';
 
@@ -12,9 +10,6 @@ class ForgotPasswordMsg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut(
-      () => ForgotpassController(),
-    );
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(

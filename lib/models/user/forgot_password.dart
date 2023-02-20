@@ -2,24 +2,20 @@ class ForgotPasswordResponse {
   ForgotPasswordResponse({
     required this.status,
     required this.message,
-    required this.data,
   });
 
   String status;
   String message;
-  String data;
 
   factory ForgotPasswordResponse.fromJson(Map<String, dynamic> json) =>
       ForgotPasswordResponse(
         status: json['status'],
         message: json['message'],
-        data: json['data'],
       );
 
   Map<String, dynamic> toJson() => {
         'status': status,
         'message': message,
-        'data': data,
       };
 }
 

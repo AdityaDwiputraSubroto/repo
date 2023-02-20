@@ -33,18 +33,6 @@ class UserService extends GetConnect implements GetxService {
     return LoginResponse.fromJson(response.body);
   }
 
-  Future<ForgotPasswordResponse> forgotPassword(
-      String uri, ForgotPasswordRequest body) async {
-    Response response = await post(ApiRoutesRepo.baseUrl + uri, body.toJson(),
-        headers: {'Content-Type': 'application/json; charset=UTF-8'});
-
-    if (response.statusCode != 201) {
-      throw Error();
-    }
-
-    return ForgotPasswordResponse.fromJson(response.body);
-  }
-
   Future<BaseResponseErrorAndMessageOnly> register(
       UserRegisterRequest request) async {
     var response = await http.post(

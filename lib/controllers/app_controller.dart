@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:repo/models/course/course_model.dart';
@@ -22,18 +26,13 @@ class AppController extends GetxController {
   UserService userService = UserService();
   DivisionService divisionService = DivisionService();
   ChapterService chapterService = ChapterService();
-
   DiscussionService discussionService = DiscussionService();
-
   DivisionWrapper? allDivisionList;
-  UserOwnProfile? userById;
   UserOwnProfile? userOwnProfile;
   final allCourseList = <CourseResponse>[].obs;
   final allChapterList = <ChapterResponse>[].obs;
   final allChaptersAndTitleArticlesById = <ChapterAndArticleResponse>[].obs;
-
   final discussionByID = <DiscussionResponse>[].obs;
-
   List<CourseResponse> allCourse = [];
   var isLoading = false.obs;
   int page = 1;
@@ -42,7 +41,6 @@ class AppController extends GetxController {
   void onInit() {
     fetchUserOwnProfile();
     fetchAllDivisions();
-    fetchUserById();
     super.onInit();
   }
 
@@ -89,24 +87,12 @@ class AppController extends GetxController {
     update();
   }
 
-  fetchUserById() async {
-    try {
-      final SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
-      var idUser = sharedPreferences.getInt('id-user');
-      userById = await userService.fetchUserById(idUser!);
-    } catch (e) {
-      throw Exception(e);
-    }
-  }
-
   Future<List<ChapterResponse>> fetchAllChapter(int idCourse) async {
     try {
       final allChapter = await chapterService.getAllChapter(idCourse);
       if (allChapter.isNotEmpty) {
         allChapterList.assignAll(allChapter);
       }
-      print(allChapterList);
       return allChapterList;
     } catch (e) {
       throw Exception(e);
@@ -176,7 +162,6 @@ class AppController extends GetxController {
     sharedPreferences.remove('refresh-token');
     sharedPreferences.remove('access-token');
     sharedPreferences.remove('id-user');
-    sharedPreferences.remove('id-division');
     sharedPreferences.remove('division-name');
     sharedPreferences.remove('password');
     Get.offAllNamed(AppRoutesRepo.login);
@@ -203,12 +188,11 @@ class AppController extends GetxController {
       var accessToken = sharedPreferences.getString('access-token');
       Map<String, dynamic> decodedToken = JwtDecoder.decode(accessToken!);
       sharedPreferences.setInt('id-user', decodedToken['id']);
-      userOwnProfile = await userService.fetchUserById(decodedToken['id']);
+      userOwnProfile = await userService.fetchUserById();
       sharedPreferences.setInt('role', userOwnProfile!.idRole!);
       sharedPreferences.setString('username', userOwnProfile!.username!);
-      sharedPreferences.setInt('id-division', userOwnProfile!.idDivision!);
       sharedPreferences.setString(
-          'division-name', userOwnProfile!.division!.divisionName!);
+          'division-name', userOwnProfile!.divisionName!);
     } catch (e) {
       throw Exception(e);
     }
@@ -236,6 +220,46 @@ class AppController extends GetxController {
       }
     } catch (e) {
       throw Exception(e);
+    }
+  }
+
+  Future editProfileWithImage(
+      BuildContext context,
+      String img,
+      String name,
+      String username,
+      String email,
+      String division,
+      String generation,
+      String noTelp) async {
+    try {
+      final response = await userService.putEditProfileWithImage(
+          img, name, username, email, division, generation, noTelp);
+      if (response.status == 'success') {
+        isLoading.value = true;
+        snackbarRepoSuccess(response.status, response.message);
+        fetchUserOwnProfile();
+        Navigator.of(context).pushReplacementNamed(
+          '/ubahProfil',
+        );
+        isLoading.value = false;
+      } else {
+        snackbarRepo(response.status, response.message);
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future changePasswordUser(String password) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final response = await userService.changePassword(password);
+
+    if (response.status == 'success') {
+      sharedPreferences.setString('password', password);
+      snackbarRepoSuccess(response.status, response.message);
+    } else {
+      snackbarRepo(response.status, response.message);
     }
   }
 }

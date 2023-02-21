@@ -108,7 +108,7 @@ class _ProfileNavigatorState extends State<ProfileNavigator> {
               case '/ubahProfil':
                 return const EditProfileScreen();
               case '/ubahPassword':
-                return ChangePasswordScreen();
+                return const ChangePasswordScreen();
               default:
                 return const ProfileScreen();
             }

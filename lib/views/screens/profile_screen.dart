@@ -19,6 +19,11 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final appController = Get.find<AppController>();
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -42,7 +47,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 dense: true,
                 leading: ClipOval(
                   child: CachedNetworkImage(
-                    imageUrl: '',
+                    imageUrl: appController.userOwnProfile!.photoProfile!,
                     imageBuilder: (context, imageProvider) => Container(
                       height: 50,
                       width: 50,
@@ -68,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 title: Text(
-                  appController.userById!.fullName!,
+                  appController.userOwnProfile!.fullName!,
                   maxLines: 2,
                   overflow: TextOverflow.clip,
                   style: const TextStyle(
@@ -77,9 +82,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 subtitle: Text(
-                  appController.allDivisionList!.data!
-                      .elementAt(appController.userById!.idDivision! - 1)
-                      .divisionName!,
+                  appController.userOwnProfile!.divisionName ?? '',
                   maxLines: 1,
                   style: const TextStyle(
                     fontSize: 16,

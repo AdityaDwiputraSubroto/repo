@@ -551,7 +551,7 @@ class ChangePasswordScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pushNamedAndRemoveUntil(
-              '/',
+              '/ubahProfil',
               (route) => false,
             );
           },

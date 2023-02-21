@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:repo/core/routes/app_routes.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
 import 'package:repo/views/screens/discussion_list_screen.dart';
@@ -38,12 +39,24 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.of(context).pushReplacementNamed(
+              AppRoutesRepo.diskusimateri,
+              arguments: {
+                'courseId': idCourse,
+                'judul': title,
+              },
+            );
+          },
+        ),
         backgroundColor: hexToColor(ColorsRepo.primaryColor),
         title: const Text('Tambah Pertanyaan'),
         actions: [
           IconButton(
             onPressed: () {
-              print('send message');
               if (nullHandler()) {
                 StoreDiscussionRequest request = StoreDiscussionRequest(
                   title: judulController.text.trim(),
@@ -51,14 +64,8 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
                 );
                 Get.find<AppController>()
                     .storeDiscussionController(request, idCourse);
-                Get.back();
-                Get.off(
-                  () => const DiscussionListScreen(),
-                  arguments: {
-                    'courseId': idCourse,
-                    'judul': title,
-                  },
-                );
+                deskripsiController.text = '';
+                judulController.text = '';
               }
             },
             icon: const Icon(Icons.send),

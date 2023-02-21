@@ -36,8 +36,6 @@ class _DiscussionListScreenState extends State<DiscussionListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('courseid : $courseid');
-    debugPrint('title : $title');
     return Scaffold(
       backgroundColor: hexToColor(ColorsRepo.lightGray),
       resizeToAvoidBottomInset: false,
@@ -142,7 +140,8 @@ class _DiscussionListScreenState extends State<DiscussionListScreen> {
                                             borderRadius:
                                                 BorderRadius.circular(2),
                                             child: CachedNetworkImage(
-                                              imageUrl: '',
+                                              imageUrl:
+                                                  '${snapshot.data[index].user.photoProfile}',
                                               imageBuilder:
                                                   (context, imageProvider) =>
                                                       Container(
@@ -209,53 +208,33 @@ class _DiscussionListScreenState extends State<DiscussionListScreen> {
                                           ),
                                         ],
                                       ),
-                                      PopupMenuButton(
-                                        padding: const EdgeInsets.all(0),
-                                        itemBuilder: (BuildContext context) =>
-                                            idUser ==
-                                                    snapshot.data![index].idUser
-                                                ? [
-                                                    PopupMenuItem(
-                                                      value: '',
-                                                      child: const Text(
-                                                          'Laporkan Pertanyaan'),
-                                                      onTap: () {
-                                                        print(
-                                                            'Laporkan Pertanyaan');
-                                                      },
-                                                    ),
-                                                    PopupMenuItem(
-                                                      value: '',
-                                                      child:
-                                                          const Text('Hapus'),
-                                                      onTap: () {
-                                                        print(courseid);
-                                                        Future.delayed(
-                                                          const Duration(
-                                                              seconds: 0),
-                                                          () => showAlertDialog(
-                                                            context,
-                                                            courseid,
-                                                            snapshot
-                                                                .data[index].id,
-                                                            title,
-                                                          ),
-                                                        );
-                                                      },
-                                                    ),
-                                                  ]
-                                                : [
-                                                    PopupMenuItem(
-                                                      value: '',
-                                                      child: const Text(
-                                                          'Laporkan Pertanyaan'),
-                                                      onTap: () {
-                                                        print(
-                                                            'Laporkan Pertanyaan');
-                                                      },
-                                                    ),
-                                                  ],
-                                      )
+                                      idUser == snapshot.data![index].idUser
+                                          ? PopupMenuButton(
+                                              padding: const EdgeInsets.all(0),
+                                              itemBuilder:
+                                                  (BuildContext context) => [
+                                                PopupMenuItem(
+                                                  value: '',
+                                                  child: const Text('Hapus'),
+                                                  onTap: () {
+                                                    Future.delayed(
+                                                      const Duration(
+                                                          seconds: 0),
+                                                      () =>
+                                                          deleteOverlayDiskusi(
+                                                        context,
+                                                        courseid,
+                                                        snapshot.data[index].id,
+                                                        title,
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ],
+                                            )
+                                          : const SizedBox(
+                                              height: 45,
+                                            ),
                                     ],
                                   ),
                                   const SizedBox(

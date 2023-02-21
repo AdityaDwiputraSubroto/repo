@@ -6,9 +6,8 @@ import '../../core/routes/app_routes.dart';
 import '../../core/shared/colors.dart';
 import '../../core/utils/formatting.dart';
 
-showAlertDialog(
+deleteOverlayDiskusi(
     BuildContext context, int idCourse, int idDiscussion, String title) {
-  print(idCourse);
   // set up the buttons
   Widget cancelButton = TextButton(
     child: Text(
@@ -29,19 +28,22 @@ showAlertDialog(
       ),
     ),
     onPressed: () {
-      Get.find<AppController>().deleteDiscussion(idCourse, idDiscussion);
-      Get.back();
-      Get.back();
-      Get.toNamed(AppRoutesRepo.diskusimateri, arguments: {
-        'courseId': idCourse,
-        'judul': title,
-      });
+      Get.find<AppController>()
+          .deleteDiscussion(context, idCourse, idDiscussion);
+      Navigator.pop(context);
+      Navigator.of(context).pushReplacementNamed(
+        AppRoutesRepo.diskusimateri,
+        arguments: {
+          'courseId': idCourse,
+          'judul': title,
+        },
+      );
     },
   );
 
   // set up the AlertDialog
   AlertDialog alert = AlertDialog(
-    content: const Text('Hapus Komentar? '),
+    content: const Text('Hapus Diskusi ? '),
     actions: [
       cancelButton,
       deleteButton,

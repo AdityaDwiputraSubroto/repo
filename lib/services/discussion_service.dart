@@ -85,8 +85,8 @@ class DiscussionService {
       //throw Exception('Failed to store discussion');
       throw Exception('Failed to store discussion');
     } else {
-      var body = jsonDecode(response.body);
-      return "Store Discussion Success";
+      var body = json.decode(response.body);
+      return BaseResponseErrorAndMessageOnly.fromJson(body);
     }
   }
 

@@ -415,7 +415,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         onChanged: (selectedItem) {
                           setState(() {
                             divisionController = selectedItem ?? division;
-                            print(divisionController);
                           });
                         },
                       ),
@@ -469,7 +468,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         onChanged: (selectedItem) {
                           setState(() {
                             generationController = selectedItem ?? generation;
-                            print(generationController);
                           });
                         },
                       ),

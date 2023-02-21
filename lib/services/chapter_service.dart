@@ -58,26 +58,6 @@ class ChapterService {
     return data.map((e) => ChapterAndArticleResponse.fromJson(e)).toList();
   }
 
-  Future<String> deleteChapter(int idCourse, int idChapter) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    var accesToken = sharedPreferences.getString('access-token');
-    Uri url = Uri.parse(ApiRoutesRepo.deleteChapter(idCourse, idChapter));
-    final response = await client.delete(
-      url,
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $accesToken',
-      },
-    );
-    if (response.statusCode == 200) {
-      print(response.body);
-      return "success";
-    } else {
-      //throw Exception('Failed to load chapter');
-      return "failed";
-    }
-  }
-
   Future getArticleByIdChapterAndIdArticle(
       int idCourse, int idChapter, int idArticle) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();

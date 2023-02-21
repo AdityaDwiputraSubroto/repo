@@ -157,7 +157,7 @@ class AppController extends GetxController {
     }
       catch(e){
         throw Exception(e);
-      }
+      }  
   }
 
   Future<List<CourseResponse>> searchCourseByTitle(String title) async {

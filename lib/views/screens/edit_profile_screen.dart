@@ -30,6 +30,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? email;
   String? noTelp;
   String? division;
+  String? generation;
+  File? _image;
+  String? image;
   var password;
   late TextEditingController nameController = TextEditingController(text: name);
   late TextEditingController usernameController =
@@ -38,6 +41,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       TextEditingController(text: email);
   late TextEditingController noTelpController =
       TextEditingController(text: noTelp);
+
   @override
   void initState() {
     SharedPreferences.getInstance().then((value) {
@@ -45,13 +49,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         password = value.getString('password')!;
       });
     });
-    appController.fetchUserById();
-    name = appController.userById!.fullName!;
-    username = appController.userById!.username!;
-    email = appController.userById!.email!;
-    photoProfile = appController.userById!.photoProfile ?? '';
-    noTelp = appController.userById!.phoneNumber ?? '';
-    division = appController.userById!.division!.divisionName ?? '';
+    appController.fetchUserOwnProfile();
+    name = appController.userOwnProfile!.fullName!;
+    username = appController.userOwnProfile!.username!;
+    email = appController.userOwnProfile!.email!;
+    photoProfile = appController.userOwnProfile!.photoProfile ?? '';
+    noTelp = appController.userOwnProfile!.phoneNumber ?? '';
+    generation = appController.userOwnProfile!.generation;
+    division = appController.userOwnProfile!.divisionName ?? '';
+
     super.initState();
   }
 
@@ -64,12 +70,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     'Project Manager'
   ];
 
+  late String? generationController = generation;
+  List<String> generasi = <String>[
+    '2020',
+    '2021',
+    '2022',
+    '2023',
+    '2024',
+  ];
+
   inputHandler() {
     bool isFilled = true;
     if (emailController.text == '' ||
         usernameController.text == '' ||
         nameController.text == '') {
       snackbarRepo('Warning!', 'Data Tidak Boleh Kosong!');
+      isFilled = false;
+    } else if (_image == null) {
+      snackbarRepo('Warning!', 'Foto Profil Masih Foto Yang Lama !!');
       isFilled = false;
     } else if (!RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
@@ -85,30 +103,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     } else if (divisionController == null) {
       snackbarRepo('Warning!', 'Divisi Harus Diisi !');
       isFilled = false;
+    } else if (noTelpController.text == '') {
+      isFilled = false;
     } else if (noTelpController.text != '') {
       if (!RegExp('[0-9]').hasMatch(noTelpController.text)) {
         snackbarRepo('Warning!', 'Nomor Telepon Hanya Boleh Angka !');
         isFilled = false;
       }
-    } else if (noTelpController.text == '') {
-      isFilled = true;
     }
     return isFilled;
   }
 
-  File? _image;
-
   Future _pickImage(ImageSource source) async {
     try {
-      final image = await ImagePicker().pickImage(source: source);
-      if (image == null) return;
-      File? img = File(image.path);
+      final image2 = await ImagePicker().pickImage(source: source);
+      if (image2 == null) return;
+      File? img = File(image2.path);
       setState(() {
         _image = img;
+        image = _image!.path;
         Navigator.of(context).pop();
       });
     } on PlatformException catch (e) {
-      print(e);
       Navigator.of(context).pop();
     }
   }
@@ -165,19 +181,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         _pickImage(ImageSource.camera);
                       },
                     ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    ButtonRepo(
-                      text: 'Hapus Gambar',
-                      backgroundColor: ColorsRepo.primaryColor,
-                      onPressed: () {
-                        setState(() {
-                          _image = null;
-                          Navigator.of(context).pop();
-                        });
-                      },
-                    ),
                   ],
                 ),
               ),
@@ -192,6 +195,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              '/',
+              (route) => false,
+            );
+          },
+        ),
         title: const Padding(
           padding: EdgeInsets.only(top: 4),
           child: Text('Ubah Profil'),
@@ -204,235 +216,304 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             onPressed: () {
               if (inputHandler()) {
-                print(emailController.text);
-                print(usernameController.text);
-                print(noTelpController.text);
-                print(divisionController);
+                Get.find<AppController>().editProfileWithImage(
+                  context,
+                  image!,
+                  nameController.text,
+                  usernameController.text,
+                  emailController.text,
+                  divisionController!,
+                  generationController!,
+                  noTelpController.text,
+                );
               }
             },
             icon: const Icon(Icons.save),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-          margin: const EdgeInsets.only(bottom: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    _showSelectPhotoOptions(context);
-                  },
-                  child: Center(
-                    child: Container(
-                      height: 100.0,
-                      width: 100.0,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.grey.withOpacity(0.2),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                          ),
-                        ],
-                      ),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Center(
-                            child: _image == null
-                                ? CachedNetworkImage(
-                                    imageUrl: photoProfile!,
-                                    imageBuilder: (context, imageProvider) {
-                                      return Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(200),
-                                          image: DecorationImage(
-                                            image: imageProvider,
-                                            fit: BoxFit.cover,
+      body: appController.isLoading.value
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                margin: const EdgeInsets.only(bottom: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: () {
+                          _showSelectPhotoOptions(context);
+                        },
+                        child: Center(
+                          child: Container(
+                            height: 100.0,
+                            width: 100.0,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.grey.withOpacity(0.2),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                ),
+                              ],
+                            ),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Center(
+                                  child: _image == null
+                                      ? CachedNetworkImage(
+                                          imageUrl: photoProfile!,
+                                          imageBuilder:
+                                              (context, imageProvider) {
+                                            return Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(200),
+                                                image: DecorationImage(
+                                                  image: imageProvider,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          placeholder: (context, url) => Icon(
+                                            Icons.person,
+                                            size: 70,
+                                            color:
+                                                Colors.black.withOpacity(0.2),
                                           ),
+                                          errorWidget: (context, url, error) =>
+                                              Icon(
+                                            Icons.person,
+                                            size: 70,
+                                            color:
+                                                Colors.black.withOpacity(0.2),
+                                          ),
+                                        )
+                                      : CircleAvatar(
+                                          backgroundImage: FileImage(_image!),
+                                          radius: 200.0,
                                         ),
-                                      );
-                                    },
-                                    placeholder: (context, url) => Icon(
-                                      Icons.person,
-                                      size: 70,
-                                      color: Colors.black.withOpacity(0.2),
-                                    ),
-                                    errorWidget: (context, url, error) => Icon(
-                                      Icons.person,
-                                      size: 70,
-                                      color: Colors.black.withOpacity(0.2),
-                                    ),
-                                  )
-                                : CircleAvatar(
-                                    backgroundImage: FileImage(_image!),
-                                    radius: 200.0,
-                                  ),
+                                ),
+                                const Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.white,
+                                  size: 28,
+                                ),
+                              ],
+                            ),
                           ),
-                          const Icon(
-                            Icons.camera_alt,
-                            color: Colors.white,
-                            size: 28,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Text(
-                'Nama Lengkap',
-                style: TextStyle(
-                  color: hexToColor(ColorsRepo.primaryColor),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(
-                height: 6,
-              ),
-              TextFieldRepo(
-                textController: nameController,
-                hintText: 'Nama',
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Text(
-                'Username',
-                style: TextStyle(
-                  color: hexToColor(ColorsRepo.primaryColor),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(
-                height: 6,
-              ),
-              TextFieldRepo(
-                textController: usernameController,
-                hintText: 'Username',
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Text(
-                'Email',
-                style: TextStyle(
-                  color: hexToColor(ColorsRepo.primaryColor),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(
-                height: 6,
-              ),
-              TextFieldRepo(
-                textController: emailController,
-                hintText: 'Email',
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Text(
-                'Divisi',
-                style: TextStyle(
-                  color: hexToColor(ColorsRepo.primaryColor),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(
-                height: 6,
-              ),
-              SizedBox(
-                height: 50,
-                width: MediaQuery.of(context).size.width,
-                child: DropdownSearch<String>(
-                  popupProps: const PopupProps.menu(
-                    fit: FlexFit.loose,
-                  ),
-                  dropdownButtonProps: DropdownButtonProps(
-                    color: hexToColor(ColorsRepo.primaryColor),
-                    icon: const Icon(Icons.keyboard_arrow_down),
-                  ),
-                  dropdownDecoratorProps: DropDownDecoratorProps(
-                    dropdownSearchDecoration: InputDecoration(
-                      filled: true,
-                      fillColor: hexToColor(ColorsRepo.secondaryColor),
-                      contentPadding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
-                    ),
-                  ),
-                  items: divisi,
-                  dropdownBuilder: (context, selectedItem) {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Text(
-                        selectedItem ?? '$divisionController',
-                        style: const TextStyle(
-                          color: Colors.black54,
-                          fontSize: 16,
                         ),
                       ),
-                    );
-                  },
-                  onChanged: (selectedItem) {
-                    setState(() {
-                      divisionController = selectedItem ?? division;
-                      print(divisionController);
-                    });
-                  },
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Text(
-                'Nomor Telepon',
-                style: TextStyle(
-                  color: hexToColor(ColorsRepo.primaryColor),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(
-                height: 6,
-              ),
-              TextFieldRepo(
-                textController: noTelpController,
-                hintText: 'Nomor Telepon',
-                isNumber: true,
-              ),
-              const SizedBox(
-                height: 12,
-              ),
-              ButtonRepo(
-                text: 'Ubah Password',
-                backgroundColor: ColorsRepo.lightGray,
-                onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/ubahPassword',
-                    arguments: Password(
-                      password,
                     ),
-                  );
-                },
-                changeTextColor: true,
-              )
-            ],
-          ),
-        ),
-      ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      'Nama Lengkap',
+                      style: TextStyle(
+                        color: hexToColor(ColorsRepo.primaryColor),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    TextFieldRepo(
+                      textController: nameController,
+                      hintText: 'Nama',
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      'Username',
+                      style: TextStyle(
+                        color: hexToColor(ColorsRepo.primaryColor),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    TextFieldRepo(
+                      textController: usernameController,
+                      hintText: 'Username',
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      'Email',
+                      style: TextStyle(
+                        color: hexToColor(ColorsRepo.primaryColor),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    TextFieldRepo(
+                      textController: emailController,
+                      hintText: 'Email',
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      'Divisi',
+                      style: TextStyle(
+                        color: hexToColor(ColorsRepo.primaryColor),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    SizedBox(
+                      height: 50,
+                      width: MediaQuery.of(context).size.width,
+                      child: DropdownSearch<String>(
+                        popupProps: const PopupProps.menu(
+                          fit: FlexFit.loose,
+                        ),
+                        dropdownButtonProps: DropdownButtonProps(
+                          color: hexToColor(ColorsRepo.primaryColor),
+                          icon: const Icon(Icons.keyboard_arrow_down),
+                        ),
+                        dropdownDecoratorProps: DropDownDecoratorProps(
+                          dropdownSearchDecoration: InputDecoration(
+                            filled: true,
+                            fillColor: hexToColor(ColorsRepo.secondaryColor),
+                            contentPadding:
+                                const EdgeInsets.fromLTRB(12, 10, 10, 10),
+                          ),
+                        ),
+                        items: divisi,
+                        dropdownBuilder: (context, selectedItem) {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Text(
+                              selectedItem ?? '$divisionController',
+                              style: const TextStyle(
+                                color: Colors.black54,
+                                fontSize: 16,
+                              ),
+                            ),
+                          );
+                        },
+                        onChanged: (selectedItem) {
+                          setState(() {
+                            divisionController = selectedItem ?? division;
+                            print(divisionController);
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      'Angkatan',
+                      style: TextStyle(
+                        color: hexToColor(ColorsRepo.primaryColor),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    SizedBox(
+                      height: 50,
+                      width: MediaQuery.of(context).size.width,
+                      child: DropdownSearch<String>(
+                        popupProps: const PopupProps.menu(
+                          fit: FlexFit.loose,
+                        ),
+                        dropdownButtonProps: DropdownButtonProps(
+                          color: hexToColor(ColorsRepo.primaryColor),
+                          icon: const Icon(Icons.keyboard_arrow_down),
+                        ),
+                        dropdownDecoratorProps: DropDownDecoratorProps(
+                          dropdownSearchDecoration: InputDecoration(
+                            filled: true,
+                            fillColor: hexToColor(ColorsRepo.secondaryColor),
+                            contentPadding:
+                                const EdgeInsets.fromLTRB(12, 10, 10, 10),
+                          ),
+                        ),
+                        items: generasi,
+                        dropdownBuilder: (context, selectedItem) {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Text(
+                              selectedItem ?? '$generationController',
+                              style: const TextStyle(
+                                color: Colors.black54,
+                                fontSize: 16,
+                              ),
+                            ),
+                          );
+                        },
+                        onChanged: (selectedItem) {
+                          setState(() {
+                            generationController = selectedItem ?? generation;
+                            print(generationController);
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      'Nomor Telepon',
+                      style: TextStyle(
+                        color: hexToColor(ColorsRepo.primaryColor),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    TextFieldRepo(
+                      textController: noTelpController,
+                      hintText: 'Nomor Telepon',
+                      isNumber: true,
+                    ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    ButtonRepo(
+                      text: 'Ubah Password',
+                      backgroundColor: ColorsRepo.lightGray,
+                      onPressed: () {
+                        Navigator.pushNamed(
+                          context,
+                          '/ubahPassword',
+                          arguments: Password(
+                            password,
+                          ),
+                        );
+                      },
+                      changeTextColor: true,
+                    )
+                  ],
+                ),
+              ),
+            ),
     );
   }
 }
@@ -466,6 +547,15 @@ class ChangePasswordScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              '/ubahProfil',
+              (route) => false,
+            );
+          },
+        ),
         title: const Text('Ganti Password'),
         backgroundColor: hexToColor(ColorsRepo.primaryColor),
         actions: [
@@ -475,7 +565,9 @@ class ChangePasswordScreen extends StatelessWidget {
             ),
             onPressed: () {
               if (handler()) {
-                print('oke');
+                Get.find<AppController>()
+                    .changePasswordUser(changePasswordController.text);
+                Get.find<AppController>().fetchUserOwnProfile();
               }
             },
             icon: const Icon(Icons.save),

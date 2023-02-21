@@ -43,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     appController.fetchAllCourse();
+    appController.fetchUserOwnProfile();
     scrollController.addListener(_scrollListener);
     super.initState();
   }

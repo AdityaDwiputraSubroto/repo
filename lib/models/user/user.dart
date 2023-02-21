@@ -6,11 +6,10 @@ class UserOwnProfile {
   String? generation;
   String? phoneNumber;
   String? photoProfile;
-  int? idDivision;
-  int? idRole;
+  String? createdAt;
   bool? verify;
-  Role? role;
-  Division? division;
+  int? idRole;
+  String? divisionName;
 
   UserOwnProfile(
       {this.id,
@@ -20,11 +19,10 @@ class UserOwnProfile {
       this.generation,
       this.phoneNumber,
       this.photoProfile,
-      this.idDivision,
-      this.idRole,
+      this.createdAt,
       this.verify,
-      this.role,
-      this.division});
+      this.idRole,
+      this.divisionName});
 
   UserOwnProfile.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -34,12 +32,10 @@ class UserOwnProfile {
     generation = json['generation'];
     phoneNumber = json['phoneNumber'];
     photoProfile = json['photoProfile'];
-    idDivision = json['id_division'];
-    idRole = json['id_role'];
+    createdAt = json['createdAt'];
     verify = json['verify'];
-    role = json['Role'] != null ? Role.fromJson(json['Role']) : null;
-    division =
-        json['Division'] != null ? Division.fromJson(json['Division']) : null;
+    idRole = json['id_role'];
+    divisionName = json['divisionName'];
   }
 
   Map<String, dynamic> toJson() {
@@ -51,46 +47,9 @@ class UserOwnProfile {
     data['generation'] = generation;
     data['phoneNumber'] = phoneNumber;
     data['photoProfile'] = photoProfile;
-    data['id_division'] = idDivision;
-    data['id_role'] = idRole;
+    data['createdAt'] = createdAt;
     data['verify'] = verify;
-    if (role != null) {
-      data['Role'] = role!.toJson();
-    }
-    if (division != null) {
-      data['Division'] = division!.toJson();
-    }
-    return data;
-  }
-}
-
-class Role {
-  String? roleName;
-
-  Role({this.roleName});
-
-  Role.fromJson(Map<String, dynamic> json) {
-    roleName = json['roleName'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['roleName'] = roleName;
-    return data;
-  }
-}
-
-class Division {
-  String? divisionName;
-
-  Division({this.divisionName});
-
-  Division.fromJson(Map<String, dynamic> json) {
-    divisionName = json['divisionName'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id_role'] = idRole;
     data['divisionName'] = divisionName;
     return data;
   }

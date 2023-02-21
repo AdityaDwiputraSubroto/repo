@@ -1,11 +1,13 @@
 abstract class ApiRoutesRepo {
-  static const String baseUrl = 'http://192.168.56.1:3000';
+  static const String baseUrl = 'http://10.0.2.2:3000';
   static const String login = '/users/login';
   static const String forgot = '/password-reset';
   static const String register = '/users/register';
   static const String division = '/divisions';
   static const String course = '/courses/mobile?page=';
   static const String discussion = 'discussions/';
+  static const String editProfile = '/users/update';
+  static const String changePassword = '/users/changepassword';
   static String user() {
     return '$baseUrl/users/profile';
   }

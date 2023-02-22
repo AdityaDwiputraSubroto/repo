@@ -45,14 +45,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                   return SingleChildScrollView(
                     child: Html(
                       data: '''${snapshot.data['id']}
-                    ${snapshot.data['body']} ${snapshot.data['body']} 
-                    ${snapshot.data['body']} ${snapshot.data['body']}
-                    ${snapshot.data['body']} ${snapshot.data['body']} 
-                    ${snapshot.data['body']}${snapshot.data['body']}
-                    ${snapshot.data['body']}${snapshot.data['body']}
-                    ${snapshot.data['body']}${snapshot.data['body']}
-                    ${snapshot.data['body']}${snapshot.data['body']}
-                    ${snapshot.data['body']}${snapshot.data['body']}''',
+                    ${snapshot.data['body']}''',
                       style: {
                         'body': Style(
                           fontSize: FontSize(18.0),
@@ -195,7 +188,6 @@ class ArticleScreenOnTap extends StatelessWidget {
           idArticle!,
         ),
         builder: (context, snapshot) {
-          print(snapshot.data);
           if (snapshot.data == null) {
             return const Center(
               child: CircularProgressIndicator(),
@@ -204,14 +196,7 @@ class ArticleScreenOnTap extends StatelessWidget {
             return SingleChildScrollView(
               child: Html(
                 data: '''${snapshot.data['id']}
-                    ${snapshot.data['body']} ${snapshot.data['body']} 
-                    ${snapshot.data['body']} ${snapshot.data['body']}
-                    ${snapshot.data['body']} ${snapshot.data['body']} 
-                    ${snapshot.data['body']}${snapshot.data['body']}
-                    ${snapshot.data['body']}${snapshot.data['body']}
-                    ${snapshot.data['body']}${snapshot.data['body']}
-                    ${snapshot.data['body']}${snapshot.data['body']}
-                    ${snapshot.data['body']}${snapshot.data['body']}''',
+                    ${snapshot.data['body']} ''',
                 style: {
                   'body': Style(
                     fontSize: FontSize(18.0),

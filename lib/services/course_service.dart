@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:http_interceptor/http_interceptor.dart';
@@ -31,7 +32,7 @@ class CourseService {
     if (response.statusCode == 200) {
       data = json.decode(response.body)['data'];
     } else {
-      print('Failed to load course');
+      debugPrint('Failed to load course');
     }
     return data.map((e) => CourseResponse.fromJson(e)).toList();
   }
@@ -48,14 +49,14 @@ class CourseService {
         'Authorization': 'Bearer $accesToken',
       },
     );
-    print('getCourseByTitle ${response.statusCode}');
+    debugPrint('getCourseByTitle ${response.statusCode}');
     if (response.statusCode == 200) {
       data = json.decode(response.body)['data'];
     } else {
       Future.delayed(const Duration(seconds: 10), () {
         getCourseByTitle(title);
       });
-      print('Failed to load course');
+      debugPrint('Failed to load course');
     }
     return data.map((e) => CourseResponse.fromJson(e)).toList();
   }
@@ -77,7 +78,7 @@ class CourseService {
   }
 
   static Future refreshToken() async {
-    print('refresh token ni boss');
+    debugPrint('refresh token ni boss');
 
     try {
       SharedPreferences sharedPreferences =

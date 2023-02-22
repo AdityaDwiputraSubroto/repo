@@ -14,12 +14,10 @@ class LoginController extends GetxController {
     try {
       var response = await service.login(userLoginRequest);
       if (response.status == 'success') {
-        print('success');
         await pref.setBool('logged-in', true);
         await pref.setString('refresh-token', response.data.user.refreshToken);
         await pref.setString('access-token', response.data.user.accessToken);
         await pref.setString('password', userLoginRequest.password);
-        print(response.data.user.accessToken);
         Get.offAllNamed(AppRoutesRepo.bottomNavigator);
       }
       if (response.status == 'error') {

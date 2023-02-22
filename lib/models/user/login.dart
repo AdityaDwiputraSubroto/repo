@@ -109,11 +109,11 @@ class Data {
   User user;
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        user: User.fromJson(json["user"]),
+        user: User.fromJson(json['user']),
       );
 
   Map<String, dynamic> toJson() => {
-        "user": user.toJson(),
+        'user': user.toJson(),
       };
 }
 
@@ -127,12 +127,12 @@ class User {
   String refreshToken;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-        accessToken: json["accessToken"],
-        refreshToken: json["refreshToken"],
+        accessToken: json['accessToken'],
+        refreshToken: json['refreshToken'],
       );
 
   Map<String, dynamic> toJson() => {
-        "accessToken": accessToken,
-        "refreshToken": refreshToken,
+        'accessToken': accessToken,
+        'refreshToken': refreshToken,
       };
 }

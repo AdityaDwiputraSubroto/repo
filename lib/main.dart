@@ -13,15 +13,9 @@ void main() async {
   final pref = await SharedPreferences.getInstance();
   var initialRoute = AppRoutesRepo.login;
   final loggedIn = pref.getBool('logged-in') ?? false;
-  print(loggedIn);
   if (loggedIn) {
-    print(loggedIn);
     initialRoute = AppRoutesRepo.bottomNavigator;
-    print(initialRoute);
     try {
-      print(pref.getString('access-token'));
-      print(pref.getString('username'));
-      print(pref.getString('refresh-token'));
       var resp = await http.post(
         Uri.parse('${ApiRoutesRepo.baseUrl}/users/refresh-token'),
         body: {
@@ -32,10 +26,7 @@ void main() async {
           'Authorization': 'Bearer ${pref.getString('access-token')}',
         },
       );
-      print(resp);
-      print(initialRoute);
       var body = jsonDecode(resp.body);
-      print(body);
       if (body['status'] == 'success') {
         pref.setString('access-token', body['data']['accessToken']);
       } else {

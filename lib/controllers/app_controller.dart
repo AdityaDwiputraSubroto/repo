@@ -225,7 +225,8 @@ class AppController extends GetxController {
     }
   }
 
-  Future<void> deleteDiscussion(int idCourse, int idDiscussion) async {
+  Future<void> deleteDiscussion(
+      BuildContext context, int idCourse, int idDiscussion) async {
     try {
       var response =
           await discussionService.deleteDiscussion(idCourse, idDiscussion);

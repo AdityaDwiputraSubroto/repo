@@ -26,13 +26,12 @@ class ForgotPasswordController {
 
     try {
       final response = await ForgotPasswordService.forgotPassword(request);
-      if (response.status == "success") {
+      if (response.status == 'success') {
         Get.offNamed(AppRoutesRepo.forgotPasswordMassage);
       } else {
-        throw Exception("Gagal melakukan request: ${response.message}");
+        throw Exception('Gagal melakukan request: ${response.message}');
       }
     } catch (e) {
-      print(e.toString());
       snackbarRepo('Error', e.toString());
     }
   }

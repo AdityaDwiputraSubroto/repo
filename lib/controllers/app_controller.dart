@@ -144,6 +144,22 @@ class AppController extends GetxController {
     }
   }
 
+  Future fetchDiscusionByDiscussionId(int idCourse, int idDiscussion)async{
+    try{
+      final res = await discussionService.getDiscussionByDiscussionId(idCourse, idDiscussion);
+      print("fetchdiscussionbyiddisuccion\n\n"+res.toString());
+      if(res.status=='success'){
+        return res;
+      }
+      else{
+        return null;
+      }
+    }
+      catch(e){
+        throw Exception(e);
+      }  
+  }
+
   Future<List<CourseResponse>> searchCourseByTitle(String title) async {
     try {
       final resultCourse = await courseService.getCourseByTitle(title);

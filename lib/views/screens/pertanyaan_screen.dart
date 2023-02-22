@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:repo/controllers/app_controller.dart';
 import 'package:repo/controllers/login_controller.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
@@ -17,8 +18,18 @@ class PertanyaanScreen extends StatefulWidget {
 }
 
 class _PertanyaanScreenState extends State<PertanyaanScreen> {
+  final _appController = Get.put(AppController());
+  final courseId = Get.arguments['courseId'];
+  final discussionId = Get.arguments['discussionId'];
+
+  void tunggu() async{
+    var tes = await _appController.fetchDiscusionByDiscussionId(courseId, discussionId);
+  }
   @override
   Widget build(BuildContext context) {
+  print(courseId.toString());
+  print(discussionId.toString());
+  tunggu();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pertanyaan'),
@@ -33,43 +44,63 @@ class _PertanyaanScreenState extends State<PertanyaanScreen> {
             children: [
               Container(
                 padding: const EdgeInsets.only(bottom: 55),
-                child: ListView(
-                  children: [
-                    const KomentarBoxParent(
-                        avatar: '',
-                        title: 'Lorem ipsum dolor sit amet',
-                        username: 'Muhammad Rafli',
-                        text:
-                            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-                        date: '12/03/2022'),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      color: hexToColor(ColorsRepo.lightGray),
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'Komentar',
-                            style: TextStyle(
-                              fontSize: 23,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          KomentarBoxChild(
-                            avatar: '',
-                            username: 'Muhammad Rafli',
-                            text:
-                                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-                          )
-                        ],
-                      ),
-                    )
-                  ],
+                child: SingleChildScrollView(
+                  child: FutureBuilder(
+                    future: _appController.fetchDiscusionByDiscussionId(courseId, discussionId),
+                    builder: (context,AsyncSnapshot s){
+                      if(s.connectionState==ConnectionState.waiting||s.data=="Tidak ada data"|| s.data==null){
+                        return Container(
+                          child: Text("Tidak Ada Data"),
+                        );
+                      }
+                      else{
+                        print("\n\nFromView\n"+s.data.data.title.toString());
+                        return Container(
+                          //Text(s.data.data.user.fullName)
+                          child: KomentarBoxParent(username: s.data.data.user.fullName, text: s.data.data.body, title: s.data.data.title, date: s.data.data.createdAt, avatar:s.data.data.user.photoProfile == null ? '' : s.data.data.user.photoProfile),
+
+                        );
+                      }
+                    },
+                  ),
                 ),
+                // child: ListView(
+                //   children: [
+                //     const KomentarBoxParent(
+                //         avatar: '',
+                //         title: 'Lorem ipsum dolor sit amet',
+                //         username: 'Muhammad Rafli',
+                //         text:
+                //             'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+                //         date: '12/03/2022'),
+                //     const SizedBox(
+                //       height: 10,
+                //     ),
+                //     Container(
+                //       color: hexToColor(ColorsRepo.lightGray),
+                //       padding: const EdgeInsets.all(20),
+                //       child: Column(
+                //         crossAxisAlignment: CrossAxisAlignment.start,
+                //         children: const [
+                //           Text(
+                //             'Komentar',
+                //             style: TextStyle(
+                //               fontSize: 23,
+                //               fontWeight: FontWeight.w700,
+                //             ),
+                //           ),
+                //           SizedBox(height: 10),
+                //           KomentarBoxChild(
+                //             avatar: '',
+                //             username: 'Muhammad Rafli',
+                //             text:
+                //                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+                //           )
+                //         ],
+                //       ),
+                //     )
+                //   ],
+                // ),
               ),
               Align(
                 alignment: Alignment.bottomCenter,

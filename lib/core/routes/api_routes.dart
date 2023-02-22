@@ -19,6 +19,10 @@ abstract class ApiRoutesRepo {
   static String alldiscussionbyid(int id) {
     return '$baseUrl/courses/$id/discussions';
   }
+  
+  static String discussionByDiscussId(int idCourse, int discussionId){
+    return '$baseUrl/courses/$idCourse/discussions/$discussionId';
+  }
 
   static String deleteChapter(int idCourse, int idChapter) {
     return '$baseUrl/courses/$idCourse/chapters/$idChapter';

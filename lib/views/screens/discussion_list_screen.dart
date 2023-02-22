@@ -108,7 +108,10 @@ class _DiscussionListScreenState extends State<DiscussionListScreen> {
                         itemBuilder: (context, index) {
                           return InkWell(
                             onTap: () {
-                              Get.toNamed(AppRoutesRepo.pertanyaan);
+                              Get.toNamed(AppRoutesRepo.pertanyaan,arguments: {
+                                'courseId' : courseid,
+                                'discussionId' : snapshot.data![index].id
+                            });
                             },
                             child: Container(
                               height: 178,

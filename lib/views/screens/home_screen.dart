@@ -5,7 +5,6 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:repo/controllers/app_controller.dart';
 import 'package:repo/core/routes/app_routes.dart';
@@ -13,11 +12,9 @@ import 'package:repo/core/shared/assets.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
 import 'package:repo/models/course/course_model.dart';
-import 'package:repo/views/screens/detail_course_screen.dart';
-import 'package:repo/views/screens/profile_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
+  static ScrollController scrollController = ScrollController();
   const HomeScreen({super.key});
 
   @override
@@ -26,9 +23,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final appController = Get.put(AppController());
-  ScrollController scrollController = ScrollController();
 
-  bool isLoading = false;
+  var isLoading = false.obs;
   bool isDescending = true;
   List<String> divisi = <String>[
     'Semua',
@@ -42,26 +38,38 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    super.initState();
+    appController.page.value = 1;
+    appController.allCourseList.value = <CourseResponse>[].obs;
     appController.fetchAllCourse();
     appController.fetchUserOwnProfile();
-    scrollController.addListener(_scrollListener);
-    super.initState();
+    HomeScreen.scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    HomeScreen.scrollController.removeListener(_scrollListener);
+    super.dispose();
   }
 
   void _scrollListener() async {
-    if (isLoading) {
+    if (isLoading.value) {
       return;
     }
-    if (scrollController.position.pixels ==
-        scrollController.position.maxScrollExtent) {
-      setState(() {
-        isLoading = true;
-      });
+    if (HomeScreen.scrollController.position.pixels ==
+        HomeScreen.scrollController.position.maxScrollExtent) {
+      isLoading.value = true;
       await appController.fetchAllCourse();
-      setState(() {
-        isLoading = false;
-      });
+      isLoading.value = false;
     }
+  }
+
+  Future refresh() async {
+    setState(() {
+      appController.allCourseList.value = <CourseResponse>[].obs;
+      appController.page = 1.obs;
+      appController.fetchAllCourse();
+    });
   }
 
   @override
@@ -93,234 +101,240 @@ class _HomeScreenState extends State<HomeScreen> {
           )
         ],
       ),
-      body: Container(
-        padding: const EdgeInsets.only(
-          top: 20,
-          left: 20,
-          right: 20,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Materi',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+      body: RefreshIndicator(
+        onRefresh: refresh,
+        child: Container(
+          padding: const EdgeInsets.only(
+            top: 20,
+            left: 20,
+            right: 20,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Materi',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(
-              height: 12,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  height: 40,
-                  width: MediaQuery.of(context).size.width / 2.3,
-                  child: DropdownSearch<String>(
-                    popupProps: const PopupProps.menu(
-                      fit: FlexFit.loose,
-                    ),
-                    dropdownButtonProps: const DropdownButtonProps(
-                      color: Colors.white,
-                      icon: Icon(Icons.keyboard_arrow_down),
-                    ),
-                    dropdownDecoratorProps: DropDownDecoratorProps(
-                      dropdownSearchDecoration: InputDecoration(
-                        filled: true,
-                        fillColor: hexToColor(ColorsRepo.primaryColor),
-                        contentPadding:
-                            const EdgeInsets.fromLTRB(12, 10, 10, 10),
+              const SizedBox(
+                height: 12,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    height: 40,
+                    width: MediaQuery.of(context).size.width / 2.3,
+                    child: DropdownSearch<String>(
+                      popupProps: const PopupProps.menu(
+                        fit: FlexFit.loose,
                       ),
-                    ),
-                    items: divisi,
-                    dropdownBuilder: (context, selectedItem) {
-                      return Text(
-                        selectedItem ?? 'Divisi',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                      dropdownButtonProps: const DropdownButtonProps(
+                        color: Colors.white,
+                        icon: Icon(Icons.keyboard_arrow_down),
+                      ),
+                      dropdownDecoratorProps: DropDownDecoratorProps(
+                        dropdownSearchDecoration: InputDecoration(
+                          filled: true,
+                          fillColor: hexToColor(ColorsRepo.primaryColor),
+                          contentPadding:
+                              const EdgeInsets.fromLTRB(12, 10, 10, 10),
                         ),
-                      );
-                    },
-                    onChanged: (selectedItem) {
-                      setState(() {
-                        selectedDivision = selectedItem!;
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                SizedBox(
-                  height: 40,
-                  width: MediaQuery.of(context).size.width / 2.3,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: hexToColor(ColorsRepo.primaryColor),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          isDescending ? 'A-Z' : 'Z-A',
+                      ),
+                      items: divisi,
+                      dropdownBuilder: (context, selectedItem) {
+                        return Text(
+                          selectedItem ?? 'Divisi',
                           style: const TextStyle(
+                            color: Colors.white,
                             fontSize: 16,
+                            fontWeight: FontWeight.w500,
                           ),
-                        ),
-                        Icon(
-                          isDescending
-                              ? Icons.keyboard_arrow_down
-                              : Icons.keyboard_arrow_up,
-                          size: 24.0,
-                        )
-                      ],
-                    ),
-                    onPressed: () => setState(() {
-                      isDescending = !isDescending;
-                      courseItems.sort(
-                        (a, b) => isDescending
-                            ? a.title!.compareTo(b.title!)
-                            : b.title!.compareTo(a.title!),
-                      );
-                    }),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 12,
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height -
-                  kToolbarHeight -
-                  MediaQuery.of(context).padding.top -
-                  kBottomNavigationBarHeight -
-                  104,
-              child: Obx(
-                () {
-                  courseItems = appController.allCourseList;
-                  final coursePerDivision = courseItems
-                      .where(
-                        (element) => selectedDivision == 'Web'
-                            ? element.division!.divisionName ==
-                                    'Back-end Developer' ||
-                                element.division!.divisionName ==
-                                    'Front-end Developer'
-                            : selectedDivision == 'Mobile'
-                                ? element.division!.divisionName ==
-                                    'Mobile Developer'
-                                : selectedDivision == 'PM'
-                                    ? element.division!.divisionName ==
-                                            'Public Relations' ||
-                                        element.division!.divisionName ==
-                                            'Project Manager'
-                                    : element.division!.divisionName != null,
-                      )
-                      .toList();
-                  if (courseItems.isEmpty) {
-                    return _emptyCourse();
-                  } else {
-                    return ListView.separated(
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 12),
-                      itemCount: isLoading
-                          ? coursePerDivision.length + 1
-                          : coursePerDivision.length,
-                      controller: scrollController,
-                      itemBuilder: (context, index) {
-                        if (index < coursePerDivision.length) {
-                          return InkWell(
-                            onTap: () {
-                              Get.toNamed(
-                                AppRoutesRepo.detailMateri,
-                                arguments: {
-                                  'courseDetail': coursePerDivision[index],
-                                },
-                              );
-                            },
-                            child: Container(
-                              width: MediaQuery.of(context).size.width,
-                              height: 310,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    blurRadius: 3,
-                                    color: Colors.grey,
-                                  )
-                                ],
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  _thumbnailCourse(context,
-                                      coursePerDivision[index].imageThumbnail),
-                                  _labelDivision(
-                                      coursePerDivision[index]
-                                          .division!
-                                          .divisionName,
-                                      coursePerDivision[index].id),
-                                  _courseTitle(coursePerDivision[index].title),
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                      left: 12,
-                                      bottom: 12,
-                                      right: 12,
-                                    ),
-                                    width: double.infinity,
-                                    child: Row(
-                                      children: [
-                                        SvgPicture.asset(
-                                          AssetsRepo.iconProfilLabel,
-                                          color:
-                                              hexToColor(ColorsRepo.darkGray),
-                                          height: 16,
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        _courseMakerLabel(
-                                            coursePerDivision[index]
-                                                .user!
-                                                .fullName),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                      left: 12,
-                                      bottom: 12,
-                                      right: 12,
-                                    ),
-                                    width: double.infinity,
-                                    child: _courseCreateAndUpdate(
-                                        coursePerDivision[index].createdAt,
-                                        coursePerDivision[index].updatedAt),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        } else {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
+                        );
                       },
-                    );
-                  }
-                },
+                      onChanged: (selectedItem) {
+                        setState(() {
+                          selectedDivision = selectedItem!;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  SizedBox(
+                    height: 40,
+                    width: MediaQuery.of(context).size.width / 2.3,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: hexToColor(ColorsRepo.primaryColor),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            isDescending ? 'A-Z' : 'Z-A',
+                            style: const TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          Icon(
+                            isDescending
+                                ? Icons.keyboard_arrow_down
+                                : Icons.keyboard_arrow_up,
+                            size: 24.0,
+                          )
+                        ],
+                      ),
+                      onPressed: () => setState(() {
+                        isDescending = !isDescending;
+                        courseItems.sort(
+                          (a, b) => isDescending
+                              ? a.title!.compareTo(b.title!)
+                              : b.title!.compareTo(a.title!),
+                        );
+                      }),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
+              const SizedBox(
+                height: 12,
+              ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height -
+                    kToolbarHeight -
+                    MediaQuery.of(context).padding.top -
+                    kBottomNavigationBarHeight -
+                    104,
+                child: Obx(
+                  () {
+                    courseItems = appController.allCourseList;
+                    final coursePerDivision = courseItems
+                        .where(
+                          (element) => selectedDivision == 'Web'
+                              ? element.division!.divisionName ==
+                                      'Back-end Developer' ||
+                                  element.division!.divisionName ==
+                                      'Front-end Developer'
+                              : selectedDivision == 'Mobile'
+                                  ? element.division!.divisionName ==
+                                      'Mobile Developer'
+                                  : selectedDivision == 'PM'
+                                      ? element.division!.divisionName ==
+                                              'Public Relations' ||
+                                          element.division!.divisionName ==
+                                              'Project Manager'
+                                      : element.division!.divisionName != null,
+                        )
+                        .toList();
+                    if (courseItems.isEmpty) {
+                      return _emptyCourse();
+                    } else {
+                      return ListView.separated(
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 12),
+                        itemCount: isLoading.value
+                            ? coursePerDivision.length + 1
+                            : coursePerDivision.length,
+                        controller: HomeScreen.scrollController,
+                        itemBuilder: (context, index) {
+                          if (index < coursePerDivision.length) {
+                            return InkWell(
+                              onTap: () {
+                                Get.toNamed(
+                                  AppRoutesRepo.detailMateri,
+                                  arguments: {
+                                    'courseDetail': coursePerDivision[index],
+                                  },
+                                );
+                              },
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                height: 310,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      blurRadius: 3,
+                                      color: Colors.grey,
+                                    )
+                                  ],
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    _thumbnailCourse(
+                                        context,
+                                        coursePerDivision[index]
+                                            .imageThumbnail),
+                                    _labelDivision(
+                                        coursePerDivision[index]
+                                            .division!
+                                            .divisionName,
+                                        coursePerDivision[index].id),
+                                    _courseTitle(
+                                        coursePerDivision[index].title),
+                                    Container(
+                                      margin: const EdgeInsets.only(
+                                        left: 12,
+                                        bottom: 12,
+                                        right: 12,
+                                      ),
+                                      width: double.infinity,
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            AssetsRepo.iconProfilLabel,
+                                            color:
+                                                hexToColor(ColorsRepo.darkGray),
+                                            height: 16,
+                                          ),
+                                          const SizedBox(
+                                            width: 5,
+                                          ),
+                                          _courseMakerLabel(
+                                              coursePerDivision[index]
+                                                  .user!
+                                                  .fullName),
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      margin: const EdgeInsets.only(
+                                        left: 12,
+                                        bottom: 12,
+                                        right: 12,
+                                      ),
+                                      width: double.infinity,
+                                      child: _courseCreateAndUpdate(
+                                          coursePerDivision[index].createdAt,
+                                          coursePerDivision[index].updatedAt),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          } else {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        },
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -46,19 +46,14 @@ class AppController extends GetxController {
 
   Future<void> fetchAllCourse() async {
     try {
-      print('page sebelum $page');
-      print('sebelum ${allCourseList.value.length}');
       allCourse = await courseService.getAllCourse(page.value);
       if (allCourse.isNotEmpty) {
         allCourseList.addAll(allCourse);
         allCourseList.refresh();
-        allCourseList.toSet().toList();
         page++;
       } else {
         page = page;
       }
-      print('sesudah ${allCourseList.value.length}');
-      print('page sesudah $page');
     } catch (e) {
       throw Exception(e);
     }

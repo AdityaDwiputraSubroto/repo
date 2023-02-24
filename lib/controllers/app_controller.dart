@@ -35,7 +35,7 @@ class AppController extends GetxController {
   final discussionByID = <DiscussionResponse>[].obs;
   List<CourseResponse> allCourse = [];
   var isLoading = false.obs;
-  int page = 1;
+  var page = 1.obs;
 
   @override
   void onInit() {
@@ -46,28 +46,13 @@ class AppController extends GetxController {
 
   Future<void> fetchAllCourse() async {
     try {
-      allCourse = await courseService.getAllCourse(page);
+      allCourse = await courseService.getAllCourse(page.value);
       if (allCourse.isNotEmpty) {
         allCourseList.addAll(allCourse);
         allCourseList.refresh();
         page++;
       } else {
         page = page;
-      }
-    } catch (e) {
-      throw Exception(e);
-    }
-    update();
-  }
-
-  Future<void> fetchAllCourseAfterDelete() async {
-    try {
-      page = 1;
-      allCourse = await courseService.getAllCourse(page);
-      if (allCourse.isNotEmpty) {
-        allCourseList.value = [];
-        allCourseList.assignAll(allCourse);
-        allCourseList.refresh();
       }
     } catch (e) {
       throw Exception(e);
@@ -144,20 +129,19 @@ class AppController extends GetxController {
     }
   }
 
-  Future fetchDiscusionByDiscussionId(int idCourse, int idDiscussion)async{
-    try{
-      final res = await discussionService.getDiscussionByDiscussionId(idCourse, idDiscussion);
-      print("fetchdiscussionbyiddisuccion\n\n"+res.toString());
-      if(res.status=='success'){
+  Future fetchDiscusionByDiscussionId(int idCourse, int idDiscussion) async {
+    try {
+      final res = await discussionService.getDiscussionByDiscussionId(
+          idCourse, idDiscussion);
+      print("fetchdiscussionbyiddisuccion\n\n" + res.toString());
+      if (res.status == 'success') {
         return res;
-      }
-      else{
+      } else {
         return null;
       }
+    } catch (e) {
+      throw Exception(e);
     }
-      catch(e){
-        throw Exception(e);
-      }  
   }
 
   Future<List<CourseResponse>> searchCourseByTitle(String title) async {

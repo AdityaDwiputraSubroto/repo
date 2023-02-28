@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:repo/core/routes/app_routes.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
-import 'package:repo/views/screens/discussion_list_screen.dart';
 import 'package:repo/views/widgets/index.dart';
 import 'package:repo/models/discussion/store_discussion_model.dart';
 import 'package:repo/controllers/app_controller.dart';

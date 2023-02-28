@@ -22,6 +22,7 @@ class _DiscussionListScreenState extends State<DiscussionListScreen> {
   final appController = Get.put(AppController());
   final courseid = Get.arguments['courseId'];
   final title = Get.arguments['judul'];
+  // ignore: prefer_typing_uninitialized_variables
   var idUser;
 
   @override
@@ -106,10 +107,10 @@ class _DiscussionListScreenState extends State<DiscussionListScreen> {
                         itemBuilder: (context, index) {
                           return InkWell(
                             onTap: () {
-                              Get.toNamed(AppRoutesRepo.pertanyaan,arguments: {
-                                'courseId' : courseid,
-                                'discussionId' : snapshot.data![index].id
-                            });
+                              Get.toNamed(AppRoutesRepo.pertanyaan, arguments: {
+                                'courseId': courseid,
+                                'discussionId': snapshot.data![index].id
+                              });
                             },
                             child: Container(
                               height: 178,

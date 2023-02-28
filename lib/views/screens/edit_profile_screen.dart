@@ -33,6 +33,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? generation;
   File? _image;
   String? image;
+  // ignore: prefer_typing_uninitialized_variables
   var password;
   late TextEditingController nameController = TextEditingController(text: name);
   late TextEditingController usernameController =
@@ -124,7 +125,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         image = _image!.path;
         Navigator.of(context).pop();
       });
-    } on PlatformException catch (e) {
+    } on PlatformException {
       Navigator.of(context).pop();
     }
   }

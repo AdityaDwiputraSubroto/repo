@@ -5,6 +5,8 @@ import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
 import 'package:repo/core/routes/routes.dart';
 import 'package:repo/models/user/login.dart';
+import 'package:repo/views/screens/article_screen.dart';
+import 'package:repo/views/screens/verify_otp_screen.dart';
 import 'package:repo/views/widgets/index.dart';
 import 'package:get/get.dart';
 

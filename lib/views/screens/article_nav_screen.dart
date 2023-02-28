@@ -5,7 +5,6 @@ import 'package:repo/core/shared/assets.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
 import 'package:repo/views/screens/article_screen.dart';
-import 'package:repo/views/screens/discussion_list_screen.dart';
 
 import '../../core/routes/app_routes.dart';
 import '../widgets/accordion_widget.dart';
@@ -82,6 +81,7 @@ class _ArticleNavScreenState extends State<ArticleNavScreen> {
   }
 }
 
+// ignore: must_be_immutable
 class DaftarMateri extends StatelessWidget {
   List? listIdChapter;
   List? listIdArticle;
@@ -95,6 +95,7 @@ class DaftarMateri extends StatelessWidget {
     this.listIdArticle,
     this.idCourse,
   });
+  // ignore: prefer_typing_uninitialized_variables
   final courseArticle;
   bool isOnTap = true;
   @override

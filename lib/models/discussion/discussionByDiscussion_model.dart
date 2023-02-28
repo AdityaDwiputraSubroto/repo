@@ -9,13 +9,13 @@ class DiscussionByDiscussionIdResponse {
   DiscussionByDiscussionIdResponse.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     message = json['message'];
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['status'] = status;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -54,21 +54,21 @@ class Data {
     updatedAt = json['updatedAt'];
     idUser = json['id_user'];
     idCourse = json['id_course'];
-    user = json['User'] != null ? new User.fromJson(json['User']) : null;
+    user = json['User'] != null ? User.fromJson(json['User']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['title'] = this.title;
-    data['body'] = this.body;
-    data['isEdited'] = this.isEdited;
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
-    data['id_user'] = this.idUser;
-    data['id_course'] = this.idCourse;
-    if (this.user != null) {
-      data['User'] = this.user!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['title'] = title;
+    data['body'] = body;
+    data['isEdited'] = isEdited;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
+    data['id_user'] = idUser;
+    data['id_course'] = idCourse;
+    if (user != null) {
+      data['User'] = user!.toJson();
     }
     return data;
   }
@@ -76,7 +76,7 @@ class Data {
 
 class User {
   String? fullName;
-  Null? photoProfile;
+  String? photoProfile;
 
   User({this.fullName, this.photoProfile});
 
@@ -86,9 +86,9 @@ class User {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['fullName'] = this.fullName;
-    data['photoProfile'] = this.photoProfile;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['fullName'] = fullName;
+    data['photoProfile'] = photoProfile;
     return data;
   }
 }

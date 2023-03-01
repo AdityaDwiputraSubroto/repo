@@ -6,15 +6,11 @@ import 'package:intl/intl.dart';
 import 'package:repo/controllers/app_controller.dart';
 import 'package:repo/core/routes/app_routes.dart';
 import 'package:repo/core/shared/assets.dart';
-import 'package:repo/models/course/course_model.dart';
-import 'package:repo/views/screens/article_nav_screen.dart';
 import 'package:repo/views/widgets/button_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../core/shared/colors.dart';
 import '../../core/utils/formatting.dart';
 import '../widgets/accordion_widget.dart';
-import 'discussion_list_screen.dart';
 
 class DetailCourseScreen extends StatefulWidget {
   const DetailCourseScreen({super.key});

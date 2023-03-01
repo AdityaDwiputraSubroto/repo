@@ -102,7 +102,7 @@ class CourseService {
       sharedPreferences.setString(
           'access-token', jsonResponse['data']['accessToken']);
     } catch (e) {
-      throw e;
+      throw Exception(e);
     }
   }
 }
@@ -132,6 +132,7 @@ class AuthorizationInterceptor implements InterceptorContract {
 
 class ExpiredTokenRetryPolicy extends RetryPolicy {
   @override
+  // ignore: overridden_fields
   int maxRetryAttempts = 1;
 
   @override

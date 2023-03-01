@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_interceptor/http/http.dart';
@@ -31,9 +32,6 @@ class UserService extends GetConnect implements GetxService {
       print(response.statusCode);
       return BaseResponseErrorAndMessageOnly.fromJson(response.body);
     }
-
-    print(response.statusCode);
-
     return LoginResponse.fromJson(response.body);
   }
 
@@ -54,6 +52,7 @@ class UserService extends GetConnect implements GetxService {
   }
 
   Future<UserOwnProfile> fetchUserById() async {
+    // ignore: prefer_typing_uninitialized_variables
     var data;
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
@@ -69,7 +68,7 @@ class UserService extends GetConnect implements GetxService {
     if (response.statusCode == 200) {
       data = json.decode(response.body)['data'];
     } else {
-      print('Failed to load user');
+      debugPrint('Failed to load user');
     }
     return UserOwnProfile.fromJson(data);
   }
@@ -121,9 +120,7 @@ class UserService extends GetConnect implements GetxService {
   Future changePassword(String password) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var accessToken = sharedPreferences.getString('access-token');
-    print(password);
     Uri url = Uri.parse(ApiRoutesRepo.baseUrl + ApiRoutesRepo.changePassword);
-    print(url);
     final body = jsonEncode({'password': password});
     final response = await http.post(
       url,
@@ -134,7 +131,6 @@ class UserService extends GetConnect implements GetxService {
       },
     );
     var data = json.decode(response.body);
-    print(response.statusCode);
 
     return BaseResponseErrorAndMessageOnly.fromJson(data);
   }

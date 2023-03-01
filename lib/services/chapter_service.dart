@@ -6,7 +6,6 @@ import 'package:repo/core/routes/api_routes.dart';
 import 'package:repo/core/routes/routes.dart';
 import 'package:repo/services/course_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 import '../models/chapter/chapter_model.dart';
 
 class ChapterService {

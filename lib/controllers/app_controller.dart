@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -18,8 +17,6 @@ import 'package:repo/views/widgets/index.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:repo/services/discussion_service.dart';
 import 'package:repo/models/discussion/store_discussion_model.dart';
-
-import '../models/user/forgot_password.dart';
 
 class AppController extends GetxController {
   CourseService courseService = CourseService();
@@ -240,6 +237,7 @@ class AppController extends GetxController {
         isLoading.value = true;
         snackbarRepoSuccess(response.status, response.message);
         fetchUserOwnProfile();
+        // ignore: use_build_context_synchronously
         Navigator.of(context).pushReplacementNamed(
           '/ubahProfil',
         );

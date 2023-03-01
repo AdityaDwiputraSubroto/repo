@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:repo/models/user/index.dart';
 import 'package:repo/services/user_service.dart';

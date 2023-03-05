@@ -4,6 +4,7 @@ import 'package:repo/views/screens/article_nav_screen.dart';
 import 'package:repo/views/screens/detail_course_screen.dart';
 import 'package:repo/views/screens/forgot_pass_msg.dart';
 import 'package:repo/views/screens/index.dart';
+import 'package:repo/views/screens/verify_otp_screen.dart';
 import 'package:repo/views/widgets/bottom_navigation_widget.dart';
 import 'package:repo/views/screens/discussion_list_screen.dart';
 
@@ -17,6 +18,7 @@ abstract class AppRoutesRepo {
   static const String detailMateri = '/detailMateri';
   static const String articleNav = '/articleNav';
   static const String diskusimateri = '/diskusimateri';
+  static const String forgotVerify = '/forgotverify';
 
   static List<GetPage<Widget>> pages = [
     GetPage(
@@ -34,6 +36,10 @@ abstract class AppRoutesRepo {
     GetPage(
       name: forgotPasswordMassage,
       page: () => const ForgotPasswordMsg(),
+    ),
+    GetPage(
+      name: forgotVerify,
+      page: () => const VerifyOtpScreen(),
     ),
     GetPage(
       name: pertanyaan,

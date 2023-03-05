@@ -1,7 +1,7 @@
 abstract class ApiRoutesRepo {
   static const String baseUrl = 'http://10.0.2.2:3000';
   static const String login = '/users/login';
-  static const String forgot = '/password-reset';
+  static const String forgot = '/password-reset/send-code';
   static const String register = '/users/register';
   static const String division = '/divisions';
   static const String course = '/courses/mobile?page=';

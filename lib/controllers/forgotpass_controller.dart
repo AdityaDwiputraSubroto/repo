@@ -27,7 +27,7 @@ class ForgotPasswordController {
     try {
       final response = await ForgotPasswordService.forgotPassword(request);
       if (response.status == 'success') {
-        Get.offNamed(AppRoutesRepo.forgotPasswordMassage);
+        Get.offNamed(AppRoutesRepo.forgotVerify);
       } else {
         throw Exception('Gagal melakukan request: ${response.message}');
       }

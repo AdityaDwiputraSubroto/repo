@@ -130,7 +130,7 @@ class AppController extends GetxController {
     try {
       final res = await discussionService.getDiscussionByDiscussionId(
           idCourse, idDiscussion);
-      print("fetchdiscussionbyiddisuccion\n\n" + res.toString());
+      debugPrint('fetchdiscussionbyiddisuccion\n\n$res');
       if (res.status == 'success') {
         return res;
       } else {

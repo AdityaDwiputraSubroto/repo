@@ -8,6 +8,7 @@ import 'package:repo/core/utils/formatting.dart';
 
 import '../../core/shared/colors.dart';
 
+// ignore: must_be_immutable
 class ArticleScreen extends StatefulWidget {
   List? listIdChapter;
   List? listIdArticle;
@@ -42,16 +43,13 @@ class _ArticleScreenState extends State<ArticleScreen> {
                     child: CircularProgressIndicator(),
                   );
                 } else {
+                  String content = snapshot.data['data']['content']
+                      .toString()
+                      .replaceAll('\\n', '\n')
+                      .replaceAll('\\', '');
                   return SingleChildScrollView(
                     child: Html(
-                      data: '''${snapshot.data['id']}
-                    ${snapshot.data['body']}''',
-                      style: {
-                        'body': Style(
-                          fontSize: FontSize(18.0),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      },
+                      data: content,
                     ),
                   );
                 }
@@ -173,6 +171,7 @@ class ArticleScreenOnTap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('ArticleScreenOnTap ${idChapter!}');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: hexToColor(ColorsRepo.primaryColor),
@@ -193,16 +192,13 @@ class ArticleScreenOnTap extends StatelessWidget {
               child: CircularProgressIndicator(),
             );
           } else {
+            String content = snapshot.data['data']['content']
+                .toString()
+                .replaceAll('\\n', '\n')
+                .replaceAll('\\', '');
             return SingleChildScrollView(
               child: Html(
-                data: '''${snapshot.data['id']}
-                    ${snapshot.data['body']} ''',
-                style: {
-                  'body': Style(
-                    fontSize: FontSize(18.0),
-                    fontWeight: FontWeight.bold,
-                  ),
-                },
+                data: content,
               ),
             );
           }

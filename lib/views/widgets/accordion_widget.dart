@@ -7,6 +7,7 @@ import 'package:repo/views/screens/article_screen.dart';
 import '../../core/shared/colors.dart';
 import '../../core/utils/formatting.dart';
 
+// ignore: must_be_immutable
 class AccordionJudulBab extends StatelessWidget {
   int? artikel;
   String? chapterTitle;
@@ -14,7 +15,7 @@ class AccordionJudulBab extends StatelessWidget {
   bool isOnTap;
   int? idCourse;
   int? idChapter;
-  List? idArticle;
+  List? dataArticle;
   AccordionJudulBab({
     Key? key,
     this.artikel,
@@ -23,7 +24,7 @@ class AccordionJudulBab extends StatelessWidget {
     required this.isOnTap,
     this.idCourse,
     this.idChapter,
-    this.idArticle,
+    this.dataArticle,
   }) : super(key: key);
   void scrollToSelectedContent({GlobalKey? expansionTileKey}) {
     final keyContext = expansionTileKey!.currentContext;
@@ -61,46 +62,49 @@ class AccordionJudulBab extends StatelessWidget {
                 Container(
                   color: Colors.white,
                   child: ListView.separated(
-                      shrinkWrap: true,
-                      primary: false,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(
-                            'Artikel # ${index + 1}',
-                            style: const TextStyle(
-                              fontSize: 10,
-                            ),
+                    shrinkWrap: true,
+                    primary: false,
+                    separatorBuilder: (context, index) {
+                      return const Divider(
+                        indent: 18,
+                        thickness: 2,
+                        height: 0.5,
+                      );
+                    },
+                    itemCount: artikel!,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(
+                          'Artikel # ${index + 1}',
+                          style: const TextStyle(
+                            fontSize: 10,
                           ),
-                          subtitle: Text(
-                            articleTitle![index],
-                            style: const TextStyle(
-                              fontSize: 16,
-                            ),
+                        ),
+                        subtitle: Text(
+                          dataArticle![index].title,
+                          style: const TextStyle(
+                            fontSize: 16,
                           ),
-                          onTap: isOnTap
-                              ? () {
-                                  Get.to(
-                                    () => ArticleScreenOnTap(
-                                      idArticle: idArticle!.elementAt(index),
-                                      idChapter: idChapter,
-                                      idCourse: idCourse,
-                                      articleTitle:
-                                          articleTitle!.elementAt(index),
-                                      chapterTitle: chapterTitle,
-                                    ),
-                                  );
-                                }
-                              : null,
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return const Divider(
-                          indent: 18,
-                          thickness: 2,
-                          height: 0.5,
-                        );
-                      },
-                      itemCount: artikel!),
+                          maxLines: 1,
+                        ),
+                        onTap: isOnTap
+                            ? () {
+                                Get.to(
+                                  () => ArticleScreenOnTap(
+                                    idArticle: dataArticle!.elementAt(index).id,
+                                    idChapter:
+                                        dataArticle!.elementAt(index).idChapter,
+                                    idCourse: idCourse,
+                                    articleTitle:
+                                        dataArticle!.elementAt(index).title,
+                                    chapterTitle: chapterTitle,
+                                  ),
+                                );
+                              }
+                            : null,
+                      );
+                    },
+                  ),
                 ),
               ],
               onExpansionChanged: (value) {

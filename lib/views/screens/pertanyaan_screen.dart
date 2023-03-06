@@ -22,14 +22,16 @@ class _PertanyaanScreenState extends State<PertanyaanScreen> {
   final courseId = Get.arguments['courseId'];
   final discussionId = Get.arguments['discussionId'];
 
-  void tunggu() async{
-    var tes = await _appController.fetchDiscusionByDiscussionId(courseId, discussionId);
+  void tunggu() async {
+    var tes = await _appController.fetchDiscusionByDiscussionId(
+        courseId, discussionId);
   }
+
   @override
   Widget build(BuildContext context) {
-  print(courseId.toString());
-  print(discussionId.toString());
-  tunggu();
+    print(courseId.toString());
+    print(discussionId.toString());
+    tunggu();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pertanyaan'),
@@ -46,19 +48,21 @@ class _PertanyaanScreenState extends State<PertanyaanScreen> {
                 padding: const EdgeInsets.only(bottom: 55),
                 child: SingleChildScrollView(
                   child: FutureBuilder(
-                    future: _appController.fetchDiscusionByDiscussionId(courseId, discussionId),
-                    builder: (context,AsyncSnapshot s){
-                      if(s.connectionState==ConnectionState.waiting||s.data=="Tidak ada data"|| s.data==null){
-                        return Container(
-                          child: Text("Tidak Ada Data"),
-                        );
-                      }
-                      else{
-                        print("\n\nFromView\n"+s.data.data.title.toString());
-                        return Container(
-                          //Text(s.data.data.user.fullName)
-                          child: KomentarBoxParent(username: s.data.data.user.fullName, text: s.data.data.body, title: s.data.data.title, date: s.data.data.createdAt, avatar:s.data.data.user.photoProfile == null ? '' : s.data.data.user.photoProfile),
-
+                    future: _appController.fetchDiscusionByDiscussionId(
+                        courseId, discussionId),
+                    builder: (context, AsyncSnapshot s) {
+                      if (s.connectionState == ConnectionState.waiting ||
+                          s.data == "Tidak ada data" ||
+                          s.data == null) {
+                        return Text("Tidak Ada Data");
+                      } else {
+                        print("\n\nFromView\n" + s.data.data.title.toString());
+                        return KomentarBoxParent(
+                          username: s.data.data.user.fullName,
+                          text: s.data.data.body,
+                          title: s.data.data.title,
+                          date: s.data.data.createdAt,
+                          avatar: s.data.data.user.photoProfile ?? '',
                         );
                       }
                     },

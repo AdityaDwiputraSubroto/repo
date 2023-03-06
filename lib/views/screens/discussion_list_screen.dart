@@ -20,7 +20,7 @@ class DiscussionListScreen extends StatefulWidget {
 
 class _DiscussionListScreenState extends State<DiscussionListScreen> {
   final appController = Get.put(AppController());
-  final courseid = Get.arguments['courseId'];
+  static final courseid = Get.arguments['courseId'];
   final title = Get.arguments['judul'];
   // ignore: prefer_typing_uninitialized_variables
   var idUser;
@@ -338,7 +338,10 @@ class SearchDiscussionScreen extends SearchDelegate {
               return ListTile(
                 title: Text(snapshot.data![index].title!),
                 onTap: () {
-                  Get.toNamed(AppRoutesRepo.pertanyaan);
+                  Get.toNamed(AppRoutesRepo.pertanyaan, arguments: {
+                    'courseId': courseId,
+                    'discussionId': snapshot.data![index].id
+                  });
                 },
               );
             },

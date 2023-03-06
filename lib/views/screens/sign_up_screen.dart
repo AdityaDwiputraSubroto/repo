@@ -24,6 +24,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  // ignore: prefer_typing_uninitialized_variables
   var divisionController;
 
   inputHandler() {
@@ -62,7 +63,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
           headers: {'Content-Type': 'application/json; charset=UTF-8'});
       List resBody =
           (json.decode(response.body) as Map<String, dynamic>)['data'];
-      ;
 
       setState(() {
         dropdownlist = resBody;
@@ -77,7 +77,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   void initState() {
     super.initState();
-    this.getdata();
+    getdata();
   }
 
   @override

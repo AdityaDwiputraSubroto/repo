@@ -34,7 +34,6 @@ class ForgotPasswordService {
         'otp': otpCode,
       },
     );
-    print(response.statusCode);
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       return VerifyTokenResponse.fromJson(data);

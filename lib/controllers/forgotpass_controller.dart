@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../core/routes/app_routes.dart';
 import '../models/user/forgot_password.dart';

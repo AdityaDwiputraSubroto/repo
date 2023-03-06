@@ -233,7 +233,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         )
                         .toList();
                     if (courseItems.isEmpty) {
-                      return _emptyCourse();
+                      return ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        itemCount: 1,
+                        itemBuilder: (context, index) {
+                          return _emptyCourse();
+                        },
+                      );
                     } else {
                       return ListView.separated(
                         separatorBuilder: (context, index) =>

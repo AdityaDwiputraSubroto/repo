@@ -1,15 +1,16 @@
 import 'dart:convert';
 
 // import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:repo/core/routes/api_routes.dart';
 import 'package:repo/core/routes/routes.dart';
 import 'package:repo/core/utils/base_response.dart';
-import 'package:repo/models/discussion/discussionByDiscussion_model.dart';
 import 'package:repo/services/course_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/discussion/discussion_by_course_id_model.dart';
+import '../models/discussion/discussion_by_discussion_model.dart';
 import '../models/discussion/store_discussion_model.dart';
 import 'package:http/http.dart' as http;
 
@@ -104,24 +105,26 @@ class DiscussionService {
     );
     var body = jsonDecode(response.body);
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      print(response.statusCode);
       return BaseResponseErrorAndMessageOnly.fromJson(body);
     } else {
-      print(response.statusCode);
       return BaseResponseErrorAndMessageOnly.fromJson(body);
     }
   }
-  Future getDiscussionByDiscussionId(int idCourse, int idDiscussion) async{
+
+  Future getDiscussionByDiscussionId(int idCourse, int idDiscussion) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    Uri url = Uri.parse(ApiRoutesRepo.discussionByDiscussId(idCourse, idDiscussion));
-    final response = await client.get(url,headers: {
-      'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ${sharedPreferences.getString('access-token')}'
-    },);
+    Uri url =
+        Uri.parse(ApiRoutesRepo.discussionByDiscussId(idCourse, idDiscussion));
+    final response = await client.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer ${sharedPreferences.getString('access-token')}'
+      },
+    );
     var data = jsonDecode(response.body);
     var discussionResponse = DiscussionByDiscussionIdResponse.fromJson(data);
-    print("from discussionService\n${discussionResponse.data!.title}");
+    debugPrint('from discussionService\n${discussionResponse.data!.title}');
     return discussionResponse;
-  
   }
 }

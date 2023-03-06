@@ -360,6 +360,14 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                                             .allChaptersAndTitleArticlesById
                                             .elementAt(index)
                                             .title,
+                                        idChapter: appController
+                                            .allChaptersAndTitleArticlesById
+                                            .elementAt(index)
+                                            .id,
+                                        dataArticle: appController
+                                            .allChaptersAndTitleArticlesById
+                                            .elementAt(index)
+                                            .articles,
                                       );
                                     },
                                   );

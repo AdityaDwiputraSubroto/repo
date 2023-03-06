@@ -71,10 +71,33 @@ class ChapterService {
       },
     );
     if (response.statusCode == 200) {
-      return json.decode(response.body)['data'];
+      return json.decode(response.body);
     } else {
       Future.delayed(const Duration(seconds: 0), () {
         getArticleByIdChapterAndIdArticle(idCourse, idChapter, idArticle);
+      });
+      throw Exception('Failed to load article');
+    }
+  }
+
+  Future getArticle(int idCourse, int idChapter) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var accesToken = sharedPreferences.getString('access-token');
+
+    Uri url = Uri.parse(ApiRoutesRepo.getArticle(idCourse, idChapter));
+
+    final response = await client.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accesToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      Future.delayed(const Duration(seconds: 0), () {
+        getArticle(idCourse, idChapter);
       });
       throw Exception('Failed to load article');
     }

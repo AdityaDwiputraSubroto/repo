@@ -8,6 +8,9 @@ abstract class ApiRoutesRepo {
   static const String discussion = 'discussions/';
   static const String editProfile = '/users/update';
   static const String changePassword = '/users/changepassword';
+  static const String verifyToken = '/password-reset/verify';
+  static const String resetPassword = '/password-reset/reset';
+
   static String user() {
     return '$baseUrl/users/profile';
   }

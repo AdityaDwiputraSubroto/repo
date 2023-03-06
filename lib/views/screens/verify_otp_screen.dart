@@ -2,10 +2,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:repo/views/widgets/banner_widget.dart';
-import 'package:repo/views/widgets/button_widget.dart';
 import 'package:repo/views/widgets/index.dart';
 
+import '../../controllers/forgotpass_controller.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/shared/colors.dart';
 import '../../core/utils/formatting.dart';
@@ -18,6 +17,16 @@ class VerifyOtpScreen extends StatefulWidget {
 }
 
 class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
+  final controller = ForgotPasswordController();
+  final email = Get.arguments;
+  List<TextEditingController> otpFieldsController = [
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController()
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,6 +83,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                         height: 55,
                         width: 55,
                         child: TextFormField(
+                          controller: otpFieldsController[0],
                           onChanged: (value) {
                             if (value.length == 1) {
                               FocusScope.of(context).nextFocus();
@@ -100,6 +110,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                         height: 55,
                         width: 55,
                         child: TextFormField(
+                          controller: otpFieldsController[1],
                           onChanged: (value) {
                             if (value.length == 1) {
                               FocusScope.of(context).nextFocus();
@@ -126,6 +137,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                         height: 55,
                         width: 55,
                         child: TextFormField(
+                          controller: otpFieldsController[2],
                           onChanged: (value) {
                             if (value.length == 1) {
                               FocusScope.of(context).nextFocus();
@@ -152,6 +164,34 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                         height: 55,
                         width: 55,
                         child: TextFormField(
+                          controller: otpFieldsController[3],
+                          onChanged: (value) {
+                            if (value.length == 1) {
+                              FocusScope.of(context).nextFocus();
+                            }
+                          },
+                          decoration: const InputDecoration(
+                              border: InputBorder.none, hintText: '0'),
+                          style: Theme.of(context).textTheme.headlineMedium,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(1),
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                        ),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: hexToColor(ColorsRepo.primaryColor)
+                              .withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.only(top: 8),
+                        height: 55,
+                        width: 55,
+                        child: TextFormField(
+                          controller: otpFieldsController[4],
                           onChanged: (value) {
                             if (value.length == 1) {
                               FocusScope.of(context).nextFocus();
@@ -189,7 +229,10 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                         ),
                         TextSpan(
                           text: 'Kirim ulang',
-                          recognizer: TapGestureRecognizer()..onTap = () {},
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () async {
+                              await controller.forgotPassword(email);
+                            },
                           style: const TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.w500,
@@ -207,7 +250,11 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                   text: 'Kirim',
                   backgroundColor: ColorsRepo.primaryColor,
                   onPressed: () {
-                    Get.offNamed(AppRoutesRepo.login);
+                    String otpCode = '';
+                    for (var controller in otpFieldsController) {
+                      otpCode += controller.text;
+                    }
+                    controller.verifyOTP(otpCode);
                   },
                 ),
                 TextButton(

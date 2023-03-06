@@ -18,25 +18,8 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   //
   final controller = ForgotPasswordController();
+  final emailController = TextEditingController();
   bool isLoading = false;
-  // nullHandler() {
-  //   bool isFilled = true;
-  //   if (forgotController == '') {
-  //     snackbarRepo('Warning!', 'Email Tidak Boleh Kosong!');
-  //     isFilled = false;
-  //   }
-  //   return isFilled;
-  // }
-
-  // emailHandler() {
-  //   bool emailValidation =
-  //       RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
-  //           .hasMatch(_emailController.text);
-  //   if (!emailValidation) {
-  //     snackbarRepo('Warning!', 'Email Salah!');
-  //   }
-  //   return emailValidation;
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +49,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   height: 12,
                 ),
                 TextFieldRepo(
-                  textController: controller.emailController,
+                  textController: emailController,
                   hintText: 'Masukkan Alamat Email',
                 ),
                 const SizedBox(
@@ -77,25 +60,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   backgroundColor: ColorsRepo.primaryColor,
                   changeTextColor: false,
                   onPressed: () async {
-                    // if (nullHandler()) {
-                    //   if (emailHandler()) {
-                    //     // ForgotPasswordRequest request = ForgotPasswordRequest(
-                    //     //   email: _emailController.text.trim(),
-                    //     // );
-
-                    //   }
-                    // }
                     setState(() {
                       isLoading = true;
                     });
-                    await controller.forgotPassword();
-
+                    await controller
+                        .forgotPassword(emailController.text.trim());
                     setState(() {
                       isLoading = false;
                     });
                   },
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 isLoading
                     ? const CircularProgressIndicator()
                     : const SizedBox.shrink(),

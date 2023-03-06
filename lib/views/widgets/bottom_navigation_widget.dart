@@ -8,7 +8,6 @@ import 'package:repo/views/screens/edit_profile_screen.dart';
 import '../../core/shared/assets.dart';
 import '../../core/shared/colors.dart';
 import '../../core/utils/formatting.dart';
-import '../../models/course/course_model.dart';
 import '../screens/home_screen.dart';
 import '../screens/profile_screen.dart';
 

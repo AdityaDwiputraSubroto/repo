@@ -29,9 +29,9 @@ class UserOwnProfile {
     username = json['username'];
     fullName = json['fullName'];
     email = json['email'];
-    generation = json['generation'];
-    phoneNumber = json['phoneNumber'];
-    photoProfile = json['photoProfile'];
+    generation = json['generation'] ?? '';
+    phoneNumber = json['phoneNumber'] ?? '';
+    photoProfile = json['photoProfile'] ?? '';
     createdAt = json['createdAt'];
     verify = json['verify'];
     idRole = json['id_role'];

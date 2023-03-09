@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:repo/models/comment/comment_request_model.dart';
 import 'package:repo/models/course/course_model.dart';
 import 'package:repo/models/discussion/discussion_by_course_id_model.dart';
 import 'package:repo/models/division/division_model.dart';
@@ -130,7 +131,6 @@ class AppController extends GetxController {
     try {
       final res = await discussionService.getDiscussionByDiscussionId(
           idCourse, idDiscussion);
-      debugPrint('fetchdiscussionbyiddisuccion\n\n$res');
       if (res.status == 'success') {
         return res;
       } else {
@@ -260,5 +260,27 @@ class AppController extends GetxController {
     } else {
       snackbarRepo(response.status, response.message);
     }
+  }
+
+  Future getComment(int idCourse, int idDiscussion) async {
+    final response =
+        await discussionService.getCommentDiscussions(idCourse, idDiscussion);
+
+    if (response.isNotEmpty) {
+      return response;
+    } else {
+      return null;
+    }
+  }
+
+  Future postComment(
+      int idCourse, int idDiscussion, CommentRequest body) async {
+    final response = await discussionService.postCommentDiscussions(
+        idCourse, idDiscussion, body);
+  }
+
+  Future deleteComment(int idCourse, int idDiscussion, int idComment) async {
+    await discussionService.deleteCommentDiscussions(
+        idCourse, idDiscussion, idComment);
   }
 }

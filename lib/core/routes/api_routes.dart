@@ -63,4 +63,16 @@ abstract class ApiRoutesRepo {
   static String getArticle(int idCourse, int idChapter) {
     return '$baseUrl/courses/$idCourse/chapters/$idChapter/articles';
   }
+
+  static String getComment(int idCourse, int idDiscussion) {
+    return '$baseUrl/courses/$idCourse/discussions/$idDiscussion/comments';
+  }
+
+  static String postComment(int idCourse, int idDiscussion) {
+    return '$baseUrl/courses/$idCourse/discussions/$idDiscussion/comments';
+  }
+
+  static String deleteComment(int idCourse, int idDiscussion, int idComment) {
+    return '$baseUrl/courses/$idCourse/discussions/$idDiscussion/comments/$idComment';
+  }
 }

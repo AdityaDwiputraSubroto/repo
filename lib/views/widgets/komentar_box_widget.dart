@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
-import 'package:repo/views/widgets/index.dart';
+
+import 'delete_overlay_widget.dart';
 
 class KomentarBoxParent extends StatelessWidget {
   final String avatar;
@@ -10,15 +12,11 @@ class KomentarBoxParent extends StatelessWidget {
   final String text;
   final String title;
   final String date;
-
-  void handleClick(String value) {
-    switch (value) {
-      case 'Laporkan Pertanyaan':
-        break;
-      case 'Hapus':
-        break;
-    }
-  }
+  final int idUserMaker;
+  final int idUserLoggedIn;
+  final int idCourse;
+  final int idDiscussion;
+  final String courseTitle;
 
   const KomentarBoxParent({
     super.key,
@@ -27,6 +25,11 @@ class KomentarBoxParent extends StatelessWidget {
     required this.title,
     required this.date,
     required this.avatar,
+    required this.idUserMaker,
+    required this.idUserLoggedIn,
+    required this.idCourse,
+    required this.idDiscussion,
+    required this.courseTitle,
   });
 
   @override
@@ -37,75 +40,100 @@ class KomentarBoxParent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(2),
-              child: CachedNetworkImage(
-                imageUrl: avatar,
-                imageBuilder: (context, imageProvider) => Container(
-                  height: 32,
-                  width: 32,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.fill,
+          const SizedBox(width: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(2),
+                    child: CachedNetworkImage(
+                      imageUrl: avatar,
+                      imageBuilder: (context, imageProvider) => Container(
+                        height: 32,
+                        width: 32,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: imageProvider,
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                      ),
+                      placeholder: (context, url) => Container(
+                        alignment: Alignment.center,
+                        color: Colors.grey.shade200,
+                        height: 32,
+                        width: 32,
+                        child: Icon(
+                          Icons.person,
+                          color: Colors.grey.shade400,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: Colors.grey.shade200,
+                        child: Icon(
+                          Icons.person,
+                          color: Colors.grey.shade400,
+                          size: 32,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-                placeholder: (context, url) => Container(
-                  alignment: Alignment.center,
-                  color: Colors.grey.shade200,
-                  height: 32,
-                  width: 32,
-                  child: Icon(
-                    Icons.person,
-                    color: Colors.grey.shade400,
+                  const SizedBox(
+                    width: 8,
                   ),
-                ),
-                errorWidget: (context, url, error) => Container(
-                  color: Colors.grey.shade200,
-                  child: Icon(
-                    Icons.person,
-                    color: Colors.grey.shade400,
-                    size: 32,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        username,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        DateFormat('dd/MM/yyyy')
+                            .format(DateTime.parse(date))
+                            .toString(),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: hexToColor(ColorsRepo.darkGray),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
+                ],
               ),
-            ),
-            const SizedBox(width: 8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  username,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  date,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: hexToColor(ColorsRepo.darkGray),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(width: 120),
-            PopupMenuButton<String>(
-              onSelected: handleClick,
-              itemBuilder: (BuildContext context) {
-                return {'Laporkan Pertanyaan', 'Hapus'}.map((String choice) {
-                  return PopupMenuItem<String>(
-                    value: choice,
-                    child: Text(choice),
-                  );
-                }).toList();
-              },
-            ),
-          ]),
+              idUserLoggedIn == idUserMaker
+                  ? PopupMenuButton(
+                      padding: const EdgeInsets.all(0),
+                      itemBuilder: (BuildContext context) => [
+                        PopupMenuItem(
+                          value: '',
+                          child: const Text('Hapus'),
+                          onTap: () {
+                            Future.delayed(
+                              const Duration(seconds: 0),
+                              () => deleteOverlayKomentarBox(
+                                context,
+                                idCourse,
+                                idDiscussion,
+                                courseTitle,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    )
+                  : const SizedBox(
+                      height: 45,
+                    ),
+            ],
+          ),
           const SizedBox(
             height: 25,
           ),
@@ -125,10 +153,9 @@ class KomentarBoxParent extends StatelessWidget {
               height: 1.5,
             ),
           ),
-          const SizedBox(height: 16),
-          ButtonBalas(
-            onPressed: () {},
-          )
+          const SizedBox(
+            height: 20,
+          ),
         ],
       ),
     );
@@ -137,24 +164,29 @@ class KomentarBoxParent extends StatelessWidget {
 
 class KomentarBoxChild extends StatelessWidget {
   final String username;
-  final String text;
+  final String komentar;
   final String avatar;
+  final int idUserLoggedIn;
+  final int idUserMaker;
+  final int idCourse;
+  final int idDiscussion;
+  final String courseTitle;
+  final int idComment;
+  final String date;
 
   const KomentarBoxChild({
     super.key,
     required this.avatar,
     required this.username,
-    required this.text,
+    required this.komentar,
+    required this.idUserLoggedIn,
+    required this.idUserMaker,
+    required this.idCourse,
+    required this.idDiscussion,
+    required this.courseTitle,
+    required this.idComment,
+    required this.date,
   });
-
-  void handleClick(String value) {
-    switch (value) {
-      case 'Laporkan Pertanyaan':
-        break;
-      case 'Hapus':
-        break;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -163,72 +195,110 @@ class KomentarBoxChild extends StatelessWidget {
         borderRadius: BorderRadius.all(Radius.circular(15)),
         color: Colors.white,
       ),
+      margin: const EdgeInsets.only(
+        right: 20,
+        left: 20,
+      ),
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(2),
-                child: CachedNetworkImage(
-                  imageUrl: avatar,
-                  imageBuilder: (context, imageProvider) => Container(
-                    height: 32,
-                    width: 32,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.fill,
+              Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(2),
+                    child: CachedNetworkImage(
+                      imageUrl: avatar,
+                      imageBuilder: (context, imageProvider) => Container(
+                        height: 32,
+                        width: 32,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: imageProvider,
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                      ),
+                      placeholder: (context, url) => Container(
+                        alignment: Alignment.center,
+                        color: Colors.grey.shade200,
+                        height: 32,
+                        width: 32,
+                        child: Icon(
+                          Icons.person,
+                          color: Colors.grey.shade400,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: Colors.grey.shade200,
+                        child: Icon(
+                          Icons.person,
+                          color: Colors.grey.shade400,
+                          size: 32,
+                        ),
                       ),
                     ),
                   ),
-                  placeholder: (context, url) => Container(
-                    alignment: Alignment.center,
-                    color: Colors.grey.shade200,
-                    height: 32,
-                    width: 32,
-                    child: Icon(
-                      Icons.person,
-                      color: Colors.grey.shade400,
-                    ),
+                  const SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        username,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        DateFormat('dd/MM/yyyy')
+                            .add_jm()
+                            .format(DateTime.parse(date).toLocal())
+                            .toString(),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: hexToColor(ColorsRepo.darkGray),
+                        ),
+                      ),
+                    ],
                   ),
-                  errorWidget: (context, url, error) => Container(
-                    color: Colors.grey.shade200,
-                    child: Icon(
-                      Icons.person,
-                      color: Colors.grey.shade400,
-                      size: 32,
+                ],
+              ),
+              idUserLoggedIn == idUserMaker
+                  ? PopupMenuButton(
+                      padding: const EdgeInsets.all(0),
+                      itemBuilder: (BuildContext context) => [
+                        PopupMenuItem(
+                          value: '',
+                          child: const Text('Hapus'),
+                          onTap: () {
+                            Future.delayed(
+                              const Duration(seconds: 0),
+                              () => deleteOverlayComment(
+                                context,
+                                idCourse,
+                                idDiscussion,
+                                courseTitle,
+                                idComment,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    )
+                  : const SizedBox(
+                      height: 45,
                     ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                username,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(width: 80),
-              PopupMenuButton<String>(
-                onSelected: handleClick,
-                itemBuilder: (BuildContext context) {
-                  return {'Laporkan Pertanyaan', 'Hapus'}.map((String choice) {
-                    return PopupMenuItem<String>(
-                      value: choice,
-                      child: Text(choice),
-                    );
-                  }).toList();
-                },
-              ),
             ],
           ),
           Container(
             margin: const EdgeInsets.only(left: 40.0),
             child: Text(
-              text,
+              komentar,
               style: const TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 16,

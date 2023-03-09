@@ -49,7 +49,12 @@ class _ArticleScreenState extends State<ArticleScreen> {
                       .replaceAll('\\', '');
                   return SingleChildScrollView(
                     child: Html(
-                      data: content,
+                      data: '''${snapshot.data['data']['title']} $content''',
+                      style: {
+                        'body': Style(
+                          fontSize: FontSize(18.0),
+                        ),
+                      },
                     ),
                   );
                 }
@@ -171,7 +176,6 @@ class ArticleScreenOnTap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('ArticleScreenOnTap ${idChapter!}');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: hexToColor(ColorsRepo.primaryColor),
@@ -196,9 +200,15 @@ class ArticleScreenOnTap extends StatelessWidget {
                 .toString()
                 .replaceAll('\\n', '\n')
                 .replaceAll('\\', '');
+
             return SingleChildScrollView(
               child: Html(
                 data: content,
+                style: {
+                  'body': Style(
+                    fontSize: FontSize(18.0),
+                  ),
+                },
               ),
             );
           }

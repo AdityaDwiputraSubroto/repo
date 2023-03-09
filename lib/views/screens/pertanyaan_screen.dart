@@ -1,17 +1,16 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:repo/controllers/app_controller.dart';
-import 'package:repo/controllers/login_controller.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
-import 'package:repo/core/routes/routes.dart';
-import 'package:repo/models/user/login.dart';
+import 'package:repo/models/comment/comment_request_model.dart';
 import 'package:repo/views/widgets/index.dart';
 import 'package:get/get.dart';
 import 'package:repo/views/widgets/komentar_box_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PertanyaanScreen extends StatefulWidget {
   const PertanyaanScreen({super.key});
+  static bool isLoading = false;
 
   @override
   State<PertanyaanScreen> createState() => _PertanyaanScreenState();
@@ -21,17 +20,23 @@ class _PertanyaanScreenState extends State<PertanyaanScreen> {
   final _appController = Get.put(AppController());
   final courseId = Get.arguments['courseId'];
   final discussionId = Get.arguments['discussionId'];
+  final courseTitle = Get.arguments['titleCourse'];
+  TextEditingController commentController = TextEditingController();
 
-  void tunggu() async {
-    var tes = await _appController.fetchDiscusionByDiscussionId(
-        courseId, discussionId);
+  // ignore: prefer_typing_uninitialized_variables
+  var idUser;
+  @override
+  void initState() {
+    SharedPreferences.getInstance().then((value) {
+      setState(() {
+        idUser = value.getInt('id-user');
+      });
+    });
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    print(courseId.toString());
-    print(discussionId.toString());
-    tunggu();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pertanyaan'),
@@ -47,64 +52,94 @@ class _PertanyaanScreenState extends State<PertanyaanScreen> {
               Container(
                 padding: const EdgeInsets.only(bottom: 55),
                 child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   child: FutureBuilder(
                     future: _appController.fetchDiscusionByDiscussionId(
                         courseId, discussionId),
-                    builder: (context, AsyncSnapshot s) {
-                      if (s.connectionState == ConnectionState.waiting ||
-                          s.data == "Tidak ada data" ||
-                          s.data == null) {
-                        return Text("Tidak Ada Data");
+                    builder: (context, AsyncSnapshot snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting ||
+                          PertanyaanScreen.isLoading == true ||
+                          snapshot.data == null) {
+                        return const Center(
+                          heightFactor: 20,
+                          child: CircularProgressIndicator(),
+                        );
                       } else {
-                        print("\n\nFromView\n" + s.data.data.title.toString());
-                        return KomentarBoxParent(
-                          username: s.data.data.user.fullName,
-                          text: s.data.data.body,
-                          title: s.data.data.title,
-                          date: s.data.data.createdAt,
-                          avatar: s.data.data.user.photoProfile ?? '',
+                        return Column(
+                          children: [
+                            KomentarBoxParent(
+                              username: snapshot.data.data.user.fullName,
+                              text: snapshot.data.data.body,
+                              title: snapshot.data.data.title,
+                              date: snapshot.data.data.createdAt,
+                              avatar:
+                                  snapshot.data.data.user.photoProfile ?? '',
+                              idUserMaker: snapshot.data.data.idUser,
+                              idUserLoggedIn: idUser,
+                              idCourse: courseId,
+                              idDiscussion: discussionId,
+                              courseTitle: courseTitle,
+                            ),
+                            Container(
+                              alignment: Alignment.centerLeft,
+                              color: hexToColor(ColorsRepo.lightGray),
+                              padding: const EdgeInsets.all(20),
+                              child: const Text(
+                                'Komentar',
+                                style: TextStyle(
+                                  fontSize: 23,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                            FutureBuilder(
+                              future: _appController.getComment(
+                                  courseId, discussionId),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                        ConnectionState.waiting ||
+                                    snapshot.data == null) {
+                                  return Container();
+                                } else {
+                                  return ListView.separated(
+                                    shrinkWrap: true,
+                                    separatorBuilder: (context, index) =>
+                                        const SizedBox(
+                                      height: 10,
+                                    ),
+                                    primary: false,
+                                    itemBuilder: (context, index) {
+                                      return KomentarBoxChild(
+                                        avatar: snapshot.data[index].user
+                                                .photoProfile ??
+                                            '',
+                                        username:
+                                            snapshot.data[index].user.fullName,
+                                        komentar: snapshot.data[index].body,
+                                        idUserMaker:
+                                            snapshot.data[index].user.id,
+                                        idUserLoggedIn: idUser,
+                                        idCourse: courseId,
+                                        idDiscussion: discussionId,
+                                        courseTitle: courseTitle,
+                                        idComment: snapshot.data[index].id,
+                                        date: snapshot.data[index].createdAt,
+                                      );
+                                    },
+                                    itemCount: snapshot.data.length,
+                                  );
+                                }
+                              },
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                          ],
                         );
                       }
                     },
                   ),
                 ),
-                // child: ListView(
-                //   children: [
-                //     const KomentarBoxParent(
-                //         avatar: '',
-                //         title: 'Lorem ipsum dolor sit amet',
-                //         username: 'Muhammad Rafli',
-                //         text:
-                //             'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-                //         date: '12/03/2022'),
-                //     const SizedBox(
-                //       height: 10,
-                //     ),
-                //     Container(
-                //       color: hexToColor(ColorsRepo.lightGray),
-                //       padding: const EdgeInsets.all(20),
-                //       child: Column(
-                //         crossAxisAlignment: CrossAxisAlignment.start,
-                //         children: const [
-                //           Text(
-                //             'Komentar',
-                //             style: TextStyle(
-                //               fontSize: 23,
-                //               fontWeight: FontWeight.w700,
-                //             ),
-                //           ),
-                //           SizedBox(height: 10),
-                //           KomentarBoxChild(
-                //             avatar: '',
-                //             username: 'Muhammad Rafli',
-                //             text:
-                //                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-                //           )
-                //         ],
-                //       ),
-                //     )
-                //   ],
-                // ),
               ),
               Align(
                 alignment: Alignment.bottomCenter,
@@ -116,10 +151,11 @@ class _PertanyaanScreenState extends State<PertanyaanScreen> {
                       children: [
                         SizedBox(
                           width: MediaQuery.of(context).size.width - 40,
-                          child: const TextField(
+                          child: TextField(
+                            controller: commentController,
                             maxLines: 5,
                             minLines: 1,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               hintText: 'Comment',
                               contentPadding: EdgeInsets.all(20),
                               border: InputBorder.none,
@@ -138,7 +174,19 @@ class _PertanyaanScreenState extends State<PertanyaanScreen> {
                             color: hexToColor(ColorsRepo.primaryColor),
                             size: 24.0,
                           ),
-                          onTap: () {},
+                          onTap: () async {
+                            setState(() {
+                              PertanyaanScreen.isLoading = true;
+                            });
+                            CommentRequest commentRequest =
+                                CommentRequest(body: commentController.text);
+                            await _appController.postComment(
+                                courseId, discussionId, commentRequest);
+                            commentController.text = '';
+                            setState(() {
+                              PertanyaanScreen.isLoading = false;
+                            });
+                          },
                         ),
                       ],
                     ),

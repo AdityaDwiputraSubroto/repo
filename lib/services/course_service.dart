@@ -61,22 +61,6 @@ class CourseService {
     return data.map((e) => CourseResponse.fromJson(e)).toList();
   }
 
-  Future deleteCourseById(int? idCourse) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    var accesToken = sharedPreferences.getString('access-token');
-    Uri url = Uri.parse(ApiRoutesRepo.deleteCourse(idCourse!));
-
-    final response = await client.delete(
-      url,
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $accesToken',
-      },
-    );
-    var jsonResponse = jsonDecode(response.body);
-    return jsonResponse;
-  }
-
   static Future refreshToken() async {
     debugPrint('refresh token ni boss');
 

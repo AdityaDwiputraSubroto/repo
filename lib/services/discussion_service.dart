@@ -1,14 +1,14 @@
 import 'dart:convert';
 
-// import 'package:http/http.dart' as http;
-import 'package:flutter/material.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:repo/core/routes/api_routes.dart';
 import 'package:repo/core/routes/routes.dart';
 import 'package:repo/core/utils/base_response.dart';
+import 'package:repo/models/comment/comment_list_response_model.dart';
 import 'package:repo/services/course_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/comment/comment_request_model.dart';
 import '../models/discussion/discussion_by_course_id_model.dart';
 import '../models/discussion/discussion_by_discussion_model.dart';
 import '../models/discussion/store_discussion_model.dart';
@@ -124,7 +124,54 @@ class DiscussionService {
     );
     var data = jsonDecode(response.body);
     var discussionResponse = DiscussionByDiscussionIdResponse.fromJson(data);
-    debugPrint('from discussionService\n${discussionResponse.data!.title}');
     return discussionResponse;
+  }
+
+  Future getCommentDiscussions(int idCourse, int idDiscussion) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    Uri url = Uri.parse(ApiRoutesRepo.getComment(idCourse, idDiscussion));
+
+    final response = await client.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer ${sharedPreferences.getString('access-token')}'
+      },
+    );
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body)['data'];
+      return data.map((e) => CommentListResponse.fromJson(e)).toList();
+    } else {
+      return [];
+    }
+  }
+
+  Future postCommentDiscussions(
+      int idCourse, int idDiscussion, CommentRequest comment) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var accesToken = sharedPreferences.getString('access-token');
+    Uri url = Uri.parse(ApiRoutesRepo.postComment(idCourse, idDiscussion));
+    await client.post(
+      url,
+      body: jsonEncode(comment),
+      headers: {
+        'Authorization': 'Bearer $accesToken',
+      },
+    );
+  }
+
+  Future deleteCommentDiscussions(
+      int idCourse, int idDiscussion, int idComment) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var accessToken = sharedPreferences.getString('access-token');
+
+    Uri url = Uri.parse(
+        ApiRoutesRepo.deleteComment(idCourse, idDiscussion, idComment));
+
+    final response = await client.delete(url, headers: {
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer $accessToken',
+    });
+    print(response.statusCode);
+    print(response.body);
   }
 }

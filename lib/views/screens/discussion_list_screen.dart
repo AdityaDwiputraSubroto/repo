@@ -13,7 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class DiscussionListScreen extends StatefulWidget {
   const DiscussionListScreen({super.key});
-
+  static bool isLoading = false;
   @override
   State<DiscussionListScreen> createState() => _DiscussionListScreenState();
 }
@@ -21,7 +21,8 @@ class DiscussionListScreen extends StatefulWidget {
 class _DiscussionListScreenState extends State<DiscussionListScreen> {
   final appController = Get.put(AppController());
   static final courseid = Get.arguments['courseId'];
-  final title = Get.arguments['judul'];
+  static final titleCourse = Get.arguments['judul'];
+
   // ignore: prefer_typing_uninitialized_variables
   var idUser;
 
@@ -35,6 +36,12 @@ class _DiscussionListScreenState extends State<DiscussionListScreen> {
     super.initState();
   }
 
+  Future refresh() async {
+    setState(() {
+      appController.fetchAllDiscussionByidCourse(courseid);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,14 +49,17 @@ class _DiscussionListScreenState extends State<DiscussionListScreen> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: hexToColor(ColorsRepo.primaryColor),
-        title: Text('$title'),
+        title: Text('$titleCourse'),
         actions: [
           IconButton(
             padding: const EdgeInsets.only(right: 20),
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: SearchDiscussionScreen(courseId: courseid),
+                delegate: SearchDiscussionScreen(
+                  courseId: courseid,
+                  courseTitle: titleCourse,
+                ),
               );
             },
             icon: const Icon(
@@ -64,18 +74,29 @@ class _DiscussionListScreenState extends State<DiscussionListScreen> {
           builder: (context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting ||
                 snapshot.data == 'Tidak ada data' ||
-                snapshot.data == null) {
-              return Container(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                child: Center(
-                  heightFactor: MediaQuery.of(context).size.height / 38,
-                  child: const Text(
-                    'Belum ada diskusi',
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                snapshot.data == null ||
+                DiscussionListScreen.isLoading == true) {
+              return RefreshIndicator(
+                onRefresh: refresh,
+                child: ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  itemCount: 1,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                      child: Center(
+                        heightFactor: MediaQuery.of(context).size.height / 38,
+                        child: const Text(
+                          'Belum ada diskusi',
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               );
             } else {
@@ -97,179 +118,187 @@ class _DiscussionListScreenState extends State<DiscussionListScreen> {
                     ),
                     SizedBox(
                       height: MediaQuery.of(context).size.height / 1.21,
-                      child: ListView.separated(
-                        separatorBuilder: (context, index) {
-                          return const SizedBox(
-                            height: 12,
-                          );
-                        },
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (context, index) {
-                          return InkWell(
-                            onTap: () {
-                              Get.toNamed(AppRoutesRepo.pertanyaan, arguments: {
-                                'courseId': courseid,
-                                'discussionId': snapshot.data![index].id
-                              });
-                            },
-                            child: Container(
-                              height: 178,
-                              width: MediaQuery.of(context).size.width,
-                              padding: const EdgeInsets.fromLTRB(12, 6, 8, 12),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(4),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.1),
-                                    spreadRadius: 5,
-                                    blurRadius: 7,
-                                    offset: const Offset(0, 3),
-                                    blurStyle: BlurStyle.outer,
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(2),
-                                            child: CachedNetworkImage(
-                                              imageUrl:
-                                                  '${snapshot.data[index].user.photoProfile}',
-                                              imageBuilder:
-                                                  (context, imageProvider) =>
-                                                      Container(
-                                                height: 32,
-                                                width: 32,
-                                                decoration: BoxDecoration(
-                                                  image: DecorationImage(
-                                                    image: imageProvider,
-                                                    fit: BoxFit.fill,
+                      child: RefreshIndicator(
+                        onRefresh: refresh,
+                        child: ListView.separated(
+                          separatorBuilder: (context, index) {
+                            return const SizedBox(
+                              height: 12,
+                            );
+                          },
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (context, index) {
+                            return InkWell(
+                              onTap: () {
+                                Get.toNamed(AppRoutesRepo.pertanyaan,
+                                    arguments: {
+                                      'courseId': courseid,
+                                      'discussionId': snapshot.data![index].id,
+                                      'titleCourse': titleCourse,
+                                    });
+                              },
+                              child: Container(
+                                height: 178,
+                                width: MediaQuery.of(context).size.width,
+                                padding:
+                                    const EdgeInsets.fromLTRB(12, 6, 8, 12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(4),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.1),
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: const Offset(0, 3),
+                                      blurStyle: BlurStyle.outer,
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(2),
+                                              child: CachedNetworkImage(
+                                                imageUrl:
+                                                    '${snapshot.data[index].user.photoProfile}',
+                                                imageBuilder:
+                                                    (context, imageProvider) =>
+                                                        Container(
+                                                  height: 32,
+                                                  width: 32,
+                                                  decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                ),
+                                                placeholder: (context, url) =>
+                                                    Container(
+                                                  alignment: Alignment.center,
+                                                  color: Colors.grey.shade200,
+                                                  height: 32,
+                                                  width: 32,
+                                                  child: Icon(
+                                                    Icons.person,
+                                                    color: Colors.grey.shade400,
+                                                  ),
+                                                ),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        Container(
+                                                  color: Colors.grey.shade200,
+                                                  child: Icon(
+                                                    Icons.person,
+                                                    color: Colors.grey.shade400,
+                                                    size: 32,
                                                   ),
                                                 ),
                                               ),
-                                              placeholder: (context, url) =>
-                                                  Container(
-                                                alignment: Alignment.center,
-                                                color: Colors.grey.shade200,
-                                                height: 32,
-                                                width: 32,
-                                                child: Icon(
-                                                  Icons.person,
-                                                  color: Colors.grey.shade400,
-                                                ),
-                                              ),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      Container(
-                                                color: Colors.grey.shade200,
-                                                child: Icon(
-                                                  Icons.person,
-                                                  color: Colors.grey.shade400,
-                                                  size: 32,
-                                                ),
-                                              ),
                                             ),
-                                          ),
-                                          const SizedBox(
-                                            width: 12,
-                                          ),
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                snapshot
-                                                    .data![index].user.fullName,
-                                                style: const TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w500,
+                                            const SizedBox(
+                                              width: 12,
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  snapshot.data![index].user
+                                                      .fullName,
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
                                                 ),
-                                              ),
-                                              const SizedBox(height: 6),
-                                              Text(
-                                                DateFormat('dd/MM/yyyy').format(
-                                                    DateTime.parse(snapshot
-                                                        .data![index]
-                                                        .createdAt)),
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: hexToColor(
-                                                      ColorsRepo.darkGray),
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      idUser == snapshot.data![index].idUser
-                                          ? PopupMenuButton(
-                                              padding: const EdgeInsets.all(0),
-                                              itemBuilder:
-                                                  (BuildContext context) => [
-                                                PopupMenuItem(
-                                                  value: '',
-                                                  child: const Text('Hapus'),
-                                                  onTap: () {
-                                                    Future.delayed(
-                                                      const Duration(
-                                                          seconds: 0),
-                                                      () =>
-                                                          deleteOverlayDiskusi(
-                                                        context,
-                                                        courseid,
-                                                        snapshot.data[index].id,
-                                                        title,
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
+                                                const SizedBox(height: 6),
+                                                Text(
+                                                  DateFormat('dd/MM/yyyy')
+                                                      .format(DateTime.parse(
+                                                          snapshot.data![index]
+                                                              .createdAt)),
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: hexToColor(
+                                                        ColorsRepo.darkGray),
+                                                  ),
+                                                )
                                               ],
-                                            )
-                                          : const SizedBox(
-                                              height: 45,
                                             ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 12,
-                                  ),
-                                  Text(
-                                    snapshot.data![index].title,
-                                    maxLines: 1,
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                                          ],
+                                        ),
+                                        idUser == snapshot.data![index].idUser
+                                            ? PopupMenuButton(
+                                                padding:
+                                                    const EdgeInsets.all(0),
+                                                itemBuilder:
+                                                    (BuildContext context) => [
+                                                  PopupMenuItem(
+                                                    value: '',
+                                                    child: const Text('Hapus'),
+                                                    onTap: () {
+                                                      Future.delayed(
+                                                        const Duration(
+                                                            seconds: 0),
+                                                        () =>
+                                                            deleteOverlayDiskusi(
+                                                          context,
+                                                          courseid,
+                                                          snapshot
+                                                              .data[index].id,
+                                                          titleCourse,
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                                ],
+                                              )
+                                            : const SizedBox(
+                                                height: 45,
+                                              ),
+                                      ],
                                     ),
-                                  ),
-                                  const SizedBox(
-                                    height: 4,
-                                  ),
-                                  Text(
-                                    snapshot.data![index].body,
-                                    maxLines: 3,
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                      height: 1.4,
+                                    const SizedBox(
+                                      height: 12,
                                     ),
-                                  ),
-                                ],
+                                    Text(
+                                      snapshot.data![index].title,
+                                      maxLines: 1,
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 4,
+                                    ),
+                                    Text(
+                                      snapshot.data![index].body,
+                                      maxLines: 3,
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        height: 1.4,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
                     )
                   ],
@@ -284,7 +313,7 @@ class _DiscussionListScreenState extends State<DiscussionListScreen> {
           //Get.to(() => const AddQuestionScreen());
           Get.to(
             () => const AddQuestionScreen(),
-            arguments: {'idCourse': courseid, 'title': title},
+            arguments: {'idCourse': courseid, 'title': titleCourse},
           );
         },
         backgroundColor: hexToColor(ColorsRepo.primaryColor),
@@ -296,9 +325,11 @@ class _DiscussionListScreenState extends State<DiscussionListScreen> {
 
 class SearchDiscussionScreen extends SearchDelegate {
   int? courseId;
+  String? courseTitle;
 
   SearchDiscussionScreen({
     this.courseId,
+    this.courseTitle,
   });
 
   final appController = Get.put(AppController());
@@ -340,7 +371,8 @@ class SearchDiscussionScreen extends SearchDelegate {
                 onTap: () {
                   Get.toNamed(AppRoutesRepo.pertanyaan, arguments: {
                     'courseId': courseId,
-                    'discussionId': snapshot.data![index].id
+                    'discussionId': snapshot.data![index].id,
+                    'titleCourse': courseTitle,
                   });
                 },
               );

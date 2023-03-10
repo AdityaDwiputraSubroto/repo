@@ -70,18 +70,6 @@ class AppController extends GetxController {
     update();
   }
 
-  Future<List<ChapterResponse>> fetchAllChapter(int idCourse) async {
-    try {
-      final allChapter = await chapterService.getAllChapter(idCourse);
-      if (allChapter.isNotEmpty) {
-        allChapterList.assignAll(allChapter);
-      }
-      return allChapterList;
-    } catch (e) {
-      throw Exception(e);
-    }
-  }
-
   fetchAllChaptersAndTitleArticles(int idCourse) async {
     try {
       isLoading.value = true;
@@ -101,8 +89,9 @@ class AppController extends GetxController {
   Future fetchArticleByIdChapterAndIdArticle(
       int idCourse, int idChapter, int idArticle) async {
     try {
-      final response = await chapterService.getArticleByIdChapterAndIdArticle(
-          idCourse, idChapter, idArticle);
+      final response = await CourseService.refreshToken().then((value) =>
+          chapterService.getArticleByIdChapterAndIdArticle(
+              idCourse, idChapter, idArticle));
       return response;
     } catch (e) {
       Future.delayed(
@@ -116,21 +105,24 @@ class AppController extends GetxController {
 
   Future fetchAllDiscussionByidCourse(int idCourse) async {
     try {
-      final response = await discussionService.getAllDiscussion(idCourse);
+      final response = await CourseService.refreshToken()
+          .then((value) => discussionService.getAllDiscussion(idCourse));
       if (response.isEmpty) {
         return null;
       } else {
         return response;
       }
     } catch (e) {
+      fetchAllDiscussionByidCourse(idCourse);
       throw Exception(e);
     }
   }
 
   Future fetchDiscusionByDiscussionId(int idCourse, int idDiscussion) async {
     try {
-      final res = await discussionService.getDiscussionByDiscussionId(
-          idCourse, idDiscussion);
+      final res = await CourseService.refreshToken().then((value) =>
+          discussionService.getDiscussionByDiscussionId(
+              idCourse, idDiscussion));
       if (res.status == 'success') {
         return res;
       } else {
@@ -143,7 +135,8 @@ class AppController extends GetxController {
 
   Future<List<CourseResponse>> searchCourseByTitle(String title) async {
     try {
-      final resultCourse = await courseService.getCourseByTitle(title);
+      final resultCourse = await CourseService.refreshToken()
+          .then((value) => courseService.getCourseByTitle(title));
       return resultCourse;
     } catch (e) {
       throw Exception(e);
@@ -167,7 +160,8 @@ class AppController extends GetxController {
   Future<void> storeDiscussionController(
       StoreDiscussionRequest request, int idCourse) async {
     try {
-      var response = await discussionService.storeDiscussion(request, idCourse);
+      var response = await CourseService.refreshToken().then(
+          (value) => discussionService.storeDiscussion(request, idCourse));
       if (response.status == 'success') {
         snackbarRepoSuccess(response.status, response.message);
       } else {
@@ -198,8 +192,8 @@ class AppController extends GetxController {
   Future<List<DiscussionResponse>> searchDiscussionTitle(
       int idCourse, String title) async {
     try {
-      final response =
-          await discussionService.searchDiscussion(idCourse, title);
+      final response = await CourseService.refreshToken()
+          .then((value) => discussionService.searchDiscussion(idCourse, title));
       return response;
     } catch (e) {
       throw Exception(e);
@@ -209,8 +203,8 @@ class AppController extends GetxController {
   Future<void> deleteDiscussion(
       BuildContext context, int idCourse, int idDiscussion) async {
     try {
-      var response =
-          await discussionService.deleteDiscussion(idCourse, idDiscussion);
+      var response = await CourseService.refreshToken().then((value) =>
+          discussionService.deleteDiscussion(idCourse, idDiscussion));
       if (response.status == 'success') {
         snackbarRepoSuccess(response.status, response.message);
       } else {
@@ -231,8 +225,9 @@ class AppController extends GetxController {
       String generation,
       String noTelp) async {
     try {
-      final response = await userService.putEditProfileWithImage(
-          img, name, username, email, division, generation, noTelp);
+      final response = await CourseService.refreshToken().then((value) =>
+          userService.putEditProfileWithImage(
+              img, name, username, email, division, generation, noTelp));
       if (response.status == 'success') {
         isLoading.value = true;
         snackbarRepoSuccess(response.status, response.message);
@@ -252,7 +247,8 @@ class AppController extends GetxController {
 
   Future changePasswordUser(String password) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    final response = await userService.changePassword(password);
+    final response = await CourseService.refreshToken()
+        .then((value) => userService.changePassword(password));
 
     if (response.status == 'success') {
       sharedPreferences.setString('password', password);
@@ -263,8 +259,8 @@ class AppController extends GetxController {
   }
 
   Future getComment(int idCourse, int idDiscussion) async {
-    final response =
-        await discussionService.getCommentDiscussions(idCourse, idDiscussion);
+    final response = await CourseService.refreshToken().then((value) =>
+        discussionService.getCommentDiscussions(idCourse, idDiscussion));
 
     if (response.isNotEmpty) {
       return response;
@@ -275,12 +271,12 @@ class AppController extends GetxController {
 
   Future postComment(
       int idCourse, int idDiscussion, CommentRequest body) async {
-    final response = await discussionService.postCommentDiscussions(
-        idCourse, idDiscussion, body);
+    await CourseService.refreshToken().then((value) =>
+        discussionService.postCommentDiscussions(idCourse, idDiscussion, body));
   }
 
   Future deleteComment(int idCourse, int idDiscussion, int idComment) async {
-    await discussionService.deleteCommentDiscussions(
-        idCourse, idDiscussion, idComment);
+    await CourseService.refreshToken().then((value) => discussionService
+        .deleteCommentDiscussions(idCourse, idDiscussion, idComment));
   }
 }

@@ -21,8 +21,8 @@ class DiscussionListScreen extends StatefulWidget {
 
 class _DiscussionListScreenState extends State<DiscussionListScreen> {
   final appController = Get.put(AppController());
-  static final courseid = Get.arguments['courseId'];
-  static final titleCourse = Get.arguments['judul'];
+  final courseid = Get.arguments['courseId'];
+  final titleCourse = Get.arguments['judul'];
 
   // ignore: prefer_typing_uninitialized_variables
   var idUser;

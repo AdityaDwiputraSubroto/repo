@@ -172,6 +172,21 @@ class AppController extends GetxController {
     }
   }
 
+  Future<void> putDiscussionController(
+      StoreDiscussionRequest request, int idCourse, int idDiscussion) async {
+    try {
+      var response = await CourseService.refreshToken().then((value) =>
+          discussionService.putDiscussion(request, idCourse, idDiscussion));
+      if (response.status == 'success') {
+        snackbarRepoSuccess(response.status, response.message);
+      } else {
+        snackbarRepo(response.status, response.message);
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
   fetchUserOwnProfile() async {
     try {
       final SharedPreferences sharedPreferences =
@@ -278,5 +293,12 @@ class AppController extends GetxController {
   Future deleteComment(int idCourse, int idDiscussion, int idComment) async {
     await CourseService.refreshToken().then((value) => discussionService
         .deleteCommentDiscussions(idCourse, idDiscussion, idComment));
+  }
+
+  Future editComment(int idCourse, int idDiscussion, int idComment,
+      CommentRequest editCommentRequest) async {
+    await CourseService.refreshToken().then((value) =>
+        discussionService.editCommentDiscussions(
+            idCourse, idDiscussion, idComment, editCommentRequest));
   }
 }

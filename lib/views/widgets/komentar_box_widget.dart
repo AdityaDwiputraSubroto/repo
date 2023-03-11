@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
-
 import 'delete_overlay_widget.dart';
+import 'edit_overlay_widget.dart';
 
 class KomentarBoxParent extends StatelessWidget {
   final String avatar;
@@ -272,6 +272,23 @@ class KomentarBoxChild extends StatelessWidget {
                   ? PopupMenuButton(
                       padding: const EdgeInsets.all(0),
                       itemBuilder: (BuildContext context) => [
+                        PopupMenuItem(
+                          value: '',
+                          child: const Text('Edit'),
+                          onTap: () {
+                            Future.delayed(
+                              const Duration(seconds: 0),
+                              () => editOverlayComment(
+                                context,
+                                idCourse,
+                                idDiscussion,
+                                courseTitle,
+                                idComment,
+                                komentar,
+                              ),
+                            );
+                          },
+                        ),
                         PopupMenuItem(
                           value: '',
                           child: const Text('Hapus'),

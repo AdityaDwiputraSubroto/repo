@@ -156,7 +156,7 @@ class _PertanyaanScreenState extends State<PertanyaanScreen> {
                             maxLines: 5,
                             minLines: 1,
                             decoration: const InputDecoration(
-                              hintText: 'Comment',
+                              hintText: 'Komentar',
                               contentPadding: EdgeInsets.all(20),
                               border: InputBorder.none,
                               focusedBorder: InputBorder.none,
@@ -175,6 +175,7 @@ class _PertanyaanScreenState extends State<PertanyaanScreen> {
                             size: 24.0,
                           ),
                           onTap: () async {
+                            FocusManager.instance.primaryFocus?.unfocus();
                             setState(() {
                               PertanyaanScreen.isLoading = true;
                             });

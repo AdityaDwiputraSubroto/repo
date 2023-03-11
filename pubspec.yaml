@@ -46,3 +46,9 @@ flutter:
         - asset: assets/fonts/Poppins-Bold.otf
           weight: 700
           style: normal
+
+flutter_native_splash:
+  color: "#ffffff"
+  android_12:
+    image: assets/images/splashscreen.png
+    color: "#ffffff"

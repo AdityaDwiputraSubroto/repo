@@ -52,6 +52,10 @@ abstract class ApiRoutesRepo {
     return '$baseUrl/courses/$idCourse/discussions';
   }
 
+  static String putDiscussion(int idCourse, int idDiscussion) {
+    return '$baseUrl/courses/$idCourse/discussions/$idDiscussion';
+  }
+
   static String searchDiscussion(int idCourse, String title) {
     return '$baseUrl/courses/$idCourse/discussions/search?keyword=$title';
   }
@@ -73,6 +77,10 @@ abstract class ApiRoutesRepo {
   }
 
   static String deleteComment(int idCourse, int idDiscussion, int idComment) {
+    return '$baseUrl/courses/$idCourse/discussions/$idDiscussion/comments/$idComment';
+  }
+
+  static String editComment(int idCourse, int idDiscussion, int idComment) {
     return '$baseUrl/courses/$idCourse/discussions/$idDiscussion/comments/$idComment';
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:repo/controllers/app_controller.dart';
-import 'package:repo/views/screens/discussion_list_screen.dart';
 
 import '../../core/routes/app_routes.dart';
 import '../../core/shared/colors.dart';

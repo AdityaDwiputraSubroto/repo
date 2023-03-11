@@ -12,6 +12,7 @@ import 'package:repo/core/shared/assets.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
 import 'package:repo/models/course/course_model.dart';
+import 'package:repo/services/course_service.dart';
 
 class HomeScreen extends StatefulWidget {
   static ScrollController scrollController = ScrollController();
@@ -41,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     appController.page.value = 1;
     appController.allCourseList.value = <CourseResponse>[].obs;
+    CourseService.refreshToken();
     appController.fetchAllCourse();
     appController.fetchUserOwnProfile();
     HomeScreen.scrollController.addListener(_scrollListener);

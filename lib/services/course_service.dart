@@ -49,7 +49,6 @@ class CourseService {
         'Authorization': 'Bearer $accesToken',
       },
     );
-    debugPrint('getCourseByTitle ${response.statusCode}');
     if (response.statusCode == 200) {
       data = json.decode(response.body)['data'];
     } else {
@@ -62,8 +61,6 @@ class CourseService {
   }
 
   static Future refreshToken() async {
-    debugPrint('refresh token ni boss');
-
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();

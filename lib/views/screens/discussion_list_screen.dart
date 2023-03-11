@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:repo/core/routes/app_routes.dart';
 import 'package:repo/core/shared/colors.dart';
 import 'package:repo/core/utils/formatting.dart';
-import 'package:repo/services/course_service.dart';
+import 'package:repo/views/screens/edit_question_screen.dart';
 import '../../models/discussion/discussion_by_course_id_model.dart';
 import '../widgets/delete_overlay_widget.dart';
 import 'add_question_screen.dart';
@@ -21,8 +21,8 @@ class DiscussionListScreen extends StatefulWidget {
 
 class _DiscussionListScreenState extends State<DiscussionListScreen> {
   final appController = Get.put(AppController());
-  static final courseid = Get.arguments['courseId'];
-  static final titleCourse = Get.arguments['judul'];
+  final courseid = Get.arguments['courseId'];
+  final titleCourse = Get.arguments['judul'];
 
   // ignore: prefer_typing_uninitialized_variables
   var idUser;
@@ -245,6 +245,41 @@ class _DiscussionListScreenState extends State<DiscussionListScreen> {
                                                     const EdgeInsets.all(0),
                                                 itemBuilder:
                                                     (BuildContext context) => [
+                                                  PopupMenuItem(
+                                                    value: '',
+                                                    child: const Text('Edit'),
+                                                    onTap: () {
+                                                      Future.delayed(
+                                                          const Duration(
+                                                              seconds: 0), () {
+                                                        Get.to(
+                                                          () =>
+                                                              const EditQuestionScreen(),
+                                                          arguments: {
+                                                            'idCourse':
+                                                                courseid,
+                                                            'title':
+                                                                titleCourse,
+                                                            'titleDiscussion':
+                                                                snapshot
+                                                                    .data![
+                                                                        index]
+                                                                    .title,
+                                                            'bodyDiscussion':
+                                                                snapshot
+                                                                    .data![
+                                                                        index]
+                                                                    .body,
+                                                            'idDiscussion':
+                                                                snapshot
+                                                                    .data![
+                                                                        index]
+                                                                    .id
+                                                          },
+                                                        );
+                                                      });
+                                                    },
+                                                  ),
                                                   PopupMenuItem(
                                                     value: '',
                                                     child: const Text('Hapus'),

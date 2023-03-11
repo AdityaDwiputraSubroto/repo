@@ -48,13 +48,40 @@ class _ArticleScreenState extends State<ArticleScreen> {
                       .replaceAll('\\n', '\n')
                       .replaceAll('\\', '');
                   return SingleChildScrollView(
-                    child: Html(
-                      data: '''${snapshot.data['data']['title']} $content''',
-                      style: {
-                        'body': Style(
-                          fontSize: FontSize(18.0),
-                        ),
-                      },
+                    child: Container(
+                      padding: const EdgeInsets.only(
+                        top: 12,
+                        left: 10,
+                        right: 10,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Chapter ${widget.listIdChapter![pageIndex]} - ${snapshot.data['data']['title']}',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Divider(
+                            color: Colors.black,
+                            thickness: 1,
+                          ),
+                          Html(
+                            data: content,
+                            style: {
+                              'p': Style(
+                                fontSize: FontSize(18.0),
+                                textAlign: TextAlign.justify,
+                              ),
+                              'img': Style(
+                                border: Border.all(color: Colors.black),
+                              )
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 }
@@ -201,14 +228,24 @@ class ArticleScreenOnTap extends StatelessWidget {
                 .replaceAll('\\n', '\n')
                 .replaceAll('\\', '');
 
-            return SingleChildScrollView(
-              child: Html(
-                data: content,
-                style: {
-                  'body': Style(
-                    fontSize: FontSize(18.0),
-                  ),
-                },
+            return Container(
+              padding: const EdgeInsets.only(
+                left: 10,
+                right: 10,
+              ),
+              child: SingleChildScrollView(
+                child: Html(
+                  data: content,
+                  style: {
+                    'p': Style(
+                      fontSize: FontSize(18.0),
+                      textAlign: TextAlign.justify,
+                    ),
+                    'img': Style(
+                      border: Border.all(color: Colors.black),
+                    )
+                  },
+                ),
               ),
             );
           }

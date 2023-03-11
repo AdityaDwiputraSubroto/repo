@@ -92,6 +92,31 @@ class DiscussionService {
     }
   }
 
+  Future putDiscussion(
+      StoreDiscussionRequest request, int idCourse, int idDiscussion) async {
+    Uri uri = Uri.parse(ApiRoutesRepo.putDiscussion(idCourse, idDiscussion));
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var accesToken = sharedPreferences.getString('access-token');
+    final response = await http.put(
+      uri,
+      body: jsonEncode(request),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accesToken',
+      },
+    );
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      // ignore: avoid_print
+      print(response.statusCode);
+      //throw Exception('Failed to store discussion');
+      throw Exception('Failed to store discussion');
+    } else {
+      var body = json.decode(response.body);
+      return BaseResponseErrorAndMessageOnly.fromJson(body);
+    }
+  }
+
   Future deleteDiscussion(int idCourse, int idDiscussion) async {
     Uri uri = Uri.parse(ApiRoutesRepo.deleteDiscussion(idCourse, idDiscussion));
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -167,11 +192,26 @@ class DiscussionService {
     Uri url = Uri.parse(
         ApiRoutesRepo.deleteComment(idCourse, idDiscussion, idComment));
 
-    final response = await client.delete(url, headers: {
+    await client.delete(url, headers: {
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer $accessToken',
     });
-    print(response.statusCode);
-    print(response.body);
+  }
+
+  Future editCommentDiscussions(int idCourse, int idDiscussion, int idComment,
+      CommentRequest editCommentRequest) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var accessToken = sharedPreferences.getString('access-token');
+
+    Uri url =
+        Uri.parse(ApiRoutesRepo.editComment(idCourse, idDiscussion, idComment));
+    await client.put(
+      url,
+      body: jsonEncode(editCommentRequest),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
   }
 }

@@ -19,8 +19,7 @@ void main() async {
       var resp = await http.post(
         Uri.parse('${ApiRoutesRepo.baseUrl}/users/refresh-token'),
         body: {
-          'username': pref.getString('username'),
-          'refreshToken': pref.getString('refresh-token')
+          'refreshToken': pref.getString('refresh-token'),
         },
         headers: {
           'Authorization': 'Bearer ${pref.getString('access-token')}',
@@ -33,7 +32,6 @@ void main() async {
         initialRoute = AppRoutesRepo.login;
         await pref.setBool('logged-in', false);
         await pref.setInt('role', 0);
-        await pref.setString('username', '');
         await pref.setString('refresh-token', '');
         await pref.setString('access-token', '');
         await pref.setInt('id-division', 0);
@@ -42,7 +40,6 @@ void main() async {
       initialRoute = AppRoutesRepo.login;
       await pref.setBool('logged-in', false);
       await pref.setInt('role', 0);
-      await pref.setString('username', '');
       await pref.setString('refresh-token', '');
       await pref.setString('access-token', '');
       await pref.setInt('id-user', 0);

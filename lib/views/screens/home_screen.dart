@@ -42,7 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     appController.page.value = 1;
     appController.allCourseList.value = <CourseResponse>[].obs;
-    CourseService.refreshToken();
+    CourseService.refreshToken()
+        .then((value) => appController.fetchAllCourse());
     appController.fetchAllCourse();
     appController.fetchUserOwnProfile();
     HomeScreen.scrollController.addListener(_scrollListener);
@@ -70,7 +71,8 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       appController.allCourseList.value = <CourseResponse>[].obs;
       appController.page = 1.obs;
-      appController.fetchAllCourse();
+      CourseService.refreshToken()
+          .then((value) => appController.fetchAllCourse());
     });
   }
 

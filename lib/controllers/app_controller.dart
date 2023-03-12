@@ -196,7 +196,6 @@ class AppController extends GetxController {
       sharedPreferences.setInt('id-user', decodedToken['id']);
       userOwnProfile = await userService.fetchUserById();
       sharedPreferences.setInt('role', userOwnProfile!.idRole!);
-      sharedPreferences.setString('username', userOwnProfile!.username!);
       sharedPreferences.setString(
           'division-name', userOwnProfile!.divisionName!);
     } catch (e) {

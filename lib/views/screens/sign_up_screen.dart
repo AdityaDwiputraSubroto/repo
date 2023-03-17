@@ -18,6 +18,7 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  bool isLoading = false;
   SignUpController signUpController = SignUpController();
 
   TextEditingController nameController = TextEditingController();
@@ -201,7 +202,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ButtonRepo(
                   text: 'Daftar',
                   backgroundColor: ColorsRepo.primaryColor,
-                  onPressed: () {
+                  onPressed: () async {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    await Future.delayed(const Duration(seconds: 2));
                     if (inputHandler()) {
                       var divisionSelected = int.parse(divisionController);
 
@@ -214,6 +219,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                       Get.find<SignUpController>().signUp(request);
                     }
+                    setState(() {
+                      isLoading = false;
+                    });
                   },
                 ),
                 const SizedBox(

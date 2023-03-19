@@ -255,7 +255,7 @@ class AppController extends GetxController {
         snackbarRepo(response.status, response.message);
       }
     } catch (e) {
-      throw Exception(e);
+      debugPrint('e ${e.toString()}');
     }
   }
 

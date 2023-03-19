@@ -27,9 +27,10 @@ deleteOverlayDiskusi(
         color: hexToColor(ColorsRepo.primaryColor),
       ),
     ),
-    onPressed: () {
+    onPressed: () async {
       Get.find<AppController>()
           .deleteDiscussion(context, idCourse, idDiscussion);
+      await Future.delayed(const Duration(seconds: 1));
       Navigator.pop(context);
       Navigator.of(context).pushReplacementNamed(
         AppRoutesRepo.diskusimateri,
@@ -80,9 +81,10 @@ deleteOverlayKomentarBox(
         color: hexToColor(ColorsRepo.primaryColor),
       ),
     ),
-    onPressed: () {
+    onPressed: () async {
       Get.find<AppController>()
           .deleteDiscussion(context, idCourse, idDiscussion);
+      await Future.delayed(const Duration(seconds: 1));
       Navigator.pop(context);
       Navigator.pop(context);
       Navigator.of(context).pushReplacementNamed(

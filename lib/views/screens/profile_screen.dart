@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,6 +19,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  bool isLoading = false;
   final appController = Get.find<AppController>();
   @override
   void initState() {
@@ -37,130 +40,158 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ListTile(
-                dense: true,
-                leading: ClipOval(
-                  child: CachedNetworkImage(
-                    imageUrl: appController.userOwnProfile!.photoProfile!,
-                    imageBuilder: (context, imageProvider) => Container(
-                      height: 50,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: imageProvider,
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ListTile(
+                    dense: true,
+                    leading: ClipOval(
+                      child: CachedNetworkImage(
+                        imageUrl: appController.userOwnProfile!.photoProfile!,
+                        imageBuilder: (context, imageProvider) => Container(
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: imageProvider,
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                        placeholder: (context, url) => Container(
+                          alignment: Alignment.center,
+                          height: 50,
+                          width: 50,
+                          child: Image.asset(AssetsRepo.avatarIcon),
+                        ),
+                        errorWidget: (context, url, error) => Image.asset(
+                          AssetsRepo.avatarIcon,
+                          height: 50,
+                          width: 50,
                           fit: BoxFit.fill,
                         ),
                       ),
                     ),
-                    placeholder: (context, url) => Container(
-                      alignment: Alignment.center,
-                      height: 50,
-                      width: 50,
-                      child: Image.asset(AssetsRepo.avatarIcon),
-                    ),
-                    errorWidget: (context, url, error) => Image.asset(
-                      AssetsRepo.avatarIcon,
-                      height: 50,
-                      width: 50,
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                ),
-                title: Text(
-                  appController.userOwnProfile!.fullName!,
-                  maxLines: 2,
-                  overflow: TextOverflow.clip,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
-                ),
-                subtitle: Text(
-                  appController.userOwnProfile!.divisionName ?? '',
-                  maxLines: 1,
-                  style: const TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              const Divider(
-                thickness: 2,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 8,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Akun',
-                      style: TextStyle(
+                    title: Text(
+                      appController.userOwnProfile!.fullName!,
+                      maxLines: 2,
+                      overflow: TextOverflow.clip,
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
                       ),
                     ),
-                    Column(
+                    subtitle: Text(
+                      appController.userOwnProfile!.divisionName ?? '',
+                      maxLines: 1,
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 2,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 8,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ListTile(
-                          leading: Padding(
-                            padding: const EdgeInsets.fromLTRB(5, 12, 8, 8),
-                            child: SvgPicture.asset(
-                              AssetsRepo.editPenIcon,
-                              height: 20,
-                            ),
+                        const Text(
+                          'Akun',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
                           ),
-                          title: const Text(
-                            'Ubah Profil',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                            ),
-                          ),
-                          subtitle: const Text('Mengubah profil akun anda'),
-                          onTap: () {
-                            Navigator.pushNamed(context, '/ubahProfil');
-                          },
                         ),
-                        ListTile(
-                          leading: Padding(
-                            padding: const EdgeInsets.fromLTRB(5, 8, 8, 8),
-                            child: Icon(
-                              Icons.logout,
-                              color: hexToColor(ColorsRepo.redColorDanger),
-                              size: 25,
-                            ),
-                          ),
-                          title: Container(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              'Keluar',
-                              style: TextStyle(
-                                color: hexToColor(ColorsRepo.redColorDanger),
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
+                        Column(
+                          children: [
+                            ListTile(
+                              leading: Padding(
+                                padding: const EdgeInsets.fromLTRB(5, 12, 8, 8),
+                                child: SvgPicture.asset(
+                                  AssetsRepo.editPenIcon,
+                                  height: 20,
+                                ),
                               ),
+                              title: const Text(
+                                'Ubah Profil',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              subtitle: const Text('Mengubah profil akun anda'),
+                              onTap: () {
+                                Navigator.pushNamed(context, '/ubahProfil');
+                              },
                             ),
-                          ),
-                          onTap: () {
-                            appController.logout();
-                          },
-                        ),
+                            ListTile(
+                              leading: Padding(
+                                padding: const EdgeInsets.fromLTRB(5, 8, 8, 8),
+                                child: Icon(
+                                  Icons.logout,
+                                  color: hexToColor(ColorsRepo.redColorDanger),
+                                  size: 25,
+                                ),
+                              ),
+                              title: Container(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  'Keluar',
+                                  style: TextStyle(
+                                    color:
+                                        hexToColor(ColorsRepo.redColorDanger),
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              onTap: () async {
+                                setState(() {
+                                  isLoading = true;
+                                });
+                                await Future.delayed(
+                                    const Duration(seconds: 2));
+                                appController.logout();
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              },
+                            ),
+                          ],
+                        )
                       ],
-                    )
-                  ],
-                ),
-              )
-            ],
+                    ),
+                  )
+                ],
+              ),
+            ),
           ),
-        ),
+          if (isLoading)
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
+              child: const Opacity(
+                opacity: 0.8,
+                child: ModalBarrier(
+                  dismissible: false,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          if (isLoading)
+            const Center(
+              child: CircularProgressIndicator(),
+            ),
+        ],
       ),
     );
   }

@@ -24,7 +24,7 @@ class LoginController extends GetxController {
         snackbarRepo('Error', response.message);
       }
     } catch (e) {
-      snackbarRepo('Kesalahan Login', 'Email/Username/Password Salah');
+      snackbarRepo('Kesalahan Login', e.toString());
     }
 
     update();

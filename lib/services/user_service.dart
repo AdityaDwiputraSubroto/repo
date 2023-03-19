@@ -29,7 +29,7 @@ class UserService extends GetConnect implements GetxService {
 
     if (response.statusCode != 200) {
       // ignore: avoid_print
-      print(response.statusCode);
+      print(response.status);
       return BaseResponseErrorAndMessageOnly.fromJson(response.body);
     }
     return LoginResponse.fromJson(response.body);
@@ -112,7 +112,6 @@ class UserService extends GetConnect implements GetxService {
     request.files.add(image);
 
     http.StreamedResponse response = await request.send();
-
     var jsonResponse = json.decode(await response.stream.bytesToString());
     return BaseResponseErrorAndMessageOnly.fromJson(jsonResponse);
   }

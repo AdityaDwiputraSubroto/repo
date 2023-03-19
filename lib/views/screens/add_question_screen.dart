@@ -34,60 +34,75 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
     return isFilled;
   }
 
+  Future<bool> onBackPressed() {
+    Navigator.pop(context);
+    Navigator.of(context).pushReplacementNamed(
+      AppRoutesRepo.diskusimateri,
+      arguments: {
+        'courseId': idCourse,
+        'judul': title,
+      },
+    );
+    return Future.value(true);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-            Navigator.of(context).pushReplacementNamed(
-              AppRoutesRepo.diskusimateri,
-              arguments: {
-                'courseId': idCourse,
-                'judul': title,
-              },
-            );
-          },
-        ),
-        backgroundColor: hexToColor(ColorsRepo.primaryColor),
-        title: const Text('Tambah Pertanyaan'),
-        actions: [
-          IconButton(
+    return WillPopScope(
+      onWillPop: onBackPressed,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              if (nullHandler()) {
-                StoreDiscussionRequest request = StoreDiscussionRequest(
-                  title: judulController.text.trim(),
-                  body: deskripsiController.text.trim(),
-                );
-                Get.find<AppController>()
-                    .storeDiscussionController(request, idCourse);
-                deskripsiController.text = '';
-                judulController.text = '';
-              }
+              Navigator.pop(context);
+              Navigator.of(context).pushReplacementNamed(
+                AppRoutesRepo.diskusimateri,
+                arguments: {
+                  'courseId': idCourse,
+                  'judul': title,
+                },
+              );
             },
-            icon: const Icon(Icons.send),
           ),
-        ],
-      ),
-      body: Container(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-        child: Column(
-          children: [
-            TextFieldRepo(
-              textController: judulController,
-              hintText: 'Judul',
-            ),
-            const SizedBox(
-              height: 12,
-            ),
-            TextFieldRepo(
-              textController: deskripsiController,
-              hintText: 'Deskripsi',
-              multiLine: true,
+          backgroundColor: hexToColor(ColorsRepo.primaryColor),
+          title: const Text('Tambah Pertanyaan'),
+          actions: [
+            IconButton(
+              onPressed: () {
+                if (nullHandler()) {
+                  StoreDiscussionRequest request = StoreDiscussionRequest(
+                    title: judulController.text.trim(),
+                    body: deskripsiController.text.trim(),
+                  );
+                  Get.find<AppController>()
+                      .storeDiscussionController(request, idCourse);
+                  deskripsiController.text = '';
+                  judulController.text = '';
+                }
+              },
+              icon: const Icon(Icons.send),
             ),
           ],
+        ),
+        body: Container(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+          child: Column(
+            children: [
+              TextFieldRepo(
+                textController: judulController,
+                hintText: 'Judul',
+              ),
+              const SizedBox(
+                height: 12,
+              ),
+              TextFieldRepo(
+                textController: deskripsiController,
+                hintText: 'Deskripsi',
+                multiLine: true,
+              ),
+            ],
+          ),
         ),
       ),
     );

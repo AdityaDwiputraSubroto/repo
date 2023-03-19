@@ -1,9 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.itc.repo">
+   <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="repo"
+        android:label="ITC Repository"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@drawable/android12splash">
         <activity
             android:name=".MainActivity"
             android:exported="true"

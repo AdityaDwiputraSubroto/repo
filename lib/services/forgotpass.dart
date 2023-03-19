@@ -16,7 +16,6 @@ class ForgotPasswordService {
     final body = jsonEncode(request.toJson());
 
     final response = await http.post(url, headers: headers, body: body);
-
     if (response.statusCode == 201) {
       final jsonResponse = jsonDecode(response.body);
       return ForgotPasswordResponse.fromJson(jsonResponse);

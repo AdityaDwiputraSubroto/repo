@@ -81,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Get.toNamed(AppRoutesRepo.forgotPassword);
+                        Get.offAllNamed(AppRoutesRepo.forgotPassword);
                       },
                       child: Container(
                         alignment: Alignment.centerRight,
@@ -140,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               text: 'Daftar',
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {
-                                  Get.toNamed(AppRoutesRepo.signup);
+                                  Get.offAllNamed(AppRoutesRepo.signup);
                                 },
                               style: TextStyle(
                                 color: hexToColor(ColorsRepo.primaryColor),

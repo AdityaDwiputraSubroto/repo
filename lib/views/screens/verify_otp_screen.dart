@@ -81,7 +81,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                         ),
                         padding: const EdgeInsets.only(top: 8),
                         height: 55,
-                        width: 55,
+                        width: MediaQuery.of(context).size.width / 10,
                         child: TextFormField(
                           controller: otpFieldsController[0],
                           onChanged: (value) {
@@ -108,7 +108,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                         ),
                         padding: const EdgeInsets.only(top: 8),
                         height: 55,
-                        width: 55,
+                        width: MediaQuery.of(context).size.width / 10,
                         child: TextFormField(
                           controller: otpFieldsController[1],
                           onChanged: (value) {
@@ -135,7 +135,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                         ),
                         padding: const EdgeInsets.only(top: 8),
                         height: 55,
-                        width: 55,
+                        width: MediaQuery.of(context).size.width / 10,
                         child: TextFormField(
                           controller: otpFieldsController[2],
                           onChanged: (value) {
@@ -162,7 +162,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                         ),
                         padding: const EdgeInsets.only(top: 8),
                         height: 55,
-                        width: 55,
+                        width: MediaQuery.of(context).size.width / 10,
                         child: TextFormField(
                           controller: otpFieldsController[3],
                           onChanged: (value) {
@@ -189,7 +189,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                         ),
                         padding: const EdgeInsets.only(top: 8),
                         height: 55,
-                        width: 55,
+                        width: MediaQuery.of(context).size.width / 10,
                         child: TextFormField(
                           controller: otpFieldsController[4],
                           onChanged: (value) {

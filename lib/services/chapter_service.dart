@@ -25,7 +25,6 @@ class ChapterService {
       },
     );
     if (response.statusCode == 200) {
-      // print(response.body);
       List data = json.decode(response.body)['data'];
       return data.map((e) => ChapterResponse.fromJson(e)).toList();
     } else {

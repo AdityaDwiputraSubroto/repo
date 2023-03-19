@@ -18,78 +18,85 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final controller = ForgotPasswordController();
   final emailController = TextEditingController();
   bool isLoading = false;
+  Future<bool> onBackPressed() {
+    Get.offAllNamed(AppRoutesRepo.login);
+    return Future.value(true);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(36, 36, 36, 0),
-            child: Column(
-              children: [
-                const BannerRepo(),
-                const SizedBox(
-                  height: 24,
-                ),
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Lupa Kata Sandi',
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 0, 0, 0),
-                        fontSize: 20),
+    return WillPopScope(
+      onWillPop: onBackPressed,
+      child: Scaffold(
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(36, 36, 36, 0),
+              child: Column(
+                children: [
+                  const BannerRepo(),
+                  const SizedBox(
+                    height: 24,
                   ),
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                TextFieldRepo(
-                  textController: emailController,
-                  hintText: 'Masukkan Alamat Email',
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                ButtonRepo(
-                  text: 'Kirim',
-                  backgroundColor: ColorsRepo.primaryColor,
-                  changeTextColor: false,
-                  onPressed: () async {
-                    setState(() {
-                      isLoading = true;
-                    });
-                    await controller
-                        .forgotPassword(emailController.text.trim());
-                    setState(() {
-                      isLoading = false;
-                    });
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                isLoading
-                    ? const CircularProgressIndicator()
-                    : const SizedBox.shrink(),
-                const SizedBox(
-                  height: 10,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Get.toNamed(AppRoutesRepo.login);
-                  },
-                  child: Text(
-                    'Kembali ke Halaman Masuk',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: hexToColor(ColorsRepo.primaryColor),
-                      fontSize: 16,
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Lupa Kata Sandi',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 0, 0, 0),
+                          fontSize: 20),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  TextFieldRepo(
+                    textController: emailController,
+                    hintText: 'Masukkan Alamat Email',
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  ButtonRepo(
+                    text: 'Kirim',
+                    backgroundColor: ColorsRepo.primaryColor,
+                    changeTextColor: false,
+                    onPressed: () async {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      await controller
+                          .forgotPassword(emailController.text.trim());
+                      setState(() {
+                        isLoading = false;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 16.0),
+                  isLoading
+                      ? const CircularProgressIndicator()
+                      : const SizedBox.shrink(),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Get.offAllNamed(AppRoutesRepo.login);
+                    },
+                    child: Text(
+                      'Kembali ke Halaman Masuk',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: hexToColor(ColorsRepo.primaryColor),
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

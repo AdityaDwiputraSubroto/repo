@@ -243,14 +243,8 @@ class AppController extends GetxController {
           userService.putEditProfileWithImage(
               img, name, username, email, division, generation, noTelp));
       if (response.status == 'success') {
-        isLoading.value = true;
         snackbarRepoSuccess(response.status, response.message);
         fetchUserOwnProfile();
-        // ignore: use_build_context_synchronously
-        Navigator.of(context).pushReplacementNamed(
-          '/ubahProfil',
-        );
-        isLoading.value = false;
       } else {
         snackbarRepo(response.status, response.message);
       }

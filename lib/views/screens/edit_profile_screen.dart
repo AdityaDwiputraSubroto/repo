@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dropdown_search/dropdown_search.dart';
@@ -33,6 +34,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? generation;
   File? _image;
   String? image;
+  bool isLoading = false;
   // ignore: prefer_typing_uninitialized_variables
   var password;
   late TextEditingController nameController = TextEditingController(text: name);
@@ -216,8 +218,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             padding: const EdgeInsets.only(
               right: 20,
             ),
-            onPressed: () {
+            onPressed: () async {
+              setState(() {
+                isLoading = true;
+              });
               if (inputHandler()) {
+                // ignore: use_build_context_synchronously
                 Get.find<AppController>().editProfileWithImage(
                   context,
                   image!,
@@ -229,291 +235,307 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   noTelpController.text,
                 );
               }
+              await Future.delayed(const Duration(seconds: 4));
+              setState(() {
+                isLoading = false;
+              });
             },
             icon: const Icon(Icons.save),
           ),
         ],
       ),
-      body: appController.isLoading.value
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : SingleChildScrollView(
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                margin: const EdgeInsets.only(bottom: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: () {
-                          _showSelectPhotoOptions(context);
-                        },
-                        child: Center(
-                          child: Container(
-                            height: 100.0,
-                            width: 100.0,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.grey.withOpacity(0.2),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                ),
-                              ],
-                            ),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Center(
-                                  child: _image == null
-                                      ? CachedNetworkImage(
-                                          imageUrl: photoProfile!,
-                                          imageBuilder:
-                                              (context, imageProvider) {
-                                            return Container(
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(200),
-                                                image: DecorationImage(
-                                                  image: imageProvider,
-                                                  fit: BoxFit.cover,
-                                                ),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+              margin: const EdgeInsets.only(bottom: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTap: () {
+                        _showSelectPhotoOptions(context);
+                      },
+                      child: Center(
+                        child: Container(
+                          height: 100.0,
+                          width: 100.0,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.grey.withOpacity(0.2),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                              ),
+                            ],
+                          ),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Center(
+                                child: _image == null
+                                    ? CachedNetworkImage(
+                                        imageUrl: photoProfile!,
+                                        imageBuilder: (context, imageProvider) {
+                                          return Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(200),
+                                              image: DecorationImage(
+                                                image: imageProvider,
+                                                fit: BoxFit.cover,
                                               ),
-                                            );
-                                          },
-                                          placeholder: (context, url) => Icon(
-                                            Icons.person,
-                                            size: 70,
-                                            color:
-                                                Colors.black.withOpacity(0.2),
-                                          ),
-                                          errorWidget: (context, url, error) =>
-                                              Icon(
-                                            Icons.person,
-                                            size: 70,
-                                            color:
-                                                Colors.black.withOpacity(0.2),
-                                          ),
-                                        )
-                                      : CircleAvatar(
-                                          backgroundImage: FileImage(_image!),
-                                          radius: 200.0,
+                                            ),
+                                          );
+                                        },
+                                        placeholder: (context, url) => Icon(
+                                          Icons.person,
+                                          size: 70,
+                                          color: Colors.black.withOpacity(0.2),
                                         ),
-                                ),
-                                const Icon(
-                                  Icons.camera_alt,
-                                  color: Colors.white,
-                                  size: 28,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      'Nama Lengkap',
-                      style: TextStyle(
-                        color: hexToColor(ColorsRepo.primaryColor),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    TextFieldRepo(
-                      textController: nameController,
-                      hintText: 'Nama',
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      'Username',
-                      style: TextStyle(
-                        color: hexToColor(ColorsRepo.primaryColor),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    TextFieldRepo(
-                      textController: usernameController,
-                      hintText: 'Username',
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      'Email',
-                      style: TextStyle(
-                        color: hexToColor(ColorsRepo.primaryColor),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    TextFieldRepo(
-                      textController: emailController,
-                      hintText: 'Email',
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      'Divisi',
-                      style: TextStyle(
-                        color: hexToColor(ColorsRepo.primaryColor),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    SizedBox(
-                      height: 50,
-                      width: MediaQuery.of(context).size.width,
-                      child: DropdownSearch<String>(
-                        popupProps: const PopupProps.menu(
-                          fit: FlexFit.loose,
-                        ),
-                        dropdownButtonProps: DropdownButtonProps(
-                          color: hexToColor(ColorsRepo.primaryColor),
-                          icon: const Icon(Icons.keyboard_arrow_down),
-                        ),
-                        dropdownDecoratorProps: DropDownDecoratorProps(
-                          dropdownSearchDecoration: InputDecoration(
-                            filled: true,
-                            fillColor: hexToColor(ColorsRepo.secondaryColor),
-                            contentPadding:
-                                const EdgeInsets.fromLTRB(12, 10, 10, 10),
-                          ),
-                        ),
-                        items: divisi,
-                        dropdownBuilder: (context, selectedItem) {
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Text(
-                              selectedItem ?? '$divisionController',
-                              style: const TextStyle(
-                                color: Colors.black54,
-                                fontSize: 16,
+                                        errorWidget: (context, url, error) =>
+                                            Icon(
+                                          Icons.person,
+                                          size: 70,
+                                          color: Colors.black.withOpacity(0.2),
+                                        ),
+                                      )
+                                    : CircleAvatar(
+                                        backgroundImage: FileImage(_image!),
+                                        radius: 200.0,
+                                      ),
                               ),
-                            ),
-                          );
-                        },
-                        onChanged: (selectedItem) {
-                          setState(() {
-                            divisionController = selectedItem ?? division;
-                          });
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      'Angkatan',
-                      style: TextStyle(
-                        color: hexToColor(ColorsRepo.primaryColor),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    SizedBox(
-                      height: 50,
-                      width: MediaQuery.of(context).size.width,
-                      child: DropdownSearch<String>(
-                        popupProps: const PopupProps.menu(
-                          fit: FlexFit.loose,
-                        ),
-                        dropdownButtonProps: DropdownButtonProps(
-                          color: hexToColor(ColorsRepo.primaryColor),
-                          icon: const Icon(Icons.keyboard_arrow_down),
-                        ),
-                        dropdownDecoratorProps: DropDownDecoratorProps(
-                          dropdownSearchDecoration: InputDecoration(
-                            filled: true,
-                            fillColor: hexToColor(ColorsRepo.secondaryColor),
-                            contentPadding:
-                                const EdgeInsets.fromLTRB(12, 10, 10, 10),
+                              const Icon(
+                                Icons.camera_alt,
+                                color: Colors.white,
+                                size: 28,
+                              ),
+                            ],
                           ),
                         ),
-                        items: generasi,
-                        dropdownBuilder: (context, selectedItem) {
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Text(
-                              selectedItem ?? '$generationController',
-                              style: const TextStyle(
-                                color: Colors.black54,
-                                fontSize: 16,
-                              ),
-                            ),
-                          );
-                        },
-                        onChanged: (selectedItem) {
-                          setState(() {
-                            generationController = selectedItem ?? generation;
-                          });
-                        },
                       ),
                     ),
-                    const SizedBox(
-                      height: 20,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'Nama Lengkap',
+                    style: TextStyle(
+                      color: hexToColor(ColorsRepo.primaryColor),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
                     ),
-                    Text(
-                      'Nomor Telepon',
-                      style: TextStyle(
+                  ),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  TextFieldRepo(
+                    textController: nameController,
+                    hintText: 'Nama',
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'Username',
+                    style: TextStyle(
+                      color: hexToColor(ColorsRepo.primaryColor),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  TextFieldRepo(
+                    textController: usernameController,
+                    hintText: 'Username',
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'Email',
+                    style: TextStyle(
+                      color: hexToColor(ColorsRepo.primaryColor),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  TextFieldRepo(
+                    textController: emailController,
+                    hintText: 'Email',
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'Divisi',
+                    style: TextStyle(
+                      color: hexToColor(ColorsRepo.primaryColor),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  SizedBox(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width,
+                    child: DropdownSearch<String>(
+                      popupProps: const PopupProps.menu(
+                        fit: FlexFit.loose,
+                      ),
+                      dropdownButtonProps: DropdownButtonProps(
                         color: hexToColor(ColorsRepo.primaryColor),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                        icon: const Icon(Icons.keyboard_arrow_down),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    TextFieldRepo(
-                      textController: noTelpController,
-                      hintText: 'Nomor Telepon',
-                      isNumber: true,
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    ButtonRepo(
-                      text: 'Ubah Password',
-                      backgroundColor: ColorsRepo.lightGray,
-                      onPressed: () {
-                        Navigator.pushNamed(
-                          context,
-                          '/ubahPassword',
-                          arguments: Password(
-                            password,
+                      dropdownDecoratorProps: DropDownDecoratorProps(
+                        dropdownSearchDecoration: InputDecoration(
+                          filled: true,
+                          fillColor: hexToColor(ColorsRepo.secondaryColor),
+                          contentPadding:
+                              const EdgeInsets.fromLTRB(12, 10, 10, 10),
+                        ),
+                      ),
+                      items: divisi,
+                      dropdownBuilder: (context, selectedItem) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            selectedItem ?? '$divisionController',
+                            style: const TextStyle(
+                              color: Colors.black54,
+                              fontSize: 16,
+                            ),
                           ),
                         );
                       },
-                      changeTextColor: true,
-                    )
-                  ],
+                      onChanged: (selectedItem) {
+                        setState(() {
+                          divisionController = selectedItem ?? division;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'Angkatan',
+                    style: TextStyle(
+                      color: hexToColor(ColorsRepo.primaryColor),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  SizedBox(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width,
+                    child: DropdownSearch<String>(
+                      popupProps: const PopupProps.menu(
+                        fit: FlexFit.loose,
+                      ),
+                      dropdownButtonProps: DropdownButtonProps(
+                        color: hexToColor(ColorsRepo.primaryColor),
+                        icon: const Icon(Icons.keyboard_arrow_down),
+                      ),
+                      dropdownDecoratorProps: DropDownDecoratorProps(
+                        dropdownSearchDecoration: InputDecoration(
+                          filled: true,
+                          fillColor: hexToColor(ColorsRepo.secondaryColor),
+                          contentPadding:
+                              const EdgeInsets.fromLTRB(12, 10, 10, 10),
+                        ),
+                      ),
+                      items: generasi,
+                      dropdownBuilder: (context, selectedItem) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            selectedItem ?? '$generationController',
+                            style: const TextStyle(
+                              color: Colors.black54,
+                              fontSize: 16,
+                            ),
+                          ),
+                        );
+                      },
+                      onChanged: (selectedItem) {
+                        setState(() {
+                          generationController = selectedItem ?? generation;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'Nomor Telepon',
+                    style: TextStyle(
+                      color: hexToColor(ColorsRepo.primaryColor),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  TextFieldRepo(
+                    textController: noTelpController,
+                    hintText: 'Nomor Telepon',
+                    isNumber: true,
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  ButtonRepo(
+                    text: 'Ubah Password',
+                    backgroundColor: ColorsRepo.lightGray,
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        '/ubahPassword',
+                        arguments: Password(
+                          password,
+                        ),
+                      );
+                    },
+                    changeTextColor: true,
+                  )
+                ],
+              ),
+            ),
+          ),
+          if (isLoading)
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
+              child: const Opacity(
+                opacity: 0.8,
+                child: ModalBarrier(
+                  dismissible: false,
+                  color: Colors.black,
                 ),
               ),
             ),
+          if (isLoading)
+            const Center(
+              child: CircularProgressIndicator(),
+            ),
+        ],
+      ),
     );
   }
 }

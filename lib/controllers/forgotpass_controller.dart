@@ -18,7 +18,6 @@ class ForgotPasswordController {
       snackbarRepo('Warning!', 'Email Salah!');
       return;
     }
-
     try {
       final response = await ForgotPasswordService.forgotPassword(request);
       if (response.status == 'success') {

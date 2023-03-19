@@ -77,6 +77,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
+  Future<bool> onBackPressed() {
+    Get.offAllNamed(AppRoutesRepo.login);
+    return Future.value(true);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -87,203 +92,208 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     Get.lazyPut(() => signUpController);
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(36, 36, 36, 36),
-                child: Column(
-                  children: [
-                    const BannerRepo(),
-                    const SizedBox(
-                      height: 24,
-                    ),
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Daftar',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 20,
-                        ),
-                        textAlign: TextAlign.left,
+    return WillPopScope(
+      onWillPop: onBackPressed,
+      child: Scaffold(
+        body: Stack(
+          children: [
+            SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(36, 36, 36, 36),
+                  child: Column(
+                    children: [
+                      const BannerRepo(),
+                      const SizedBox(
+                        height: 24,
                       ),
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    TextFieldRepo(
-                      textController: nameController,
-                      hintText: 'Nama',
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    TextFieldRepo(
-                      textController: usernameController,
-                      hintText: 'Username',
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    TextFieldRepo(
-                      textController: emailController,
-                      hintText: 'Email',
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                              color: hexToColor(ColorsRepo.primaryColor),
-                              width: 1),
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Daftar',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 20,
+                          ),
+                          textAlign: TextAlign.left,
                         ),
                       ),
-                      child: Container(
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      TextFieldRepo(
+                        textController: nameController,
+                        hintText: 'Nama',
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      TextFieldRepo(
+                        textController: usernameController,
+                        hintText: 'Username',
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      TextFieldRepo(
+                        textController: emailController,
+                        hintText: 'Email',
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      Container(
                         decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(4),
-                              topRight: Radius.circular(4)),
-                          color: hexToColor(ColorsRepo.secondaryColor),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 12),
-                          child: Obx(
-                            () => DropdownButton(
-                              underline: const SizedBox(),
-                              isExpanded: true,
-                              value:
-                                  signUpController.selectedDivision.value == ''
-                                      ? null
-                                      : signUpController.selectedDivision.value,
-                              hint: const Text('Divisi'),
-                              icon: const Icon(Icons.arrow_drop_down),
-                              elevation: 2,
-                              dropdownColor:
-                                  hexToColor(ColorsRepo.secondaryColor),
-                              onChanged: (value) {
-                                signUpController.setDivision(value!);
-
-                                setState(() {
-                                  divisionController = value;
-                                });
-                              },
-                              items: dropdownlist.map(
-                                (e) {
-                                  return DropdownMenuItem(
-                                    value: e['id'].toString(),
-                                    child: Text(e['divisionName']),
-                                  );
-                                },
-                              ).toList(),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    TextField(
-                      obscureText: true,
-                      controller: passwordController,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: hexToColor(ColorsRepo.secondaryColor),
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: hexToColor(ColorsRepo.primaryColor),
-                          ),
-                        ),
-                        hintText: 'Password',
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 28,
-                    ),
-                    ButtonRepo(
-                      text: 'Daftar',
-                      backgroundColor: ColorsRepo.primaryColor,
-                      onPressed: () async {
-                        setState(() {
-                          isLoading = true;
-                        });
-                        await Future.delayed(const Duration(seconds: 2));
-                        if (inputHandler()) {
-                          var divisionSelected = int.parse(divisionController);
-
-                          var request = UserRegisterRequest(
-                              username: usernameController.text,
-                              fullName: nameController.text,
-                              email: emailController.text,
-                              password: passwordController.text,
-                              idDivision: divisionSelected);
-
-                          Get.find<SignUpController>().signUp(request);
-                        }
-                        setState(() {
-                          isLoading = false;
-                        });
-                      },
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Center(
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Sudah mempunyai akun? ',
-                              style: TextStyle(
-                                color: hexToColor(ColorsRepo.darkGray),
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16,
-                              ),
-                            ),
-                            TextSpan(
-                              text: 'Masuk',
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  Get.toNamed(AppRoutesRepo.login);
-                                },
-                              style: TextStyle(
+                          border: Border(
+                            bottom: BorderSide(
                                 color: hexToColor(ColorsRepo.primaryColor),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
+                                width: 1),
+                          ),
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(4),
+                                topRight: Radius.circular(4)),
+                            color: hexToColor(ColorsRepo.secondaryColor),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 12),
+                            child: Obx(
+                              () => DropdownButton(
+                                underline: const SizedBox(),
+                                isExpanded: true,
+                                value: signUpController
+                                            .selectedDivision.value ==
+                                        ''
+                                    ? null
+                                    : signUpController.selectedDivision.value,
+                                hint: const Text('Divisi'),
+                                icon: const Icon(Icons.arrow_drop_down),
+                                elevation: 2,
+                                dropdownColor:
+                                    hexToColor(ColorsRepo.secondaryColor),
+                                onChanged: (value) {
+                                  signUpController.setDivision(value!);
+
+                                  setState(() {
+                                    divisionController = value;
+                                  });
+                                },
+                                items: dropdownlist.map(
+                                  (e) {
+                                    return DropdownMenuItem(
+                                      value: e['id'].toString(),
+                                      child: Text(e['divisionName']),
+                                    );
+                                  },
+                                ).toList(),
                               ),
-                            )
-                          ],
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      TextField(
+                        obscureText: true,
+                        controller: passwordController,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: hexToColor(ColorsRepo.secondaryColor),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: hexToColor(ColorsRepo.primaryColor),
+                            ),
+                          ),
+                          hintText: 'Password',
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 28,
+                      ),
+                      ButtonRepo(
+                        text: 'Daftar',
+                        backgroundColor: ColorsRepo.primaryColor,
+                        onPressed: () async {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          await Future.delayed(const Duration(seconds: 2));
+                          if (inputHandler()) {
+                            var divisionSelected =
+                                int.parse(divisionController);
+
+                            var request = UserRegisterRequest(
+                                username: usernameController.text,
+                                fullName: nameController.text,
+                                email: emailController.text,
+                                password: passwordController.text,
+                                idDivision: divisionSelected);
+
+                            Get.find<SignUpController>().signUp(request);
+                          }
+                          setState(() {
+                            isLoading = false;
+                          });
+                        },
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Center(
+                        child: RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Sudah mempunyai akun? ',
+                                style: TextStyle(
+                                  color: hexToColor(ColorsRepo.darkGray),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'Masuk',
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    Get.offAllNamed(AppRoutesRepo.login);
+                                  },
+                                style: TextStyle(
+                                  color: hexToColor(ColorsRepo.primaryColor),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          if (isLoading)
-            BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
-              child: const Opacity(
-                opacity: 0.8,
-                child: ModalBarrier(
-                  dismissible: false,
-                  color: Colors.black,
+            if (isLoading)
+              BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
+                child: const Opacity(
+                  opacity: 0.8,
+                  child: ModalBarrier(
+                    dismissible: false,
+                    color: Colors.black,
+                  ),
                 ),
               ),
-            ),
-          if (isLoading)
-            const Center(
-              child: CircularProgressIndicator(),
-            ),
-        ],
+            if (isLoading)
+              const Center(
+                child: CircularProgressIndicator(),
+              ),
+          ],
+        ),
       ),
     );
   }

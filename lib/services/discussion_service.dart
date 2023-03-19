@@ -31,7 +31,6 @@ class DiscussionService {
         'Authorization': 'Bearer $accesToken',
       },
     );
-    // print('getAllDiscussion ${response.statusCode}');
     if (response.statusCode == 200) {
       data = json.decode(response.body)['data'];
     } else {
